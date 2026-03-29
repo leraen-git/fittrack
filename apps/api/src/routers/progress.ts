@@ -1,0 +1,88 @@
+import { z } from 'zod'
+import { eq, and, desc, gte } from 'drizzle-orm'
+import { router, protectedProcedure } from '../trpc.js'
+import {
+  workoutSessions,
+  sessionExercises,
+  exerciseSets,
+  personalRecords,
+  users,
+} from '../db/schema.js'
+import { calcDelta, getExerciseStatus } from '@fittrack/shared'
+
+export const progressRouter = router({
+  records: protectedProcedure.query(async ({ ctx }) => {
+    const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+    if (!user) throw new Error('User not found')
+    return ctx.db
+      .select()
+      .from(personalRecords)
+      .where(eq(personalRecords.userId, user.id))
+      .orderBy(desc(personalRecords.achievedAt))
+  }),
+
+  heatmap: protectedProcedure
+    .input(z.object({ weeks: z.number().int().default(16) }))
+    .query(async ({ ctx, input }) => {
+      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      if (!user) throw new Error('User not found')
+      const since = new Date()
+      since.setDate(since.getDate() - input.weeks * 7)
+      const sessions = await ctx.db
+        .select({ startedAt: workoutSessions.startedAt, totalVolume: workoutSessions.totalVolume })
+        .from(workoutSessions)
+        .where(
+          and(eq(workoutSessions.userId, user.id), gte(workoutSessions.startedAt, since)),
+        )
+      return sessions
+    }),
+
+  exercise: protectedProcedure
+    .input(z.object({ exerciseId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      if (!user) throw new Error('User not found')
+      const sessionExs = await ctx.db
+        .select()
+        .from(sessionExercises)
+        .where(eq(sessionExercises.exerciseId, input.exerciseId))
+      return sessionExs
+    }),
+
+  sessionRecap: protectedProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const [session] = await ctx.db
+        .select()
+        .from(workoutSessions)
+        .where(eq(workoutSessions.id, input.sessionId))
+        .limit(1)
+      if (!session) throw new Error('Session not found')
+
+      const [prevSession] = await ctx.db
+        .select()
+        .from(workoutSessions)
+        .where(
+          and(
+            eq(workoutSessions.userId, session.userId),
+            eq(workoutSessions.workoutTemplateId, session.workoutTemplateId),
+          ),
+        )
+        .orderBy(desc(workoutSessions.startedAt))
+        .limit(2)
+        .offset(1)
+
+      const delta = prevSession
+        ? calcDelta(session.totalVolume, prevSession.totalVolume)
+        : null
+
+      return {
+        sessionId: session.id,
+        previousSessionId: prevSession?.id ?? null,
+        totalVolume: session.totalVolume,
+        previousTotalVolume: prevSession?.totalVolume ?? null,
+        volumeDelta: delta,
+        status: delta !== null ? getExerciseStatus(delta) : null,
+      }
+    }),
+})

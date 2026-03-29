@@ -1,0 +1,51 @@
+{
+  "name": "@fittrack/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "lint": "eslint app src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@clerk/clerk-expo": "^2.8.1",
+    "@fittrack/api": "*",
+    "@fittrack/shared": "*",
+    "@shopify/react-native-skia": "2.0.0-next.4",
+    "@tanstack/react-query": "^5.64.1",
+    "@trpc/client": "^11.0.0",
+    "@trpc/react-query": "^11.0.0",
+    "expo": "~53.0.0",
+    "expo-asset": "^11.1.7",
+    "expo-background-fetch": "~13.1.6",
+    "expo-constants": "^17.1.8",
+    "expo-file-system": "^18.1.11",
+    "expo-font": "~13.3.1",
+    "expo-keep-awake": "^14.1.4",
+    "expo-linking": "^55.0.10-canary-20260328-bdc6273",
+    "expo-notifications": "~0.31.5",
+    "expo-router": "~5.1.11",
+    "expo-status-bar": "~2.2.3",
+    "expo-task-manager": "~13.1.6",
+    "i18next": "^24.2.1",
+    "react": "19.0.0",
+    "react-i18next": "^15.4.0",
+    "react-native": "0.79.6",
+    "react-native-gesture-handler": "~2.24.0",
+    "react-native-reanimated": "~3.17.4",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1",
+    "victory-native": "^41.12.0",
+    "web-streams-polyfill": "^3.3.3",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
