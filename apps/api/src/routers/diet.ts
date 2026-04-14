@@ -103,6 +103,45 @@ export const dietRouter = router({
     return plan ?? null
   }),
 
+  // Lightweight query for the home screen — returns only today's meals instead
+  // of the full 7-day rawPlan JSON (~100 KB). Invalidated by generatePlan/deletePlan.
+  todayMeals: protectedProcedure.query(async ({ ctx }) => {
+    const user = await resolveUser(ctx.db, ctx.userId)
+    const [plan] = await ctx.db
+      .select({
+        id: dietPlans.id,
+        isActive: dietPlans.isActive,
+        targetCalories: dietPlans.targetCalories,
+        targetProtein: dietPlans.targetProtein,
+        targetCarbs: dietPlans.targetCarbs,
+        targetFat: dietPlans.targetFat,
+        hydrationLiters: dietPlans.hydrationLiters,
+        rawPlan: dietPlans.rawPlan,
+      })
+      .from(dietPlans)
+      .where(and(eq(dietPlans.userId, user.id), eq(dietPlans.isActive, true)))
+      .orderBy(desc(dietPlans.createdAt))
+      .limit(1)
+
+    if (!plan) return null
+
+    const jsDay = new Date().getDay()         // 0=Sun … 6=Sat
+    const dietDow = jsDay === 0 ? 7 : jsDay  // 1=Mon … 7=Sun
+    const raw = plan.rawPlan as any
+    const todayDay = (raw?.days as any[])?.find((d: any) => d.dayOfWeek === dietDow) ?? null
+
+    return {
+      id: plan.id,
+      isActive: plan.isActive,
+      targetCalories: plan.targetCalories,
+      targetProtein: plan.targetProtein,
+      targetCarbs: plan.targetCarbs,
+      targetFat: plan.targetFat,
+      hydrationLiters: plan.hydrationLiters,
+      todayDay,
+    }
+  }),
+
   savedProfile: protectedProcedure.query(async ({ ctx }) => {
     const user = await resolveUser(ctx.db, ctx.userId)
     const [profile] = await ctx.db

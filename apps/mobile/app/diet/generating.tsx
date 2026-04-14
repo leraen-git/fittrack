@@ -35,7 +35,10 @@ export default function DietGeneratingScreen() {
 
   const generatePlan = trpc.diet.generatePlan.useMutation({
     onSuccess: async () => {
-      await utils.diet.activePlan.invalidate()
+      await Promise.all([
+        utils.diet.activePlan.invalidate(),
+        utils.diet.todayMeals.invalidate(),
+      ])
       router.replace('/(tabs)/diet' as any)
     },
     onError: (err) => {

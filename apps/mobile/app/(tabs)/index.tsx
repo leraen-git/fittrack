@@ -13,10 +13,6 @@ import { MealDetailModal, MEAL_ICONS, type DietMeal } from '@/components/MealDet
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-// Diet plan uses 1=Mon..7=Sun; JS getDay() uses 0=Sun..6=Sat
-function jsDowToDietDow(jsDow: number): number {
-  return jsDow === 0 ? 7 : jsDow
-}
 
 export default function HomeScreen() {
   const { colors, typography, spacing, radius } = useTheme()
@@ -30,9 +26,12 @@ export default function HomeScreen() {
   }
   const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
   const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
-  const { data: dietPlan, refetch: refetchDiet } = trpc.diet.activePlan.useQuery()
+  // todayMeals is a lightweight endpoint — only today's day, no full rawPlan JSON.
+  // staleTime: Infinity because the plan never changes unless the user explicitly
+  // regenerates or deletes it (both mutations invalidate this query).
+  const { data: dietToday } = trpc.diet.todayMeals.useQuery(undefined, { staleTime: Infinity })
 
-  useFocusEffect(useCallback(() => { refetchPlan(); refetchDiet() }, []))
+  useFocusEffect(useCallback(() => { refetchPlan() }, []))
   const { data: lastSessionPRCount } = trpc.progress.lastSessionPRCount.useQuery()
 
   const nextWorkout = activePlan?.stats.nextWorkout
@@ -53,7 +52,7 @@ export default function HomeScreen() {
     })
 
   // Today tab logic — only rendered when both workout plan AND diet plan are active
-  const showTodayTabs = !!activePlan && !!dietPlan
+  const showTodayTabs = !!activePlan && !!dietToday
   const todayJsDow = new Date().getDay()
   const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayJsDow)
   const isTodayWorkoutDone =
@@ -85,9 +84,8 @@ export default function HomeScreen() {
     setActiveTab(tab)
   }
 
-  // Today's diet day (1=Mon..7=Sun)
-  const todayDietDow = jsDowToDietDow(todayJsDow)
-  const todayDietDay = (dietPlan?.rawPlan as any)?.days?.find((d: any) => d.dayOfWeek === todayDietDow)
+  // todayDietDay comes directly from the server — no client-side JSONB traversal needed
+  const todayDietDay = dietToday?.todayDay ?? null
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>

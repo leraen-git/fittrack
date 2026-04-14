@@ -68,7 +68,10 @@ export default function DietScreen() {
   const [selectedDay, setSelectedDay] = useState(todayDow)
 
   const deletePlan = trpc.diet.deletePlan.useMutation({
-    onSuccess: () => utils.diet.activePlan.invalidate(),
+    onSuccess: () => Promise.all([
+      utils.diet.activePlan.invalidate(),
+      utils.diet.todayMeals.invalidate(),
+    ]),
     onError: (err) => Alert.alert('Error', err.message),
   })
 
