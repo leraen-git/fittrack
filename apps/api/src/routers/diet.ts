@@ -39,6 +39,10 @@ const dietPlanSchema = z.object({
       fat: z.number(),
       batchCookable: z.boolean().optional(),
       isTreat: z.boolean().optional(),
+      prepTime: z.number().optional(),             // minutes
+      ingredients: z.array(z.string()).optional(), // e.g. ["200g chicken breast", "1 tbsp olive oil"]
+      preparationSteps: z.array(z.string()).optional(),
+      recipeVideoUrl: z.string().optional(),        // YouTube search URL or direct link
     })),
   })),
   snackSwaps: z.array(z.object({
@@ -196,7 +200,11 @@ Return ONLY a valid JSON object — no markdown, no explanation, nothing else be
           "carbs": <number>,
           "fat": <number>,
           "batchCookable": <true|false>,
-          "isTreat": <true|false>
+          "isTreat": <true|false>,
+          "prepTime": <minutes as integer>,
+          "ingredients": ["<quantity + ingredient>", ...],
+          "preparationSteps": ["<step 1>", "<step 2>", ...],
+          "recipeVideoUrl": "<YouTube search URL: https://www.youtube.com/results?search_query=<meal+name+recipe>>"
         }
       ]
     }
