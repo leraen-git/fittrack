@@ -46,23 +46,23 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
 
   return (
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
-      <TouchableOpacity
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
-        activeOpacity={1}
-        onPress={onClose}
-        accessibilityLabel="Close meal detail"
-        accessibilityRole="button"
-      >
+      {/* Full-screen container with dim background */}
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        {/* Tap-to-close area above the sheet */}
         <TouchableOpacity
+          style={{ flex: 1 }}
           activeOpacity={1}
-          onPress={() => {}}
-          style={{
-            backgroundColor: colors.background,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            maxHeight: '90%',
-          }}
-        >
+          onPress={onClose}
+          accessibilityLabel="Close meal detail"
+          accessibilityRole="button"
+        />
+        {/* Sheet — sits at the bottom, bounded by maxHeight */}
+        <View style={{
+          backgroundColor: colors.background,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          maxHeight: '90%',
+        }}>
           {/* Drag handle */}
           <View style={{ alignItems: 'center', paddingTop: spacing.md }}>
             <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.surface2 }} />
@@ -171,8 +171,8 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>Close</Text>
             </TouchableOpacity>
           </ScrollView>
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   )
 }
