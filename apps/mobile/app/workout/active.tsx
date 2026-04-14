@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -6,15 +6,25 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  AppState,
+  type AppStateStatus,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake'
+import * as FileSystem from 'expo-file-system'
 import { useTheme } from '@/theme/ThemeContext'
 import { TimerRing } from '@/components/TimerRing'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useTimerStore } from '@/stores/timerStore'
 import { scheduleRestEndNotification, cancelRestNotification, requestNotificationPermissions } from '@/services/timerService'
 import { colors as tokenColors } from '@/theme/tokens'
+import { MusicControlBar } from '@/components/MusicControlBar'
+import { useWorkletTimer } from '@/hooks/useWorkletTimer'
+
+const WAKE_LOCK_TAG = 'active-workout'
+const HEARTBEAT_FILE = FileSystem.documentDirectory + 'session-heartbeat.json'
+const HEARTBEAT_INTERVAL_MS = 30_000
 
 export default function ActiveWorkoutScreen() {
   const { colors, typography, spacing, radius } = useTheme()
@@ -31,8 +41,10 @@ export default function ActiveWorkoutScreen() {
   } = useActiveSessionStore()
 
   const { isRunning, secondsRemaining, totalSeconds, start, skip, addSeconds } = useTimerStore()
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [notifPermission, setNotifPermission] = useState(false)
+
+  // UI-thread frame-based timer — replaces JS-thread setInterval
+  useWorkletTimer()
 
   const currentExercise = exercises[currentExerciseIndex]
 
@@ -41,19 +53,53 @@ export default function ActiveWorkoutScreen() {
     requestNotificationPermissions().then(setNotifPermission)
   }, [])
 
-  // Timer tick
+  // Wake lock — keep screen on during active session, respect AppState
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        useTimerStore.getState().tick()
-      }, 1000)
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
+    let appStateSubscription: ReturnType<typeof AppState.addEventListener>
+
+    const activate = () => activateKeepAwakeAsync(WAKE_LOCK_TAG)
+    const deactivate = () => deactivateKeepAwake(WAKE_LOCK_TAG)
+
+    activate()
+
+    appStateSubscription = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state === 'active') activate()
+      else deactivate()
+    })
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      deactivate()
+      appStateSubscription.remove()
     }
-  }, [isRunning])
+  }, [])
+
+  // Session heartbeat — write to disk every 30s for crash recovery
+  useEffect(() => {
+    if (!currentWorkout || !startedAt) return
+
+    const write = () => {
+      FileSystem.writeAsStringAsync(
+        HEARTBEAT_FILE,
+        JSON.stringify({
+          workoutId: currentWorkout.id,
+          workoutName: currentWorkout.name,
+          startedAt: startedAt.toISOString(),
+          lastPulse: new Date().toISOString(),
+        }),
+        { encoding: FileSystem.EncodingType.UTF8 },
+      ).catch(() => null) // non-critical, never throw
+    }
+
+    write()
+    const interval = setInterval(write, HEARTBEAT_INTERVAL_MS)
+
+    return () => {
+      clearInterval(interval)
+      // Clear heartbeat when session ends cleanly
+      FileSystem.deleteAsync(HEARTBEAT_FILE, { idempotent: true }).catch(() => null)
+    }
+  }, [currentWorkout, startedAt])
+
 
   if (!currentWorkout || !currentExercise) {
     return (
@@ -99,6 +145,7 @@ export default function ActiveWorkoutScreen() {
         style: 'destructive',
         onPress: () => {
           useTimerStore.getState().reset()
+          FileSystem.deleteAsync(HEARTBEAT_FILE, { idempotent: true }).catch(() => null)
           router.push('/workout/recap')
         },
       },
@@ -186,6 +233,8 @@ export default function ActiveWorkoutScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      <MusicControlBar />
 
       {!isRunning && (
         <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>

@@ -1,5 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -10,6 +10,11 @@ import { colors as tokenColors } from '@/theme/tokens'
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+// Diet plan uses 1=Mon..7=Sun; JS getDay() uses 0=Sun..6=Sat
+function jsDowToDietDow(jsDow: number): number {
+  return jsDow === 0 ? 7 : jsDow
+}
 
 function getGreeting(): string {
   const hour = new Date().getHours()
@@ -22,8 +27,9 @@ export default function HomeScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
   const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
+  const { data: dietPlan, refetch: refetchDiet } = trpc.diet.activePlan.useQuery()
 
-  useFocusEffect(useCallback(() => { refetchPlan() }, []))
+  useFocusEffect(useCallback(() => { refetchPlan(); refetchDiet() }, []))
   const { data: lastSessionPRCount } = trpc.progress.lastSessionPRCount.useQuery()
 
   const nextWorkout = activePlan?.stats.nextWorkout
@@ -42,6 +48,40 @@ export default function HomeScreen() {
       const todayDow = new Date().getDay()
       return ((a.dayOfWeek - todayDow + 7) % 7) - ((b.dayOfWeek - todayDow + 7) % 7)
     })
+
+  // Today tab logic — only rendered when both workout plan AND diet plan are active
+  const showTodayTabs = !!activePlan && !!dietPlan
+  const todayJsDow = new Date().getDay()
+  const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayJsDow)
+  const isTodayWorkoutDone =
+    todayPlanDays.length > 0 && todayPlanDays.every((d) => doneTemplateIds.has(d.workoutTemplateId))
+
+  const [activeTab, setActiveTab] = useState<'workout' | 'diet'>('workout')
+  const hasManuallySet = useRef(false)
+
+  // Auto-default to diet tab when today's workout is done (respect manual overrides)
+  useEffect(() => {
+    if (!hasManuallySet.current && isTodayWorkoutDone) setActiveTab('diet')
+  }, [isTodayWorkoutDone])
+
+  // Reset manual override when date changes (checked on each focus)
+  const lastDateRef = useRef(new Date().toDateString())
+  useFocusEffect(useCallback(() => {
+    const today = new Date().toDateString()
+    if (today !== lastDateRef.current) {
+      lastDateRef.current = today
+      hasManuallySet.current = false
+    }
+  }, []))
+
+  const handleTabChange = (tab: 'workout' | 'diet') => {
+    hasManuallySet.current = true
+    setActiveTab(tab)
+  }
+
+  // Today's diet day (1=Mon..7=Sun)
+  const todayDietDow = jsDowToDietDow(todayJsDow)
+  const todayDietDay = dietPlan?.days?.find((d: any) => d.dayOfWeek === todayDietDow)
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -62,6 +102,134 @@ export default function HomeScreen() {
             </Text>
           )}
         </View>
+
+        {/* Today tab toggle — only when both plans are active */}
+        {showTodayTabs && (
+          <View style={{
+            flexDirection: 'row',
+            backgroundColor: colors.surface2,
+            borderRadius: radius.lg,
+            padding: 4,
+          }}>
+            {(['workout', 'diet'] as const).map((tab) => (
+              <TouchableOpacity
+                key={tab}
+                onPress={() => handleTabChange(tab)}
+                style={{
+                  flex: 1,
+                  paddingVertical: spacing.sm,
+                  borderRadius: radius.md,
+                  alignItems: 'center',
+                  backgroundColor: activeTab === tab ? colors.background : 'transparent',
+                }}
+                accessibilityLabel={tab === 'workout' ? "Today's workout" : "Today's diet"}
+                accessibilityRole="tab"
+              >
+                <Text style={{
+                  fontFamily: typography.family.bold,
+                  fontSize: typography.size.base,
+                  color: activeTab === tab ? colors.textPrimary : colors.textMuted,
+                }}>
+                  {tab === 'workout' ? `Workout${isTodayWorkoutDone ? ' ✓' : ''}` : 'Diet today'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* Diet today view */}
+        {showTodayTabs && activeTab === 'diet' && (
+          <View style={{ gap: spacing.md }}>
+            {todayDietDay ? (
+              <>
+                {/* Day theme + macro targets */}
+                <View style={{
+                  backgroundColor: colors.surface,
+                  borderRadius: radius.lg,
+                  padding: spacing.base,
+                  gap: spacing.sm,
+                }}>
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+                    {todayDietDay.theme}
+                  </Text>
+                  <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                    {[
+                      { label: 'Calories', value: `${todayDietDay.totalCalories} kcal` },
+                      { label: 'Protein', value: `${todayDietDay.totalProtein}g` },
+                      { label: 'Carbs', value: `${todayDietDay.totalCarbs}g` },
+                      { label: 'Fat', value: `${todayDietDay.totalFat}g` },
+                    ].map(({ label, value }) => (
+                      <View key={label} style={{
+                        flex: 1, backgroundColor: colors.surface2,
+                        borderRadius: radius.md, padding: spacing.sm, alignItems: 'center',
+                      }}>
+                        <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
+                        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>{value}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Meals */}
+                {todayDietDay.meals.map((meal: any, i: number) => (
+                  <View key={i} style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: radius.md,
+                    padding: spacing.base,
+                    gap: spacing.xs,
+                  }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        {meal.type}
+                      </Text>
+                      <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+                        {meal.calories} kcal
+                      </Text>
+                    </View>
+                    <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
+                      {meal.name}
+                    </Text>
+                    <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+                      P {meal.protein}g · C {meal.carbs}g · F {meal.fat}g
+                    </Text>
+                  </View>
+                ))}
+
+                {/* Log food CTA */}
+                <TouchableOpacity
+                  onPress={() => router.push('/diet/intake' as any)}
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: radius.lg,
+                    padding: spacing.base,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: spacing.md,
+                    borderWidth: 1,
+                    borderColor: colors.surface2,
+                  }}
+                  accessibilityLabel="Log today's food"
+                  accessibilityRole="button"
+                >
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
+                    + Log today's food
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
+                <Text style={{ fontSize: 32 }}>🥗</Text>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
+                  No meal plan for today
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Workout content — shown when no tab toggle, or workout tab is active */}
+        {(!showTodayTabs || activeTab === 'workout') && (
+          <>
 
         {/* Active plan banner */}
         {activePlan ? (
@@ -395,6 +563,8 @@ export default function HomeScreen() {
         ) : (
           /* No plan — CTA handled above in no-plan block */
           null
+        )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
