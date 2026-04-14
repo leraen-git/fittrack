@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -12,6 +13,7 @@ function tabIcon(active: string, inactive: string) {
 
 export default function TabLayout() {
   const { colors, typography } = useTheme()
+  const { t } = useTranslation()
 
   return (
     <Tabs
@@ -32,24 +34,24 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarLabel: 'Home',
+          title: t('tabs.home'),
+          tabBarLabel: t('tabs.home'),
           tabBarIcon: tabIcon('home', 'home-outline'),
         }}
       />
       <Tabs.Screen
         name="workouts"
         options={{
-          title: 'Workouts',
-          tabBarLabel: 'Workouts',
+          title: t('tabs.workouts'),
+          tabBarLabel: t('tabs.workouts'),
           tabBarIcon: tabIcon('barbell', 'barbell-outline'),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
-          tabBarLabel: 'History',
+          title: t('tabs.history'),
+          tabBarLabel: t('tabs.history'),
           tabBarIcon: tabIcon('stats-chart', 'stats-chart-outline'),
         }}
       />
@@ -64,8 +66,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarLabel: 'Profile',
+          title: t('tabs.profile'),
+          tabBarLabel: t('tabs.profile'),
           tabBarIcon: tabIcon('person-circle', 'person-circle-outline'),
         }}
       />

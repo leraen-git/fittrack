@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
+import '@/i18n'
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
 

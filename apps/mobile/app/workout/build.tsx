@@ -14,6 +14,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
 
 const MUSCLE_GROUPS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body', 'Cardio']
 const DURATIONS = [30, 45, 60, 75, 90]
@@ -45,6 +46,7 @@ function ExercisePicker({
   preselectedMuscles: string[]
 }) {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   // activeFilters: empty = show all; otherwise show exercises matching any active filter
   const [activeFilters, setActiveFilters] = useState<string[]>([])
@@ -68,12 +70,14 @@ function ExercisePicker({
 
   const filtered = useMemo(() => {
     if (!allExercises) return []
+    const lang = t('common.search') === 'Rechercher' ? 'fr' : 'en'
     return allExercises.filter((ex) => {
-      const matchSearch = ex.name.toLowerCase().includes(search.toLowerCase())
+      const displayName = (lang === 'fr' && ex.nameFr) ? ex.nameFr : ex.name
+      const matchSearch = displayName.toLowerCase().includes(search.toLowerCase())
       const matchMuscle = activeFilters.length === 0 || ex.muscleGroups.some((mg) => activeFilters.includes(mg))
       return matchSearch && matchMuscle
     })
-  }, [allExercises, search, activeFilters])
+  }, [allExercises, search, activeFilters, t])
 
   const toggleFilter = (mg: string) => {
     setActiveFilters((prev) =>
@@ -111,7 +115,7 @@ function ExercisePicker({
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>✕</Text>
           </TouchableOpacity>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1 }}>
-            Add exercises
+            {t('workout.addExercises')}
           </Text>
           {selected.length > 0 && (
             <TouchableOpacity
@@ -137,7 +141,7 @@ function ExercisePicker({
           <TextInput
             value={search}
             onChangeText={setSearch}
-            placeholder="Search exercises..."
+            placeholder={t('workout.searchExercises')}
             placeholderTextColor={colors.textMuted}
             style={{
               backgroundColor: colors.surface,
@@ -208,6 +212,8 @@ function ExercisePicker({
           {filtered.map((ex) => {
             const alreadyIn = alreadyAdded.includes(ex.id)
             const ticked = isSelected(ex.id)
+            const isFr = t('common.search') === 'Rechercher'
+            const displayName = (isFr && ex.nameFr) ? ex.nameFr : ex.name
             return (
               <TouchableOpacity
                 key={ex.id}
@@ -231,7 +237,7 @@ function ExercisePicker({
               >
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                    {ex.name}
+                    {displayName}
                   </Text>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
                     {ex.muscleGroups.join(' · ')} · {ex.difficulty}
@@ -288,6 +294,7 @@ function ExercisePicker({
 
 export default function WorkoutBuildScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const setPending = usePendingWorkoutStore((s) => s.setPending)
   const pendingForDay = usePendingWorkoutStore((s) => s.pendingForDay)
   const utils = trpc.useUtils()
@@ -339,6 +346,16 @@ export default function WorkoutBuildScreen() {
     setExercises((prev) => prev.filter((_, i) => i !== idx))
   }
 
+  const moveExercise = (idx: number, direction: 'up' | 'down') => {
+    setExercises((prev) => {
+      const next = [...prev]
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+      if (swapIdx < 0 || swapIdx >= next.length) return prev
+      ;[next[idx], next[swapIdx]] = [next[swapIdx]!, next[idx]!]
+      return next
+    })
+  }
+
   const handleSave = () => {
     if (!workoutName.trim()) {
       Alert.alert('Missing name', 'Please give your workout a name.')
@@ -378,7 +395,7 @@ export default function WorkoutBuildScreen() {
           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
-          New Workout
+          {t('workout.newWorkout')}
         </Text>
       </View>
 
@@ -386,7 +403,7 @@ export default function WorkoutBuildScreen() {
         {/* Workout name */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Workout name
+            {t('workout.workoutName')}
           </Text>
           <TextInput
             value={workoutName}
@@ -402,10 +419,10 @@ export default function WorkoutBuildScreen() {
         {/* Muscle groups */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Muscle groups
+            {t('workout.muscleGroups')}
           </Text>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-            Selected muscles will pre-filter the exercise picker
+            {t('workout.muscleGroupsDesc')}
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             {MUSCLE_GROUPS.map((mg) => {
@@ -441,7 +458,7 @@ export default function WorkoutBuildScreen() {
         {/* Duration */}
         <View style={{ gap: spacing.sm }}>
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
-            Estimated duration
+            {t('workout.estimatedDuration')}
           </Text>
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             {DURATIONS.map((d) => {
@@ -492,6 +509,27 @@ export default function WorkoutBuildScreen() {
             }}>
               {/* Exercise header */}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                {/* Reorder arrows */}
+                <View style={{ gap: 2 }}>
+                  <TouchableOpacity
+                    onPress={() => moveExercise(idx, 'up')}
+                    disabled={idx === 0}
+                    style={{ opacity: idx === 0 ? 0.2 : 1, padding: 2 }}
+                    accessibilityLabel={`Move ${ex.exerciseName} up`}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▲</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => moveExercise(idx, 'down')}
+                    disabled={idx === exercises.length - 1}
+                    style={{ opacity: idx === exercises.length - 1 ? 0.2 : 1, padding: 2 }}
+                    accessibilityLabel={`Move ${ex.exerciseName} down`}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▼</Text>
+                  </TouchableOpacity>
+                </View>
                 <View style={{
                   width: 28,
                   height: 28,
@@ -526,10 +564,10 @@ export default function WorkoutBuildScreen() {
               <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                 {(
                   [
-                    { label: 'Sets', field: 'sets' as const, value: ex.sets },
-                    { label: 'Reps', field: 'reps' as const, value: ex.reps },
-                    { label: 'kg', field: 'weight' as const, value: ex.weight },
-                    { label: 'Rest s', field: 'restSeconds' as const, value: ex.restSeconds },
+                    { label: t('workout.sets'), field: 'sets' as const, value: ex.sets },
+                    { label: t('workout.reps'), field: 'reps' as const, value: ex.reps },
+                    { label: t('workout.kg'), field: 'weight' as const, value: ex.weight },
+                    { label: t('workout.restSeconds'), field: 'restSeconds' as const, value: ex.restSeconds },
                   ] as const
                 ).map(({ label, field, value }) => (
                   <View key={field} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
@@ -581,7 +619,7 @@ export default function WorkoutBuildScreen() {
           >
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.primary }}>+</Text>
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>
-              {exercises.length === 0 ? 'Add exercises' : 'Add more exercises'}
+              {exercises.length === 0 ? t('workout.addExercises') : t('workout.addMoreExercises')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -605,7 +643,7 @@ export default function WorkoutBuildScreen() {
             fontSize: typography.size.xl,
             color: workoutName.trim() ? tokenColors.white : colors.textMuted,
           }}>
-            {createWorkout.isPending ? 'Saving...' : 'Save workout'}
+            {createWorkout.isPending ? t('workout.saving') : t('workout.saveWorkout')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

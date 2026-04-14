@@ -7,6 +7,7 @@ import { StatCard } from '@/components/StatCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useTranslation } from 'react-i18next'
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -16,15 +17,16 @@ function jsDowToDietDow(jsDow: number): number {
   return jsDow === 0 ? 7 : jsDow
 }
 
-function getGreeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 17) return 'Good afternoon'
-  return 'Good evening'
-}
-
 export default function HomeScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
+
+  function getGreeting(): string {
+    const hour = new Date().getHours()
+    if (hour < 12) return t('home.greeting_morning')
+    if (hour < 17) return t('home.greeting_afternoon')
+    return t('home.greeting_evening')
+  }
   const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
   const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
   const { data: dietPlan, refetch: refetchDiet } = trpc.diet.activePlan.useQuery()
@@ -55,6 +57,8 @@ export default function HomeScreen() {
   const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayJsDow)
   const isTodayWorkoutDone =
     todayPlanDays.length > 0 && todayPlanDays.every((d) => doneTemplateIds.has(d.workoutTemplateId))
+  // True when today has a workout that hasn't been done yet → compact/hero mode
+  const isTodayWorkout = nextWorkout?.dayOfWeek === todayJsDow && !isTodayWorkoutDone
 
   const [activeTab, setActiveTab] = useState<'workout' | 'diet'>('workout')
   const hasManuallySet = useRef(false)
@@ -81,7 +85,7 @@ export default function HomeScreen() {
 
   // Today's diet day (1=Mon..7=Sun)
   const todayDietDow = jsDowToDietDow(todayJsDow)
-  const todayDietDay = dietPlan?.days?.find((d: any) => d.dayOfWeek === todayDietDow)
+  const todayDietDay = (dietPlan?.rawPlan as any)?.days?.find((d: any) => d.dayOfWeek === todayDietDow)
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -130,7 +134,7 @@ export default function HomeScreen() {
                   fontSize: typography.size.base,
                   color: activeTab === tab ? colors.textPrimary : colors.textMuted,
                 }}>
-                  {tab === 'workout' ? `Workout${isTodayWorkoutDone ? ' ✓' : ''}` : 'Diet today'}
+                  {tab === 'workout' ? `${t('home.workout')}${isTodayWorkoutDone ? ' ✓' : ''}` : t('home.diet')}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -220,7 +224,7 @@ export default function HomeScreen() {
               <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
                 <Text style={{ fontSize: 32 }}>🥗</Text>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
-                  No meal plan for today
+                  {t('home.noMealPlanToday')}
                 </Text>
               </View>
             )}
@@ -233,23 +237,49 @@ export default function HomeScreen() {
 
         {/* Active plan banner */}
         {activePlan ? (
-          <View style={{
-            backgroundColor: colors.surface,
-            borderRadius: radius.md,
-            padding: spacing.base,
-            borderLeftWidth: 3,
-            borderLeftColor: colors.primary,
-          }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Active plan
-            </Text>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary, marginTop: 2 }}>
-              {activePlan.name}
-            </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: 2 }}>
-              {activePlan.days.map((d) => DAY_NAMES[d.dayOfWeek]).join(' · ')}
-            </Text>
-          </View>
+          isTodayWorkout ? (
+            // Compact single-line banner when today's workout is pending
+            <View style={{
+              backgroundColor: colors.surface,
+              borderRadius: radius.md,
+              paddingVertical: spacing.sm,
+              paddingHorizontal: spacing.base,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.sm,
+              borderLeftWidth: 3,
+              borderLeftColor: colors.primary,
+            }}>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('home.plan')}
+              </Text>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.textPrimary, flex: 1 }} numberOfLines={1}>
+                {activePlan.name}
+              </Text>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
+                {activePlan.days.map((d) => DAY_NAMES[d.dayOfWeek]).join(' · ')}
+              </Text>
+            </View>
+          ) : (
+            // Full banner when no workout today or workout already done
+            <View style={{
+              backgroundColor: colors.surface,
+              borderRadius: radius.md,
+              padding: spacing.base,
+              borderLeftWidth: 3,
+              borderLeftColor: colors.primary,
+            }}>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>
+                {t('home.activePlan')}
+              </Text>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary, marginTop: 2 }}>
+                {activePlan.name}
+              </Text>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: 2 }}>
+                {activePlan.days.map((d) => DAY_NAMES[d.dayOfWeek]).join(' · ')}
+              </Text>
+            </View>
+          )
         ) : (
           <View style={{ gap: spacing.md }}>
             {/* Hero: no plan */}
@@ -271,10 +301,10 @@ export default function HomeScreen() {
               <Text style={{ fontSize: 40 }}>📋</Text>
               <View style={{ alignItems: 'center', gap: spacing.xs }}>
                 <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                  No active plan
+                  {t('home.noActivePlan')}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
-                  Create your first workout plan and start tracking your progress.
+                  {t('home.noActivePlanDesc')}
                 </Text>
               </View>
               <View style={{
@@ -284,7 +314,7 @@ export default function HomeScreen() {
                 paddingHorizontal: spacing.xl,
               }}>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>
-                  Create a plan →
+                  {t('home.createPlan')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -292,7 +322,7 @@ export default function HomeScreen() {
             {/* AI divider */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
               <View style={{ flex: 1, height: 1, backgroundColor: colors.surface2 }} />
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>or</Text>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>{t('common.or')}</Text>
               <View style={{ flex: 1, height: 1, backgroundColor: colors.surface2 }} />
             </View>
 
@@ -321,10 +351,10 @@ export default function HomeScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                  Let us help you create a plan
+                  {t('home.generatePlan')}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                  AI generates a plan based on your profile
+                  {t('home.generatePlanDesc')}
                 </Text>
               </View>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>→</Text>
@@ -338,30 +368,49 @@ export default function HomeScreen() {
               accessibilityRole="button"
             >
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                or <Text style={{ fontFamily: typography.family.semiBold, color: colors.primary }}>just start an exercise</Text>
+                {t('home.justStart')}<Text style={{ fontFamily: typography.family.semiBold, color: colors.primary }}>{t('home.justStartLink')}</Text>
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Stats */}
-        {activePlan && (
+        {/* Stats — hidden when today's workout is pending (give space to hero card) */}
+        {activePlan && !isTodayWorkout && (
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             <StatCard
-              label="This week"
+              label={t('home.thisWeek')}
               value={stats ? `${stats.sessionsThisWeek}/${stats.plannedThisWeek}` : '—'}
               trend={stats && stats.sessionsThisWeek >= stats.plannedThisWeek ? 'up' : 'neutral'}
             />
             <StatCard
-              label="Streak"
+              label={t('home.streak')}
               value={stats ? `${stats.streak}w` : '—'}
               trend={stats && stats.streak > 0 ? 'up' : 'neutral'}
             />
             <StatCard
-              label="Last session PRs"
+              label={t('home.lastPRs')}
               value={lastSessionPRCount != null ? String(lastSessionPRCount) : '—'}
               trend={lastSessionPRCount != null && lastSessionPRCount > 0 ? 'up' : 'neutral'}
             />
+          </View>
+        )}
+
+        {/* Rest day notice */}
+        {activePlan && todayPlanDays.length === 0 && !isTodayWorkoutDone && (
+          <View style={{
+            backgroundColor: colors.surface,
+            borderRadius: radius.lg,
+            padding: spacing.xl,
+            alignItems: 'center',
+            gap: spacing.sm,
+          }}>
+            <Text style={{ fontSize: 40 }}>😴</Text>
+            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
+              {t('home.restDay')}
+            </Text>
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
+              {t('home.restDayDesc')}
+            </Text>
           </View>
         )}
 
@@ -369,7 +418,7 @@ export default function HomeScreen() {
         {nextWorkout ? (
           <View style={{ gap: spacing.md }}>
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-              Next workout
+              {isTodayWorkout ? t('home.todayWorkout') : t('home.nextWorkout')}
             </Text>
 
             <View style={{
@@ -379,11 +428,11 @@ export default function HomeScreen() {
             }}>
               {/* Header */}
               <View style={{ padding: spacing.base, gap: spacing.xs }}>
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+                <Text style={{ fontFamily: typography.family.extraBold, fontSize: isTodayWorkout ? typography.size['3xl'] : typography.size['2xl'], color: colors.textPrimary }}>
                   {nextWorkout.workoutName}
                 </Text>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
-                  {DAY_NAMES_FULL[nextWorkout.dayOfWeek]} · {nextWorkout.estimatedDuration} min
+                  {isTodayWorkout ? `${nextWorkout.estimatedDuration} min` : `${DAY_NAMES_FULL[nextWorkout.dayOfWeek]} · ${nextWorkout.estimatedDuration} min`}
                 </Text>
 
                 {/* Muscle group tags */}
@@ -445,7 +494,7 @@ export default function HomeScreen() {
                 )}
               </View>
 
-              {/* Big Start button */}
+              {/* Start button — larger when today's workout */}
               <TouchableOpacity
                 onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}` as any)}
                 style={{
@@ -453,14 +502,14 @@ export default function HomeScreen() {
                   margin: spacing.base,
                   marginTop: 0,
                   borderRadius: radius.lg,
-                  paddingVertical: spacing.lg,
+                  paddingVertical: isTodayWorkout ? spacing.xl : spacing.lg,
                   alignItems: 'center',
                 }}
                 accessibilityLabel={`Start ${nextWorkout.workoutName}`}
                 accessibilityRole="button"
               >
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: '#FFFFFF' }}>
-                  Start workout →
+                <Text style={{ fontFamily: typography.family.extraBold, fontSize: isTodayWorkout ? typography.size['3xl'] : typography.size['2xl'], color: '#FFFFFF' }}>
+                  {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -469,7 +518,7 @@ export default function HomeScreen() {
             {remainingWorkouts.length > 0 && (
               <View style={{ gap: spacing.sm }}>
                 <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                  Also this week
+                  {t('home.alsoThisWeek')}
                 </Text>
                 {remainingWorkouts.map((d) => (
                   <TouchableOpacity
@@ -512,10 +561,10 @@ export default function HomeScreen() {
             }}>
               <Text style={{ fontSize: 40 }}>🎉</Text>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
-                All done this week!
+                {t('home.allDoneThisWeek')}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
-                Rest up — you've earned it.
+                {t('home.allDoneDesc')}
               </Text>
             </View>
 
@@ -531,7 +580,7 @@ export default function HomeScreen() {
               return (
                 <View style={{ gap: spacing.sm }}>
                   <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
-                    Your next session
+                    {t('home.yourNextSession')}
                   </Text>
                   <TouchableOpacity
                     onPress={() => router.push(`/workout/preview?templateId=${nextUpcoming.workoutTemplateId}` as any)}

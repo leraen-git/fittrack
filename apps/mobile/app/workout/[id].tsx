@@ -23,6 +23,21 @@ export default function WorkoutDetailScreen() {
   const updateWorkout = trpc.workouts.update.useMutation({
     onSuccess: () => utils.workouts.detail.invalidate({ id: id ?? '' }),
   })
+  const reorderExercises = trpc.workouts.reorderExercises.useMutation({
+    onSuccess: () => utils.workouts.detail.invalidate({ id: id ?? '' }),
+  })
+
+  type WorkoutExercise = NonNullable<typeof workout>['exercises'][number]
+  const moveExercise = (exercises: WorkoutExercise[], idx: number, direction: 'up' | 'down') => {
+    const next = [...exercises]
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= next.length) return
+    ;[next[idx], next[swapIdx]] = [next[swapIdx]!, next[idx]!]
+    reorderExercises.mutate({
+      workoutTemplateId: id ?? '',
+      orderedIds: next.map((e) => e.id),
+    })
+  }
   const deleteWorkout = trpc.workouts.delete.useMutation({
     onSuccess: () => {
       utils.workouts.list.invalidate()
@@ -165,6 +180,27 @@ export default function WorkoutDetailScreen() {
               alignItems: 'center',
               gap: spacing.md,
             }}>
+              {/* Reorder arrows */}
+              <View style={{ gap: 2 }}>
+                <TouchableOpacity
+                  onPress={() => moveExercise(workout.exercises, i, 'up')}
+                  disabled={i === 0}
+                  style={{ opacity: i === 0 ? 0.2 : 1, padding: 2 }}
+                  accessibilityLabel={`Move ${ex.exerciseName} up`}
+                  accessibilityRole="button"
+                >
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▲</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => moveExercise(workout.exercises, i, 'down')}
+                  disabled={i === workout.exercises.length - 1}
+                  style={{ opacity: i === workout.exercises.length - 1 ? 0.2 : 1, padding: 2 }}
+                  accessibilityLabel={`Move ${ex.exerciseName} down`}
+                  accessibilityRole="button"
+                >
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: 12, color: colors.textMuted, lineHeight: 14 }}>▼</Text>
+                </TouchableOpacity>
+              </View>
               <View style={{
                 width: 32, height: 32, borderRadius: 16,
                 backgroundColor: `${colors.primary}18`,

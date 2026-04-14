@@ -2,17 +2,10 @@
  * musicService — bridges the phone's system media player (Spotify, Apple Music, etc.)
  * into the app via react-native-music-control.
  *
- * This service reads currently-playing track metadata and sends remote commands
- * (play/pause/next/prev) to the OS media session. No audio data flows through
- * the app and no mediaLibrary permission is required.
- *
- * Audio session note: we configure AVAudioSessionCategoryAmbient (iOS) /
- * AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK (Android) so rest-timer notification
- * sounds MIX with music rather than pausing it.
+ * Gracefully no-ops in Expo Go where the native module is unavailable.
+ * Full functionality requires a dev build (npx expo run:ios).
  */
 
-import { Platform } from 'react-native'
-import MusicControl, { Command } from 'react-native-music-control'
 import { Audio } from 'expo-av'
 
 export interface NowPlayingInfo {
@@ -28,60 +21,85 @@ let _listener: NowPlayingListener | null = null
 let _current: NowPlayingInfo | null = null
 let _initialized = false
 
+// Lazily loaded — avoids crashing Expo Go at import time
+let MusicControl: any = null
+
+function loadNativeModule(): boolean {
+  if (MusicControl !== null) return true
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require('react-native-music-control')
+    MusicControl = mod?.default ?? mod
+    // If the native bridge isn't linked, the module may be a null/stub
+    if (!MusicControl || typeof MusicControl.enableBackgroundMode !== 'function') {
+      MusicControl = null
+      return false
+    }
+    return true
+  } catch {
+    return false
+  }
+}
+
 /**
- * Call once on app start (or before the first active session).
- * Sets the audio session to ambient/duck mode and registers media control handlers.
+ * Call once on app start. No-ops gracefully if the native module is absent.
  */
 export async function initMusicService(): Promise<void> {
   if (_initialized) return
   _initialized = true
 
-  // Configure audio session so notification sounds mix with music
-  await Audio.setAudioModeAsync({
-    playsInSilentModeIOS: false,
-    // Ambient: our app audio never interrupts the system player
-    staysActiveInBackground: false,
-    interruptionModeIOS: 1, // DO_NOT_MIX equivalent — we only read, never play
-    shouldDuckAndroid: true,
-    interruptionModeAndroid: 1,
-    playThroughEarpieceAndroid: false,
-  })
+  if (!loadNativeModule()) return // Expo Go — skip silently
 
-  MusicControl.enableBackgroundMode(false) // we are not a music player
-  MusicControl.handleAudioInterruptions(true)
+  try {
+    // Configure audio session so notification sounds mix with music
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: false,
+      staysActiveInBackground: false,
+      interruptionModeIOS: 1,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: 1,
+      playThroughEarpieceAndroid: false,
+    })
 
-  // Enable only the commands we need
-  MusicControl.enableControl(Command.play, true)
-  MusicControl.enableControl(Command.pause, true)
-  MusicControl.enableControl(Command.nextTrack, true)
-  MusicControl.enableControl(Command.previousTrack, true)
-  MusicControl.enableControl(Command.changePlaybackPosition, false)
+    MusicControl.enableBackgroundMode(false)
+    MusicControl.handleAudioInterruptions(true)
 
-  // Forward remote commands to the system player
-  MusicControl.on(Command.play, () => MusicControl.updatePlayback({ state: MusicControl.STATE_PLAYING }))
-  MusicControl.on(Command.pause, () => MusicControl.updatePlayback({ state: MusicControl.STATE_PAUSED }))
-  MusicControl.on(Command.nextTrack, () => { /* next handled by OS */ })
-  MusicControl.on(Command.previousTrack, () => { /* prev handled by OS */ })
+    const { Command } = require('react-native-music-control')
+    MusicControl.enableControl(Command.play, true)
+    MusicControl.enableControl(Command.pause, true)
+    MusicControl.enableControl(Command.nextTrack, true)
+    MusicControl.enableControl(Command.previousTrack, true)
+    MusicControl.enableControl(Command.changePlaybackPosition, false)
 
-  // Poll now-playing info (react-native-music-control is event-driven for commands,
-  // but track metadata is read via the native bridge on each update event)
-  MusicControl.on('remoteEvent', (event: any) => {
-    if (event?.nowPlayingInfo) {
-      const info: NowPlayingInfo = {
-        title: event.nowPlayingInfo.title ?? '',
-        artist: event.nowPlayingInfo.artist ?? '',
-        artwork: event.nowPlayingInfo.artwork ?? null,
-        isPlaying: event.nowPlayingInfo.isPlaying ?? false,
+    MusicControl.on(Command.play, () =>
+      MusicControl.updatePlayback({ state: MusicControl.STATE_PLAYING }),
+    )
+    MusicControl.on(Command.pause, () =>
+      MusicControl.updatePlayback({ state: MusicControl.STATE_PAUSED }),
+    )
+    MusicControl.on(Command.nextTrack, () => {})
+    MusicControl.on(Command.previousTrack, () => {})
+
+    MusicControl.on('remoteEvent', (event: any) => {
+      if (event?.nowPlayingInfo) {
+        const info: NowPlayingInfo = {
+          title: event.nowPlayingInfo.title ?? '',
+          artist: event.nowPlayingInfo.artist ?? '',
+          artwork: event.nowPlayingInfo.artwork ?? null,
+          isPlaying: event.nowPlayingInfo.isPlaying ?? false,
+        }
+        _current = info
+        _listener?.(info)
       }
-      _current = info
-      _listener?.(info)
-    }
-  })
+    })
+  } catch {
+    // Native module present but failed — degrade gracefully
+    MusicControl = null
+  }
 }
 
 export function subscribeNowPlaying(listener: NowPlayingListener): () => void {
   _listener = listener
-  // Emit current state immediately if we have it
   if (_current !== null) listener(_current)
   return () => {
     if (_listener === listener) _listener = null
@@ -93,26 +111,23 @@ export function getCurrentTrack(): NowPlayingInfo | null {
 }
 
 export function playPause(): void {
-  if (!_current) return
-  if (_current.isPlaying) {
-    MusicControl.updatePlayback({ state: MusicControl.STATE_PAUSED })
-  } else {
-    MusicControl.updatePlayback({ state: MusicControl.STATE_PLAYING })
-  }
+  if (!_current || !MusicControl) return
+  MusicControl.updatePlayback({
+    state: _current.isPlaying ? MusicControl.STATE_PAUSED : MusicControl.STATE_PLAYING,
+  })
 }
 
 export function nextTrack(): void {
-  // Triggers the OS next-track command
-  MusicControl.handleCommand('nextTrack', {})
+  MusicControl?.handleCommand('nextTrack', {})
 }
 
 export function prevTrack(): void {
-  MusicControl.handleCommand('previousTrack', {})
+  MusicControl?.handleCommand('previousTrack', {})
 }
 
 export function teardownMusicService(): void {
   if (!_initialized) return
-  MusicControl.stopControl()
+  MusicControl?.stopControl()
   _initialized = false
   _current = null
   _listener = null

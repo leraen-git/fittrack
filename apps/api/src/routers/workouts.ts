@@ -102,6 +102,35 @@ export const workoutsRouter = router({
       return { success: true }
     }),
 
+  reorderExercises: protectedProcedure
+    .input(
+      z.object({
+        workoutTemplateId: z.string(),
+        orderedIds: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      if (!user) throw new Error('User not found')
+      // Verify ownership
+      const [template] = await ctx.db
+        .select()
+        .from(workoutTemplates)
+        .where(and(eq(workoutTemplates.id, input.workoutTemplateId), eq(workoutTemplates.userId, user.id)))
+        .limit(1)
+      if (!template) throw new Error('Workout not found')
+      // Update order for each exercise
+      await Promise.all(
+        input.orderedIds.map((exId, order) =>
+          ctx.db
+            .update(workoutExercises)
+            .set({ order })
+            .where(and(eq(workoutExercises.id, exId), eq(workoutExercises.workoutTemplateId, input.workoutTemplateId))),
+        ),
+      )
+      return { success: true }
+    }),
+
   // Full workout detail: exercises + names + previous session weights per exercise
   detail: protectedProcedure
     .input(z.object({ id: z.string() }))

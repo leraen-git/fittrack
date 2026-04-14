@@ -35,7 +35,8 @@
           "icon": "./assets/notification-icon.png",
           "color": "#E8192C"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

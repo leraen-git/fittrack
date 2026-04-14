@@ -1,5 +1,6 @@
 import { db } from './index.js'
 import { exercises, programs, users } from './schema.js'
+import { WORKOUT_COOL_EXERCISES } from './exercises-seed-data.js'
 
 const SEED_EXERCISES = [
   // Chest
@@ -160,9 +161,23 @@ async function seed() {
     .onConflictDoNothing()
   console.log('Dev user ready (clerkId: dev_user)')
 
-  console.log('Seeding exercises...')
-  await db.insert(exercises).values(SEED_EXERCISES).onConflictDoNothing()
-  console.log(`Inserted ${SEED_EXERCISES.length} exercises`)
+  console.log('Seeding exercises from workout.cool...')
+  // Insert in batches of 100 to avoid query size limits
+  const exData = WORKOUT_COOL_EXERCISES.map((ex) => ({
+    name: ex.name,
+    nameFr: ex.nameFr,
+    muscleGroups: [...ex.muscleGroups],
+    equipment: [...ex.equipment],
+    difficulty: ex.difficulty,
+    description: ex.description,
+    descriptionFr: ex.descriptionFr,
+    videoUrl: ex.videoUrl,
+    imageUrl: ex.imageUrl,
+  }))
+  for (let i = 0; i < exData.length; i += 100) {
+    await db.insert(exercises).values(exData.slice(i, i + 100)).onConflictDoNothing()
+  }
+  console.log(`Inserted ${exData.length} exercises from workout.cool`)
 
   console.log('Seeding programs...')
   await db.insert(programs).values(SEED_PROGRAMS).onConflictDoNothing()

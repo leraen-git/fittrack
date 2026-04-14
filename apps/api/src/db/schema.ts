@@ -39,9 +39,11 @@ export const users = pgTable('users', {
 export const exercises = pgTable('exercises', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
+  nameFr: text('name_fr'),
   muscleGroups: text('muscle_groups').array().notNull().default([]),
   equipment: text('equipment').array().notNull().default([]),
   description: text('description').notNull().default(''),
+  descriptionFr: text('description_fr'),
   videoUrl: text('video_url'),
   imageUrl: text('image_url'),
   difficulty: difficultyEnum('difficulty').notNull().default('BEGINNER'),
