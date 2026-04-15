@@ -46,17 +46,22 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
 
   return (
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
-      {/* Full-screen container with dim background */}
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
-        {/* Tap-to-close area above the sheet */}
+      {/* Outer View: flex+justifyEnd anchors the sheet to the bottom.
+          A plain View (not TouchableOpacity) so flex resolves correctly. */}
+      <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+
+        {/* Backdrop tap-to-close — absolutely positioned so it doesn't
+            affect the flex layout of the sheet */}
         <TouchableOpacity
-          style={{ flex: 1 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           activeOpacity={1}
           onPress={onClose}
           accessibilityLabel="Close meal detail"
           accessibilityRole="button"
         />
-        {/* Sheet — sits at the bottom, bounded by maxHeight */}
+
+        {/* Sheet — flex child of the outer View, so maxHeight resolves
+            against the screen height and ScrollView can scroll within it */}
         <View style={{
           backgroundColor: colors.background,
           borderTopLeftRadius: 24,
