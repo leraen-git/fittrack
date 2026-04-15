@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, createContext, useContext, useCallback } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +12,7 @@ import { initMusicService } from '@/services/musicService'
 import { setupNotificationChannels } from '@/services/notificationPermissions'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
 import '@/i18n'
 
 // Handle incoming notification taps — deep-link to the relevant screen
@@ -26,14 +27,47 @@ Notifications.setNotificationHandler({
 })
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
+const CLERK_PUBLISHABLE_KEY = process.env['EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY'] ?? ''
+
+// ── Auth token context ────────────────────────────────────────────────────────
+// Decouples TRPCProvider from Clerk so the app still runs in dev when no
+// publishable key is configured (server falls back to DEV_CLERK_ID in that case).
+type GetTokenFn = () => Promise<string | null>
+const TokenContext = createContext<{ getToken: GetTokenFn }>({
+  getToken: async () => null,
+})
+
+// Bridges Clerk's useAuth into TokenContext — only mounted when Clerk is active
+function ClerkTokenBridge({ children }: { children: React.ReactNode }) {
+  const { getToken } = useAuth()
+  return <TokenContext.Provider value={{ getToken }}>{children}</TokenContext.Provider>
+}
 
 function TRPCProvider({ children }: { children: React.ReactNode }) {
+  const { getToken } = useContext(TokenContext)
+
+  // Keep a ref to the latest getToken so the trpcClient closure never goes stale
+  const getTokenRef = useRef<GetTokenFn>(getToken)
+  useEffect(() => { getTokenRef.current = getToken }, [getToken])
+
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
   }))
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [httpBatchLink({ url: `${API_URL}/trpc`, headers: async () => ({}) })],
+      links: [httpBatchLink({
+        url: `${API_URL}/trpc`,
+        headers: async () => {
+          try {
+            const token = await getTokenRef.current()
+            return token ? { Authorization: `Bearer ${token}` } : {}
+          } catch {
+            // Token fetch failed (e.g. session expired) — send no header,
+            // server will respond with UNAUTHORIZED for protected routes.
+            return {}
+          }
+        },
+      })],
     }),
   )
 
@@ -110,14 +144,28 @@ export default function RootLayout() {
     initMusicService().catch(() => null) // graceful fallback if native module absent
   }, [])
 
+  const appContent = (
+    <TRPCProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+      {splashDone && <OnboardingGate />}
+      <NotificationWatcher />
+    </TRPCProvider>
+  )
+
   return (
     <View style={{ flex: 1 }}>
       <ThemeProvider>
-        <TRPCProvider>
-          <Stack screenOptions={{ headerShown: false }} />
-          {splashDone && <OnboardingGate />}
-          <NotificationWatcher />
-        </TRPCProvider>
+        {CLERK_PUBLISHABLE_KEY ? (
+          // Production: ClerkProvider verifies sessions; bridge passes token to tRPC
+          <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+            <ClerkTokenBridge>
+              {appContent}
+            </ClerkTokenBridge>
+          </ClerkProvider>
+        ) : (
+          // Dev without Clerk keys: no token sent; server falls back to DEV_CLERK_ID
+          appContent
+        )}
       </ThemeProvider>
       {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
     </View>

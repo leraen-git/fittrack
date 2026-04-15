@@ -1,11 +1,19 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
+import { clerkPlugin, getAuth } from '@clerk/fastify'
 import { appRouter } from './router.js'
 import { db } from './db/index.js'
 
 // Explicit boolean guard — never truthy unless explicitly set to 'true'
 const isDev = process.env['NODE_ENV'] === 'development'
+
+const CLERK_SECRET_KEY = process.env['CLERK_SECRET_KEY']
+
+// In production Clerk keys are mandatory — fail fast rather than silently
+if (!isDev && !CLERK_SECRET_KEY) {
+  throw new Error('CLERK_SECRET_KEY is required in production (set it via environment variables)')
+}
 
 const server = Fastify({ logger: { level: isDev ? 'warn' : 'info' } })
 
@@ -16,20 +24,33 @@ const allowedOrigins = isDev
 
 await server.register(cors, { origin: allowedOrigins })
 
+// Register Clerk plugin when secret key is configured.
+// This runs before every request and sets verified auth state on req (getAuth(req).userId).
+// In dev without Clerk keys the plugin is skipped — auth falls back to DEV_CLERK_ID below.
+if (CLERK_SECRET_KEY) {
+  await server.register(clerkPlugin)
+}
+
 await server.register(fastifyTRPCPlugin, {
   prefix: '/trpc',
   trpcOptions: {
     router: appRouter,
     createContext: async ({ req }: { req: any }) => {
-      const authHeader = req.headers.authorization as string | undefined
       let userId: string | null = null
 
-      if (authHeader?.startsWith('Bearer ')) {
-        const token = authHeader.slice(7)
-
-        if (isDev) {
-          // Dev only: decode without verification for local testing
-          // WARNING: never reaches this branch in production (isDev = false)
+      if (CLERK_SECRET_KEY) {
+        // ── Production path ────────────────────────────────────────────────
+        // clerkPlugin verified the JWT before this context was created.
+        // getAuth returns userId: string if token is valid, null otherwise.
+        userId = getAuth(req).userId ?? null
+      } else if (isDev) {
+        // ── Dev path (no Clerk keys configured) ───────────────────────────
+        // Decode without signature verification so local tools (Expo dev
+        // client, Postman) can pass any well-formed JWT for testing.
+        // This branch is unreachable in production — the guard above throws.
+        const authHeader = req.headers.authorization as string | undefined
+        if (authHeader?.startsWith('Bearer ')) {
+          const token = authHeader.slice(7)
           try {
             const parts = token.split('.')
             if (parts.length === 3) {
@@ -41,15 +62,12 @@ await server.register(fastifyTRPCPlugin, {
           } catch {
             userId = null
           }
-        } else {
-          // Production: verify via Clerk SDK
-          // TODO: replace with clerkClient.verifyToken(token)
-          // For now, reject unverified tokens in production
-          userId = null
         }
       }
 
-      // Dev fallback: unauthenticated requests → seeded dev user (dev only)
+      // ── Dev fallback: no token → seeded dev user ──────────────────────────
+      // Lets the simulator work without any token during local development.
+      // Unreachable in production (both guards above prevent it).
       if (!userId && isDev) {
         const devUserId = process.env['DEV_CLERK_ID']
         if (devUserId) userId = devUserId
