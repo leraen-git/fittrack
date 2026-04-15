@@ -13,7 +13,7 @@ import { eq } from 'drizzle-orm'
 
 async function seedHistory() {
   // Get dev user
-  const [user] = await db.select().from(users).where(eq(users.clerkId, 'dev_user'))
+  const [user] = await db.select().from(users).where(eq(users.authId, 'dev_user'))
   if (!user) throw new Error('Dev user not found — run db:seed first')
 
   // Get key exercises by name

@@ -6,7 +6,7 @@ import { workoutTemplates, workoutExercises, exercises, users, workoutSessions, 
 
 export const workoutsRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
-    const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+    const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
     return ctx.db.select().from(workoutTemplates).where(eq(workoutTemplates.userId, user.id))
   }),
@@ -29,7 +29,7 @@ export const workoutsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const { exercises: exInput, ...templateData } = input
       const [created] = await ctx.db
@@ -55,7 +55,7 @@ export const workoutsRouter = router({
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const [workout] = await ctx.db
         .select()
@@ -81,7 +81,7 @@ export const workoutsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const { id, ...data } = input
       const [updated] = await ctx.db
@@ -95,7 +95,7 @@ export const workoutsRouter = router({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       await ctx.db
         .delete(workoutTemplates)
@@ -111,7 +111,7 @@ export const workoutsRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       // Verify ownership
       const [template] = await ctx.db
@@ -136,7 +136,7 @@ export const workoutsRouter = router({
   detail: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
 
       const [template] = await ctx.db

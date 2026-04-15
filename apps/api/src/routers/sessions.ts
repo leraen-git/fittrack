@@ -4,8 +4,8 @@ import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
 import { workoutSessions, sessionExercises, exerciseSets, users, personalRecords, workoutTemplates, workoutExercises } from '../db/schema.js'
 
-async function resolveUser(db: any, clerkId: string) {
-  const [user] = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1)
+async function resolveUser(db: any, userId: string) {
+  const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
   if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
   return user
 }

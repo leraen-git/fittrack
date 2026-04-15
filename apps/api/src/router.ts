@@ -1,4 +1,5 @@
 import { router } from './trpc.js'
+import { authRouter } from './routers/auth.js'
 import { usersRouter } from './routers/users.js'
 import { workoutsRouter } from './routers/workouts.js'
 import { sessionsRouter } from './routers/sessions.js'
@@ -10,6 +11,7 @@ import { dietRouter } from './routers/diet.js'
 import { notificationsRouter } from './routers/notifications.js'
 
 export const appRouter = router({
+  auth: authRouter,
   users: usersRouter,
   workouts: workoutsRouter,
   sessions: sessionsRouter,

@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
-import { useState, useEffect, useRef, createContext, useContext, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
@@ -12,7 +12,7 @@ import { initMusicService } from '@/services/musicService'
 import { setupNotificationChannels } from '@/services/notificationPermissions'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
+import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import '@/i18n'
 
 // Handle incoming notification taps — deep-link to the relevant screen
@@ -27,51 +27,31 @@ Notifications.setNotificationHandler({
 })
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
-const CLERK_PUBLISHABLE_KEY = process.env['EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY'] ?? ''
-
-// ── Auth token context ────────────────────────────────────────────────────────
-// Decouples TRPCProvider from Clerk so the app still runs in dev when no
-// publishable key is configured (server falls back to DEV_CLERK_ID in that case).
-type GetTokenFn = () => Promise<string | null>
-const TokenContext = createContext<{ getToken: GetTokenFn }>({
-  getToken: async () => null,
-})
-
-// Bridges Clerk's useAuth into TokenContext — only mounted when Clerk is active
-function ClerkTokenBridge({ children }: { children: React.ReactNode }) {
-  const { getToken } = useAuth()
-  return <TokenContext.Provider value={{ getToken }}>{children}</TokenContext.Provider>
-}
 
 function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const { getToken } = useContext(TokenContext)
+  const { token } = useAuth()
 
-  // Keep a ref to the latest getToken so the trpcClient closure never goes stale
-  const getTokenRef = useRef<GetTokenFn>(getToken)
-  useEffect(() => { getTokenRef.current = getToken }, [getToken])
+  // Keep a stable ref to the latest token so the tRPC link closure never goes stale
+  const tokenRef = useRef<string | null>(token)
+  useEffect(() => { tokenRef.current = token }, [token])
 
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
   }))
+
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [httpBatchLink({
         url: `${API_URL}/trpc`,
-        headers: async () => {
-          try {
-            const token = await getTokenRef.current()
-            return token ? { Authorization: `Bearer ${token}` } : {}
-          } catch {
-            // Token fetch failed (e.g. session expired) — send no header,
-            // server will respond with UNAUTHORIZED for protected routes.
-            return {}
-          }
+        headers: () => {
+          const t = tokenRef.current
+          return t ? { Authorization: `Bearer ${t}` } : {}
         },
       })],
     }),
   )
 
-  // Battery: cancel all in-flight queries when app backgrounds to prevent radio wake-ups
+  // Cancel all in-flight queries when app backgrounds to prevent radio wake-ups
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'background') queryClient.cancelQueries()
@@ -107,65 +87,59 @@ function NotificationWatcher() {
   const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
 
   useEffect(() => {
-    // Setup Android channels on mount
     setupNotificationChannels()
-
-    // Reschedule all on foreground (catches DST and timezone changes)
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
         rescheduleAll(settings, undefined, lang).catch(() => null)
       }
     })
-
-    // Deep-link on notification tap
     const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
       const screen = response.notification.request.content.data?.screen as string | undefined
       if (screen === 'workout') router.navigate('/(tabs)/' as any)
       else if (screen === 'diet') router.navigate('/(tabs)/diet' as any)
       else router.navigate('/(tabs)/' as any)
     })
-
-    return () => {
-      sub.remove()
-      tapSub.remove()
-    }
-  // settings reference is stable from Zustand; run once on mount
+    return () => { sub.remove(); tapSub.remove() }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return null
 }
 
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { status } = useAuth()
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/(auth)/sign-in' as any)
+    }
+  }, [status])
+
+  // While loading the stored token, render nothing (splash is already shown)
+  if (status === 'loading') return null
+
+  return <>{children}</>
+}
+
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false)
 
-  // Init music service once — sets audio session to ambient/duck mode
   useEffect(() => {
-    initMusicService().catch(() => null) // graceful fallback if native module absent
+    initMusicService().catch(() => null)
   }, [])
-
-  const appContent = (
-    <TRPCProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-      {splashDone && <OnboardingGate />}
-      <NotificationWatcher />
-    </TRPCProvider>
-  )
 
   return (
     <View style={{ flex: 1 }}>
       <ThemeProvider>
-        {CLERK_PUBLISHABLE_KEY ? (
-          // Production: ClerkProvider verifies sessions; bridge passes token to tRPC
-          <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-            <ClerkTokenBridge>
-              {appContent}
-            </ClerkTokenBridge>
-          </ClerkProvider>
-        ) : (
-          // Dev without Clerk keys: no token sent; server falls back to DEV_CLERK_ID
-          appContent
-        )}
+        <AuthProvider>
+          <TRPCProvider>
+            <AuthGate>
+              <Stack screenOptions={{ headerShown: false }} />
+              {splashDone && <OnboardingGate />}
+              <NotificationWatcher />
+            </AuthGate>
+          </TRPCProvider>
+        </AuthProvider>
       </ThemeProvider>
       {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
     </View>

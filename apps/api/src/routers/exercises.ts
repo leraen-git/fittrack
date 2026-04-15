@@ -32,7 +32,7 @@ export const exercisesRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [user] = await ctx.db.select().from(users).where(eq(users.clerkId, ctx.userId)).limit(1)
+      const [user] = await ctx.db.select().from(users).where(eq(users.id, ctx.userId)).limit(1)
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const [created] = await ctx.db
         .insert(exercises)

@@ -151,7 +151,7 @@ async function seed() {
   await db
     .insert(users)
     .values({
-      clerkId: 'dev_user',
+      authId: 'dev_user',
       name: 'Dev Athlete',
       email: 'dev@fittrack.app',
       level: 'INTERMEDIATE',
@@ -159,7 +159,7 @@ async function seed() {
       weeklyTarget: 4,
     })
     .onConflictDoNothing()
-  console.log('Dev user ready (clerkId: dev_user)')
+  console.log('Dev user ready (authId: dev_user)')
 
   console.log('Seeding exercises from workout.cool...')
   // Insert in batches of 100 to avoid query size limits
