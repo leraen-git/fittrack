@@ -1,6 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { NativeModules, Platform } from 'react-native'
+import { getLocales } from 'expo-localization'
 import { en } from './en'
 import { fr } from './fr'
 
@@ -9,25 +9,13 @@ export const resources = {
   fr: { translation: fr },
 } as const
 
-// Detect device language without requiring a native rebuild.
-// iOS:     NativeModules.SettingsManager.settings.AppleLanguages[0]  (e.g. "fr-FR")
-// Android: NativeModules.I18nManager.localeIdentifier                (e.g. "fr_FR")
-// Fallback: Intl API (may return en-US on some Hermes builds regardless of locale)
+// expo-localization getLocales() is synchronous and uses TurboModules —
+// compatible with React Native New Architecture (bridgeless mode).
+// NativeModules.SettingsManager was unreliable in New Architecture.
 function getDeviceLocale(): string {
   try {
-    if (Platform.OS === 'ios') {
-      const settings = NativeModules.SettingsManager?.settings
-      const lang =
-        settings?.AppleLanguages?.[0] ??
-        settings?.AppleLocale ??
-        ''
-      if (lang) return lang
-    }
-    if (Platform.OS === 'android') {
-      const locale = NativeModules.I18nManager?.localeIdentifier ?? ''
-      if (locale) return locale
-    }
-    return Intl.DateTimeFormat().resolvedOptions().locale ?? 'en'
+    const locales = getLocales()
+    return locales[0]?.languageCode ?? locales[0]?.languageTag ?? 'en'
   } catch {
     return 'en'
   }
