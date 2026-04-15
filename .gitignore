@@ -1,6 +1,7 @@
 node_modules
 .expo
 dist
+!packages/shared/dist
 .env
 .env.*
 !.env.example
