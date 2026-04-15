@@ -376,6 +376,22 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Reminders */}
+        <SectionTitle label="Reminders" />
+        <View style={cardStyle}>
+          <TouchableOpacity
+            onPress={() => router.push('/settings/reminders' as any)}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md }}
+            accessibilityLabel="Reminders settings" accessibilityRole="button"
+          >
+            <Text style={{ fontSize: typography.size.xl, marginRight: spacing.md }}>🔔</Text>
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary, flex: 1 }}>
+              Workout, meal & hydration reminders
+            </Text>
+            <Text style={{ color: colors.textMuted, fontSize: typography.size.body }}>→</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Appearance */}
         <SectionTitle label="Appearance" />
         <View style={{ ...cardStyle, flexDirection: 'row', paddingVertical: spacing.sm }}>

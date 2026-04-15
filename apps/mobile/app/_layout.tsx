@@ -5,9 +5,24 @@ import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
 import { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
+import * as Notifications from 'expo-notifications'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
+import { setupNotificationChannels } from '@/services/notificationPermissions'
+import { rescheduleAll } from '@/services/notificationScheduler'
+import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import '@/i18n'
+
+// Handle incoming notification taps — deep-link to the relevant screen
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+})
 
 const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
 
@@ -51,6 +66,39 @@ function OnboardingGate() {
   return null
 }
 
+function NotificationWatcher() {
+  const settings = useNotificationSettingsStore()
+
+  useEffect(() => {
+    // Setup Android channels on mount
+    setupNotificationChannels()
+
+    // Reschedule all on foreground (catches DST and timezone changes)
+    const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
+      if (state === 'active') {
+        rescheduleAll(settings).catch(() => null)
+      }
+    })
+
+    // Deep-link on notification tap
+    const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const screen = response.notification.request.content.data?.screen as string | undefined
+      if (screen === 'workout') router.navigate('/(tabs)/' as any)
+      else if (screen === 'diet') router.navigate('/(tabs)/diet' as any)
+      else router.navigate('/(tabs)/' as any)
+    })
+
+    return () => {
+      sub.remove()
+      tapSub.remove()
+    }
+  // settings reference is stable from Zustand; run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return null
+}
+
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false)
 
@@ -65,6 +113,7 @@ export default function RootLayout() {
         <TRPCProvider>
           <Stack screenOptions={{ headerShown: false }} />
           {splashDone && <OnboardingGate />}
+          <NotificationWatcher />
         </TRPCProvider>
       </ThemeProvider>
       {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}

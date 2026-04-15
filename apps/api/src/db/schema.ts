@@ -217,3 +217,35 @@ export const dietPlans = pgTable('diet_plans', {
   rawPlan: jsonb('raw_plan').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+// ─── Notification Preferences ─────────────────────────────────────────────────
+
+export const notificationPreferences = pgTable('notification_preferences', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').notNull().unique().references(() => users.id),
+
+  // Workout reminders
+  workoutEnabled: boolean('workout_enabled').notNull().default(false),
+  workoutTime: text('workout_time').notNull().default('18:00'),
+  workoutOffset: integer('workout_offset').notNull().default(30), // minutes before: 0 | 15 | 30
+  workoutDays: jsonb('workout_days').notNull().default([1, 3, 5]), // 0=Sun … 6=Sat
+
+  // Meal reminders
+  breakfastEnabled: boolean('breakfast_enabled').notNull().default(false),
+  breakfastTime: text('breakfast_time').notNull().default('08:00'),
+  lunchEnabled: boolean('lunch_enabled').notNull().default(false),
+  lunchTime: text('lunch_time').notNull().default('12:30'),
+  snackEnabled: boolean('snack_enabled').notNull().default(false),
+  snackTime: text('snack_time').notNull().default('16:00'),
+  dinnerEnabled: boolean('dinner_enabled').notNull().default(false),
+  dinnerTime: text('dinner_time').notNull().default('20:00'),
+
+  // Hydration reminders
+  hydrationEnabled: boolean('hydration_enabled').notNull().default(false),
+  hydrationInterval: integer('hydration_interval').notNull().default(90), // minutes: 60 | 90 | 120
+  hydrationActiveFrom: text('hydration_active_from').notNull().default('07:00'),
+  hydrationActiveTo: text('hydration_active_to').notNull().default('22:00'),
+
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})

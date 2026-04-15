@@ -43,6 +43,13 @@
       "when": 1776193643998,
       "tag": "0005_plain_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776800000000,
+      "tag": "0006_notification_preferences",
+      "breakpoints": true
     }
   ]
 }

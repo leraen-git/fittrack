@@ -7,6 +7,7 @@ import { progressRouter } from './routers/progress.js'
 import { programsRouter } from './routers/programs.js'
 import { plansRouter } from './routers/plans.js'
 import { dietRouter } from './routers/diet.js'
+import { notificationsRouter } from './routers/notifications.js'
 
 export const appRouter = router({
   users: usersRouter,
@@ -17,6 +18,7 @@ export const appRouter = router({
   programs: programsRouter,
   plans: plansRouter,
   diet: dietRouter,
+  notifications: notificationsRouter,
 })
 
 export type AppRouter = typeof appRouter
