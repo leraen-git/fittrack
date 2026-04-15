@@ -143,6 +143,7 @@ export const fr = {
     goalMuscleGain: 'Prise de muscle',
     goalMaintenance: 'Maintien',
     // Settings rows
+    exploreSub: 'Découvre tout ce que FitTrack peut faire',
     reminders: 'Rappels',
     remindersSub: 'Entraînement, repas & hydratation',
     appearance: 'Apparence',
@@ -221,6 +222,47 @@ export const fr = {
       dinner: 'Dîner',
       dessert: 'Dessert',
     },
+  },
+  explore: {
+    title: 'Explorer FitTrack',
+    subtitle: '{{used}} fonctionnalités découvertes sur {{total}}',
+    new: 'NEW',
+    tryIt: 'Essayer',
+    // Groups
+    groupWorkouts: 'Entraînements',
+    groupProgress: 'Progression',
+    groupPlans: 'Plans',
+    groupDiet: 'Alimentation',
+    groupReminders: 'Rappels',
+    // Workout features
+    workoutBuilder: 'Créateur de séances',
+    workoutBuilderDesc: 'Crée des séances personnalisées avec exercices, séries et temps de repos.',
+    activeSession: 'Suivi de séance en direct',
+    activeSessionDesc: 'Enregistre tes séries en temps réel — les charges précédentes s\'affichent en fantôme.',
+    restTimer: 'Minuterie de repos',
+    restTimerDesc: 'Se lance automatiquement après chaque série. Tourne en arrière-plan avec notification.',
+    personalRecords: 'Records personnels',
+    personalRecordsDesc: 'Chaque record est détecté automatiquement et mis en avant en fin de séance.',
+    // Progress features
+    progressCharts: 'Courbes de progression',
+    progressChartsDesc: 'Graphiques par exercice — charge max, volume ou répétitions dans le temps.',
+    streakStats: 'Série & stats de volume',
+    streakStatsDesc: 'Vois ta régularité hebdomadaire, le volume total soulevé et les tendances.',
+    sessionRecap: 'Récap de séance',
+    sessionRecapDesc: 'Après chaque séance : comparaison exercice par exercice vs ta dernière tentative.',
+    // Plan features
+    aiWorkoutPlan: 'Plan d\'entraînement IA',
+    aiWorkoutPlanDesc: 'Claude génère un programme hebdomadaire complet adapté à ton niveau et ton objectif.',
+    guidedPrograms: 'Programmes guidés',
+    guidedProgramsDesc: 'Programmes officiels structurés du Débutant 8sem au Powerlifting Avancé.',
+    // Diet features
+    aiDietPlan: 'Plan alimentaire IA',
+    aiDietPlanDesc: 'Un plan repas 7 jours personnalisé avec macros exactes, autour de tes aliments préférés.',
+    mealRecipes: 'Recettes & macros',
+    mealRecipesDesc: 'Chaque repas a ses ingrédients complets, étapes de préparation et un lien YouTube.',
+    // Reminder features
+    reminders: 'Rappels intelligents',
+    remindersDesc: 'Rappels entraînement, repas et hydratation — planifiés en local, sans serveur.',
   },
   notifications: {
     title: 'Rappels',

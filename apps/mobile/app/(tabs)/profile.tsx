@@ -509,6 +509,12 @@ export default function ProfileScreen() {
           <SectionTitle label={t('profile.sectionSettings')} />
           <View style={cardStyle}>
             <NavRow
+              icon="✨"
+              label={t('explore.title')}
+              sublabel={t('profile.exploreSub')}
+              onPress={() => router.push('/explore' as any)}
+            />
+            <NavRow
               icon="🔔"
               label={t('profile.reminders')}
               sublabel={t('profile.remindersSub')}

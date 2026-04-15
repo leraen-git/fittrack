@@ -143,6 +143,7 @@ export const en = {
     goalMuscleGain: 'Muscle Gain',
     goalMaintenance: 'Maintenance',
     // Settings rows
+    exploreSub: 'Discover everything FitTrack can do',
     reminders: 'Reminders',
     remindersSub: 'Workout, meal & hydration',
     appearance: 'Appearance',
@@ -221,6 +222,47 @@ export const en = {
       dinner: 'Dinner',
       dessert: 'Dessert',
     },
+  },
+  explore: {
+    title: 'Explore FitTrack',
+    subtitle: '{{used}} of {{total}} features discovered',
+    new: 'NEW',
+    tryIt: 'Try it',
+    // Groups
+    groupWorkouts: 'Workouts',
+    groupProgress: 'Progress',
+    groupPlans: 'Plans',
+    groupDiet: 'Diet',
+    groupReminders: 'Reminders',
+    // Workout features
+    workoutBuilder: 'Workout builder',
+    workoutBuilderDesc: 'Create custom sessions with any exercises, sets and rest times.',
+    activeSession: 'Active session tracker',
+    activeSessionDesc: 'Log sets in real time — previous weights shown as a ghost reference.',
+    restTimer: 'Rest timer',
+    restTimerDesc: 'Auto-starts after each set. Runs in background and sends a notification.',
+    personalRecords: 'Personal records',
+    personalRecordsDesc: 'Every PR is auto-detected and highlighted at the end of your session.',
+    // Progress features
+    progressCharts: 'Progression charts',
+    progressChartsDesc: 'Line charts per exercise — max weight, volume or reps over time.',
+    streakStats: 'Streak & volume stats',
+    streakStatsDesc: 'See your weekly consistency, total volume lifted and trends.',
+    sessionRecap: 'Session recap',
+    sessionRecapDesc: 'After each session: per-exercise comparison vs your last attempt.',
+    // Plan features
+    aiWorkoutPlan: 'AI workout plan',
+    aiWorkoutPlanDesc: 'Claude builds a full weekly program tailored to your level and goal.',
+    guidedPrograms: 'Guided programs',
+    guidedProgramsDesc: 'Official structured programs from Beginner 8wk to Advanced Powerlifting.',
+    // Diet features
+    aiDietPlan: 'AI diet plan',
+    aiDietPlanDesc: 'A personalised 7-day meal plan with exact macros built around your favourite foods.',
+    mealRecipes: 'Meal recipes & macros',
+    mealRecipesDesc: 'Each meal has full ingredients, preparation steps and a YouTube link.',
+    // Reminder features
+    reminders: 'Smart reminders',
+    remindersDesc: 'Workout, meal and hydration reminders — scheduled locally, no server needed.',
   },
   notifications: {
     title: 'Reminders',
