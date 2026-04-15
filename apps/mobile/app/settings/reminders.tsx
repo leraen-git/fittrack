@@ -230,7 +230,7 @@ function PillSelector<T extends string | number>({
 
 export default function RemindersScreen() {
   const { colors, typography, spacing, radius } = useTheme()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const settings = useNotificationSettingsStore()
   const { enableWithPermission, permDenied } = usePermissionToggle()
   const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
