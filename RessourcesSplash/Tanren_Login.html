@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Login Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --red-light: #E8192C;
+    --red-dark: #FF2D3F;
+    --grey-light: #F2F2F2;
+    --grey-mid: #888888;
+    --grey-border: #CCCCCC;
+    --surface-dark: #111111;
+    --grid-dark: #141414;
+    --grid-light: #F0F0F0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ===== HEADER ===== */
+  .page-header {
+    text-align: center;
+    margin-bottom: 60px;
+    max-width: 800px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--grey-mid);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--grey-mid);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ===== MOCKUPS ROW ===== */
+  .mockups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .mockup-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 52px;
+    padding: 14px;
+    box-shadow:
+      0 40px 100px rgba(0, 0, 0, 0.5),
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+  .phone-screen {
+    width: 360px;
+    height: 780px;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 32px;
+    background: #000;
+    border-radius: 18px;
+    z-index: 100;
+  }
+  .mockup-label {
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+  }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .status-time { font-variant-numeric: tabular-nums; }
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* ===== LOGIN SCREEN BASE ===== */
+  .login-screen {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 28px 32px;
+  }
+
+  /* ===== KANJI WATERMARK ===== */
+  .kanji-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 320px;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    user-select: none;
+    pointer-events: none;
+    text-align: center;
+    z-index: 1;
+  }
+
+  /* ===== BACKGROUND GRID ===== */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* ===== LOGO BLOCK ===== */
+  .logo-block {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+  }
+  .mark-wrap {
+    position: relative;
+    margin-bottom: 24px;
+  }
+  .mark-glow {
+    position: absolute;
+    inset: -30%;
+    border-radius: 50%;
+    z-index: -1;
+  }
+  .login-mark {
+    width: 64px;
+    height: 64px;
+    display: block;
+  }
+  .login-wordmark {
+    font-weight: 900;
+    font-size: 44px;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .login-kanji-small {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    margin-bottom: 16px;
+  }
+  .login-baseline {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  /* ===== SPACER ===== */
+  .spacer { flex: 1; }
+
+  /* ===== CTA BLOCK ===== */
+  .cta-block {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cta {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    border: none;
+    padding: 0 20px;
+  }
+  .cta:hover { transform: translateY(-1px); }
+  .cta svg { width: 18px; height: 18px; }
+
+  /* PRIMARY CTA — Red, brand */
+  .cta-primary-dark {
+    background: var(--red-dark);
+    color: var(--white);
+  }
+  .cta-primary-light {
+    background: var(--red-light);
+    color: var(--white);
+  }
+
+  /* SECONDARY CTAs */
+  .cta-secondary-dark {
+    background: var(--white);
+    color: var(--black);
+  }
+  .cta-secondary-light {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  /* TERTIARY CTAs */
+  .cta-tertiary-dark {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid #333;
+  }
+  .cta-tertiary-light {
+    background: transparent;
+    color: var(--black);
+    border: 1px solid var(--grey-border);
+  }
+
+  /* GUEST LINK */
+  .guest-link {
+    font-weight: 500;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    margin: 16px 0 4px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+
+  /* DEV BUTTON */
+  .cta-dev {
+    background: transparent;
+    height: 44px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-style: dashed;
+    border-width: 1px;
+  }
+  .cta-dev-dark { color: #555; border-color: #333; }
+  .cta-dev-light { color: var(--grey-mid); border-color: var(--grey-border); }
+
+  /* CGU TEXT */
+  .cgu-text {
+    font-size: 11px;
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+  .cgu-text a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ===== DARK MODE SPECIFIC ===== */
+  .dark-mode {
+    background: var(--black);
+    color: var(--white);
+  }
+  .dark-mode .bg-grid {
+    background-image:
+      linear-gradient(var(--grid-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-dark) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .dark-mode .kanji-watermark {
+    color: var(--white);
+    opacity: 0.04;
+  }
+  .dark-mode .mark-glow {
+    background: radial-gradient(circle, rgba(255,45,63,0.4) 0%, rgba(255,45,63,0) 70%);
+  }
+  .dark-mode .login-wordmark { color: var(--white); }
+  .dark-mode .login-kanji-small { color: var(--red-dark); }
+  .dark-mode .login-baseline { color: var(--red-dark); }
+  .dark-mode .guest-link { color: var(--white); }
+  .dark-mode .cgu-text { color: var(--grey-mid); }
+  .dark-mode .cgu-text a { color: var(--white); }
+  .dark-mode .status-bar { color: var(--white); }
+
+  /* ===== LIGHT MODE SPECIFIC ===== */
+  .light-mode {
+    background: var(--white);
+    color: var(--black);
+  }
+  .light-mode .bg-grid {
+    background-image:
+      linear-gradient(var(--grid-light) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-light) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .light-mode .kanji-watermark {
+    color: var(--black);
+    opacity: 0.05;
+  }
+  .light-mode .mark-glow {
+    background: radial-gradient(circle, rgba(232,25,44,0.25) 0%, rgba(232,25,44,0) 70%);
+  }
+  .light-mode .login-wordmark { color: var(--black); }
+  .light-mode .login-kanji-small { color: var(--red-light); }
+  .light-mode .login-baseline { color: var(--red-light); }
+  .light-mode .guest-link { color: var(--black); }
+  .light-mode .cgu-text { color: var(--grey-mid); }
+  .light-mode .cgu-text a { color: var(--black); }
+  .light-mode .status-bar { color: var(--black); }
+
+  /* ===== DESIGN NOTES BLOCK ===== */
+  .notes {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 32px 40px;
+    max-width: 900px;
+    margin-top: 40px;
+  }
+  .notes h3 {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red-dark);
+    margin-bottom: 16px;
+  }
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 40px;
+  }
+  .note-item {
+    border-left: 2px solid var(--red-dark);
+    padding-left: 16px;
+  }
+  .note-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--grey-mid);
+    margin-bottom: 4px;
+  }
+  .note-value {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--white);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="page-label">Tanren · Écran de connexion</div>
+  <div class="page-title">Login</div>
+  <div class="page-desc">Premier contact avec l'app. Établit immédiatement l'identité de marque : forge, brutalisme industriel, rouge signal, kanji 鍛錬 en watermark.</div>
+</div>
+
+<!-- MOCKUPS -->
+<div class="mockups">
+
+  <!-- ===== DARK MODE ===== -->
+  <div class="mockup-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="login-screen dark-mode">
+
+          <!-- Background grid -->
+          <div class="bg-grid"></div>
+
+          <!-- Kanji watermark -->
+          <div class="kanji-watermark">鍛錬</div>
+
+          <!-- Status bar -->
+          <div class="status-bar">
+            <span class="status-time">13:32</span>
+            <div class="status-icons">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M1 7l2-2 2 2-2 2zm4 2l3-3 3 3-3 3zm5-4l1.5-1.5 1.5 1.5L11.5 6.5z" opacity="0.6"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <!-- Logo block -->
+          <div class="logo-block">
+            <div class="mark-wrap">
+              <div class="mark-glow"></div>
+              <svg class="login-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+                <circle cx="100" cy="100" r="14" fill="#FF2D3F"/>
+                <rect x="92" y="20" width="16" height="50" fill="#FFFFFF"/>
+                <rect x="20" y="92" width="50" height="16" fill="#FFFFFF"/>
+                <rect x="130" y="92" width="50" height="16" fill="#FFFFFF"/>
+                <rect x="92" y="130" width="16" height="50" fill="#FFFFFF"/>
+                <line x1="148" y1="52" x2="135" y2="65" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+                <line x1="52" y1="148" x2="65" y2="135" stroke="#FF2D3F" stroke-width="4" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <div class="login-wordmark">TANREN</div>
+            <div class="login-kanji-small">鍛 錬</div>
+            <div class="login-baseline">Une rep après l'autre.</div>
+          </div>
+
+          <div class="spacer"></div>
+
+          <!-- CTA block -->
+          <div class="cta-block">
+            <button class="cta cta-primary-dark">
+              <svg viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+              Continuer avec Apple
+            </button>
+            <button class="cta cta-secondary-dark">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Se connecter avec Google
+            </button>
+            <button class="cta cta-tertiary-dark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              Continuer avec un e-mail
+            </button>
+
+            <div class="guest-link">Continuer en tant qu'invité</div>
+
+            <button class="cta cta-dev cta-dev-dark">
+              DEV — Skip sign-in
+            </button>
+
+            <div class="cgu-text">
+              En continuant, tu acceptes nos <a>CGU</a> et notre <a>politique de confidentialité</a>.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">Dark mode (par défaut)</div>
+  </div>
+
+  <!-- ===== LIGHT MODE ===== -->
+  <div class="mockup-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="login-screen light-mode">
+
+          <!-- Background grid -->
+          <div class="bg-grid"></div>
+
+          <!-- Kanji watermark -->
+          <div class="kanji-watermark">鍛錬</div>
+
+          <!-- Status bar -->
+          <div class="status-bar">
+            <span class="status-time">13:32</span>
+            <div class="status-icons">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M1 7l2-2 2 2-2 2zm4 2l3-3 3 3-3 3zm5-4l1.5-1.5 1.5 1.5L11.5 6.5z" opacity="0.6"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+
+          <!-- Logo block -->
+          <div class="logo-block">
+            <div class="mark-wrap">
+              <div class="mark-glow"></div>
+              <svg class="login-mark" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#000000" stroke-width="6"/>
+                <circle cx="100" cy="100" r="14" fill="#E8192C"/>
+                <rect x="92" y="20" width="16" height="50" fill="#000000"/>
+                <rect x="20" y="92" width="50" height="16" fill="#000000"/>
+                <rect x="130" y="92" width="50" height="16" fill="#000000"/>
+                <rect x="92" y="130" width="16" height="50" fill="#000000"/>
+                <line x1="148" y1="52" x2="135" y2="65" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+                <line x1="52" y1="148" x2="65" y2="135" stroke="#E8192C" stroke-width="4" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <div class="login-wordmark">TANREN</div>
+            <div class="login-kanji-small">鍛 錬</div>
+            <div class="login-baseline">Une rep après l'autre.</div>
+          </div>
+
+          <div class="spacer"></div>
+
+          <!-- CTA block -->
+          <div class="cta-block">
+            <button class="cta cta-primary-light">
+              <svg viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+              Continuer avec Apple
+            </button>
+            <button class="cta cta-secondary-light">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Se connecter avec Google
+            </button>
+            <button class="cta cta-tertiary-light">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              Continuer avec un e-mail
+            </button>
+
+            <div class="guest-link">Continuer en tant qu'invité</div>
+
+            <button class="cta cta-dev cta-dev-light">
+              DEV — Skip sign-in
+            </button>
+
+            <div class="cgu-text">
+              En continuant, tu acceptes nos <a>CGU</a> et notre <a>politique de confidentialité</a>.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">Light mode</div>
+  </div>
+
+</div>
+
+<!-- ===== DESIGN NOTES ===== -->
+<div class="notes">
+  <h3>Notes de design</h3>
+  <div class="notes-grid">
+    <div class="note-item">
+      <div class="note-label">Forge-spark mark</div>
+      <div class="note-value">64×64 px, centré, avec glow rouge radial subtil. Premier élément visible — pose immédiatement l'identité.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Kanji watermark 鍛錬</div>
+      <div class="note-value">Noto Serif JP Black, 320px, opacité 4–5%. Remplit l'espace mort sans voler la vedette aux CTAs.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Bouton primaire rouge</div>
+      <div class="note-value">Apple Sign-In en couleur signature (au lieu de noir/blanc Apple). Le rouge attire l'œil sur le chemin le plus rapide.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Hiérarchie des CTAs</div>
+      <div class="note-value">Rouge (Apple) → Plein contrasté (Google) → Outlined (Email) → Lien texte (Invité) → Pointillés (DEV).</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Grille de fond</div>
+      <div class="note-value">24px en #141414 (dark) / #F0F0F0 (light). Évoque l'enclume quadrillée des forgerons.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Tutoiement systématique</div>
+      <div class="note-value">"tu acceptes", "Continuer". Cohérent avec le brand voice direct, pas de "vous" formel.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Baseline française</div>
+      <div class="note-value">"Une rep après l'autre." — adaptation libre de "Built rep by rep." qui sonne natif en FR.</div>
+    </div>
+    <div class="note-item">
+      <div class="note-label">Coins boutons : 4px</div>
+      <div class="note-value">Bord quasi-droit, brutaliste. Pas de bouton arrondi qui adoucirait l'identité.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

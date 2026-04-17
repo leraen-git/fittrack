@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
 import { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
-import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold } from '@expo-google-fonts/barlow-condensed'
+import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
@@ -149,6 +149,10 @@ export default function RootLayout() {
     BarlowCondensed_400Regular,
     BarlowCondensed_500Medium,
     BarlowCondensed_700Bold,
+    BarlowCondensed_900Black,
+    // Subsetted Noto Serif JP — only contains 鍛錬 characters (~2.7KB each)
+    NotoSerifJP_700Bold_subset: require('../assets/fonts/NotoSerifJP_700Bold_subset.ttf'),
+    NotoSerifJP_900Black_subset: require('../assets/fonts/NotoSerifJP_900Black_subset.ttf'),
   })
 
   useEffect(() => {

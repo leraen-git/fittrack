@@ -1,14 +1,13 @@
 ---
 name: App distribution options for iOS
-description: How to share FitTrack with friends via TestFlight or EAS ad-hoc builds
+description: How to share Tanren with friends via TestFlight or EAS ad-hoc builds
 type: project
-originSessionId: 3edd2e77-56f9-4e78-9448-a973558947cc
 ---
-Two options to share FitTrack with friends on iPhone:
+Two options to share Tanren with friends on iPhone:
 
 **Option 1 — TestFlight** (up to 10,000 testers)
 - Requires Apple Developer account ($99/yr)
-- Bundle ID: com.fittrack.app
+- Bundle ID: app.tanren
 - Archive via Xcode → upload to App Store Connect → invite testers by email
 - Best for more than 3–4 friends
 

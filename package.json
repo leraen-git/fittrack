@@ -29,5 +29,9 @@
   "packageManager": "npm@11.11.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@expo-google-fonts/noto-serif-jp": "^0.4.3",
+    "react-native-svg": "15.11.2"
   }
 }

@@ -8,36 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		231245DEAF01492ABFA808E5 /* BarlowCondensed_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C2D16D1922949E8B9522E8E /* BarlowCondensed_700Bold.ttf */; };
+		233BCC944DE94FDFABDA979A /* BarlowCondensed_500Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */; };
+		2F6276BEC383936E433184AB /* libPods-Tanren.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E201C2AB2262021B018BA77 /* libPods-Tanren.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		4E3CEDDFF95D4E3626C9C630 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2A5D75896172AE980CB414 /* ExpoModulesProvider.swift */; };
-		52705F4D2FF44DD38B2DD98F /* BarlowCondensed_300Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 637B7AD594454DC5AD129F7E /* BarlowCondensed_300Light.ttf */; };
-		7F187F609A3274FE3268DBEF /* libPods-Tanren.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51B558D303E90D5B9BD01F9E /* libPods-Tanren.a */; };
-		9404BDA2105B5CB5A601CA14 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E383295B4B9E7D1C4311DFD2 /* PrivacyInfo.xcprivacy */; };
+		44E271C02CEA442C98264421 /* BarlowCondensed_300Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */; };
+		4C91E4348E7AEDAC01973995 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */; };
+		52ED103313484DE89D085D05 /* BarlowCondensed_400Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */; };
+		778993493B154786BB284536 /* NotoSerifJP_700Bold_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */; };
+		80220E842F6D4ACA8FF9245A /* NotoSerifJP_900Black_subset.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */; };
+		B190D5211DDB43D89D75FD41 /* BarlowCondensed_900Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C2770A2E81364603AA615031 /* BarlowCondensed_400Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 606A11B127B2471396B10392 /* BarlowCondensed_400Regular.ttf */; };
-		D70D709A8DA14634BCE2E4A2 /* BarlowCondensed_500Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8B631882CE04FC595DA224C /* BarlowCondensed_500Medium.ttf */; };
+		DE85B0F326847DF98BE5F552 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */; };
+		E79871223AED48F4A0A1934A /* BarlowCondensed_700Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_900Black_subset.ttf; path = ../assets/fonts/NotoSerifJP_900Black_subset.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Tanren.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tanren.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tanren/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tanren/Info.plist; sourceTree = "<group>"; };
-		2E2A5D75896172AE980CB414 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Tanren/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		3C2D16D1922949E8B9522E8E /* BarlowCondensed_700Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_700Bold.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf"; sourceTree = "<group>"; };
-		49F0D54DF596574D1EB58F29 /* Pods-Tanren.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.release.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.release.xcconfig"; sourceTree = "<group>"; };
-		51B558D303E90D5B9BD01F9E /* libPods-Tanren.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tanren.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		606A11B127B2471396B10392 /* BarlowCondensed_400Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_400Regular.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf"; sourceTree = "<group>"; };
-		637B7AD594454DC5AD129F7E /* BarlowCondensed_300Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_300Light.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/300Light/BarlowCondensed_300Light.ttf"; sourceTree = "<group>"; };
+		16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_500Medium.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf"; sourceTree = "<group>"; };
+		1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Tanren/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.release.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.release.xcconfig"; sourceTree = "<group>"; };
+		60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_900Black.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/900Black/BarlowCondensed_900Black.ttf"; sourceTree = "<group>"; };
+		6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = NotoSerifJP_700Bold_subset.ttf; path = ../assets/fonts/NotoSerifJP_700Bold_subset.ttf; sourceTree = "<group>"; };
+		6E201C2AB2262021B018BA77 /* libPods-Tanren.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tanren.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_700Bold.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/700Bold/BarlowCondensed_700Bold.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Tanren/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B45470E66BE427B098134571 /* Pods-Tanren.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.debug.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.debug.xcconfig"; sourceTree = "<group>"; };
-		B8B631882CE04FC595DA224C /* BarlowCondensed_500Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_500Medium.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		E383295B4B9E7D1C4311DFD2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Tanren/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_300Light.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/300Light/BarlowCondensed_300Light.ttf"; sourceTree = "<group>"; };
+		E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BarlowCondensed_400Regular.ttf; path = "../../../node_modules/@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tanren.debug.xcconfig"; path = "Target Support Files/Pods-Tanren/Pods-Tanren.debug.xcconfig"; sourceTree = "<group>"; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Tanren/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Tanren-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Tanren-Bridging-Header.h"; path = "Tanren/Tanren-Bridging-Header.h"; sourceTree = "<group>"; };
+		FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Tanren/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F187F609A3274FE3268DBEF /* libPods-Tanren.a in Frameworks */,
+				2F6276BEC383936E433184AB /* libPods-Tanren.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,46 +67,26 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				E383295B4B9E7D1C4311DFD2 /* PrivacyInfo.xcprivacy */,
+				1FA8F9970CF78E089CC7D599 /* PrivacyInfo.xcprivacy */,
 			);
 			name = Tanren;
 			sourceTree = "<group>";
 		};
-		1E46AEEFE6D13EF6B19790F3 /* ExpoModulesProviders */ = {
+		2A276E23DDB10D936B7B1D0D /* Tanren */ = {
 			isa = PBXGroup;
 			children = (
-				670F6EB8D66B410D1A34D7D0 /* Tanren */,
+				FE5346D650CBEED6C6196F7C /* ExpoModulesProvider.swift */,
 			);
-			name = ExpoModulesProviders;
+			name = Tanren;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				51B558D303E90D5B9BD01F9E /* libPods-Tanren.a */,
+				6E201C2AB2262021B018BA77 /* libPods-Tanren.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		37CC4BC72C66448D9A609840 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				637B7AD594454DC5AD129F7E /* BarlowCondensed_300Light.ttf */,
-				606A11B127B2471396B10392 /* BarlowCondensed_400Regular.ttf */,
-				B8B631882CE04FC595DA224C /* BarlowCondensed_500Medium.ttf */,
-				3C2D16D1922949E8B9522E8E /* BarlowCondensed_700Bold.ttf */,
-			);
-			name = Resources;
-			path = "";
-			sourceTree = "<group>";
-		};
-		670F6EB8D66B410D1A34D7D0 /* Tanren */ = {
-			isa = PBXGroup;
-			children = (
-				2E2A5D75896172AE980CB414 /* ExpoModulesProvider.swift */,
-			);
-			name = Tanren;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -117,9 +103,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				37CC4BC72C66448D9A609840 /* Resources */,
-				84B76AB619F934429598C8C6 /* Pods */,
-				1E46AEEFE6D13EF6B19790F3 /* ExpoModulesProviders */,
+				B59E3A62C9B44670AC856B84 /* Resources */,
+				CC0AB768530FCDFAF033BE5D /* Pods */,
+				C0626FFC9F563817FB48CB4E /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -134,14 +120,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		84B76AB619F934429598C8C6 /* Pods */ = {
+		B59E3A62C9B44670AC856B84 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B45470E66BE427B098134571 /* Pods-Tanren.debug.xcconfig */,
-				49F0D54DF596574D1EB58F29 /* Pods-Tanren.release.xcconfig */,
+				D31425EC3F944ABB930D6CA4 /* BarlowCondensed_300Light.ttf */,
+				E7D44E5922754B98A712893F /* BarlowCondensed_400Regular.ttf */,
+				16F40BB8CF1F4F168A72E9E0 /* BarlowCondensed_500Medium.ttf */,
+				876CD21CD3444282844CA596 /* BarlowCondensed_700Bold.ttf */,
+				60A02958547843E7992ACA1E /* BarlowCondensed_900Black.ttf */,
+				6BC249DF3C8146F3B206E525 /* NotoSerifJP_700Bold_subset.ttf */,
+				07CBED6A7FEE4A6C96DFF84E /* NotoSerifJP_900Black_subset.ttf */,
 			);
-			name = Pods;
-			path = Pods;
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -153,6 +144,24 @@
 			path = Tanren/Supporting;
 			sourceTree = "<group>";
 		};
+		C0626FFC9F563817FB48CB4E /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				2A276E23DDB10D936B7B1D0D /* Tanren */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		CC0AB768530FCDFAF033BE5D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */,
+				5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -161,13 +170,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Tanren" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				22B32178C25F4B29EBA39141 /* [Expo] Configure project */,
+				E79F2CE413470269441BD35E /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				8B516ED16FCB1AC87683DF13 /* [CP] Embed Pods Frameworks */,
+				C1B7023B757CB2034C43EA81 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -217,11 +226,14 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				52705F4D2FF44DD38B2DD98F /* BarlowCondensed_300Light.ttf in Resources */,
-				C2770A2E81364603AA615031 /* BarlowCondensed_400Regular.ttf in Resources */,
-				D70D709A8DA14634BCE2E4A2 /* BarlowCondensed_500Medium.ttf in Resources */,
-				231245DEAF01492ABFA808E5 /* BarlowCondensed_700Bold.ttf in Resources */,
-				9404BDA2105B5CB5A601CA14 /* PrivacyInfo.xcprivacy in Resources */,
+				44E271C02CEA442C98264421 /* BarlowCondensed_300Light.ttf in Resources */,
+				52ED103313484DE89D085D05 /* BarlowCondensed_400Regular.ttf in Resources */,
+				233BCC944DE94FDFABDA979A /* BarlowCondensed_500Medium.ttf in Resources */,
+				E79871223AED48F4A0A1934A /* BarlowCondensed_700Bold.ttf in Resources */,
+				B190D5211DDB43D89D75FD41 /* BarlowCondensed_900Black.ttf in Resources */,
+				778993493B154786BB284536 /* NotoSerifJP_700Bold_subset.ttf in Resources */,
+				80220E842F6D4ACA8FF9245A /* NotoSerifJP_900Black_subset.ttf in Resources */,
+				DE85B0F326847DF98BE5F552 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +277,71 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		22B32178C25F4B29EBA39141 /* [Expo] Configure project */ = {
+		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/ExpoTaskManager_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoTaskManager_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C1B7023B757CB2034C43EA81 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E79F2CE413470269441BD35E /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -284,68 +360,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Tanren/expo-configure-project.sh\"\n";
 		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/ExpoTaskManager_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoTaskManager_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8B516ED16FCB1AC87683DF13 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tanren/Pods-Tanren-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -354,7 +368,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				4E3CEDDFF95D4E3626C9C630 /* ExpoModulesProvider.swift in Sources */,
+				4C91E4348E7AEDAC01973995 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,7 +377,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B45470E66BE427B098134571 /* Pods-Tanren.debug.xcconfig */;
+			baseConfigurationReference = EDFAD1C7A049BD332DCC9383 /* Pods-Tanren.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -399,7 +413,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49F0D54DF596574D1EB58F29 /* Pods-Tanren.release.xcconfig */;
+			baseConfigurationReference = 5821D415435A31A9F5135384 /* Pods-Tanren.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TANREN — Health Permission Pre-Prompts</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --red-light: #E8192C;
+    --red-dark: #FF2D3F;
+    --grey-mid: #888888;
+    --grey-border: #333333;
+    --grid-dark: #141414;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow Condensed', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    color: var(--white);
+    min-height: 100vh;
+    padding: 60px 40px;
+  }
+
+  /* ===== HEADER ===== */
+  .page-header {
+    text-align: center;
+    margin: 0 auto 60px;
+    max-width: 900px;
+  }
+  .page-label {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--grey-mid);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-weight: 900;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-desc {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--grey-mid);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* ===== MOCKUPS ROW ===== */
+  .mockups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 900px;
+    margin: 0 auto 60px;
+  }
+  .mockup-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 48px;
+    padding: 12px;
+    box-shadow:
+      0 40px 100px rgba(0, 0, 0, 0.5),
+      0 12px 24px rgba(0, 0, 0, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+  .phone-screen {
+    width: 360px;
+    height: 780px;
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 28px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 100;
+  }
+  .mockup-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .mockup-context {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--grey-mid);
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    z-index: 50;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* ===== PROMPT SCREEN ===== */
+  .prompt-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--black);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 70px 24px 32px;
+  }
+
+  /* Background grid */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-dark) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: 0;
+  }
+
+  /* Kanji watermark */
+  .kanji-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 900;
+    font-size: 280px;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    color: var(--white);
+    opacity: 0.04;
+    user-select: none;
+    pointer-events: none;
+    text-align: center;
+    z-index: 1;
+  }
+
+  /* Skip button (top right) */
+  .skip-btn {
+    position: absolute;
+    top: 60px;
+    right: 24px;
+    background: transparent;
+    border: none;
+    color: var(--grey-mid);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    z-index: 30;
+    padding: 8px;
+  }
+
+  /* Hero block */
+  .hero {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 32px;
+  }
+  .icon-wrap {
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .icon-glow {
+    position: absolute;
+    inset: -40%;
+    background: radial-gradient(circle, rgba(255,45,63,0.4) 0%, rgba(255,45,63,0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+  }
+  .icon-frame {
+    width: 96px;
+    height: 96px;
+    border: 2px solid var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--black);
+    position: relative;
+  }
+  .icon-frame.with-corners::before,
+  .icon-frame.with-corners::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--red-dark);
+  }
+  .icon-frame.with-corners::before {
+    top: -2px;
+    left: -2px;
+  }
+  .icon-frame.with-corners::after {
+    bottom: -2px;
+    right: -2px;
+  }
+
+  /* Tag (kanji-style) */
+  .tag {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--red-dark);
+    letter-spacing: 0.4em;
+    margin-bottom: 12px;
+  }
+
+  /* Title */
+  .prompt-title {
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    max-width: 240px;
+  }
+
+  /* Description */
+  .prompt-desc {
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #BBBBBB;
+    text-align: center;
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  /* Bullets / benefits */
+  .benefits {
+    position: relative;
+    z-index: 10;
+    margin: 8px 0 24px;
+    padding: 0 8px;
+  }
+  .benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-top: 1px solid #1f1f1f;
+  }
+  .benefit-item:last-child {
+    border-bottom: 1px solid #1f1f1f;
+  }
+  .benefit-num {
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--red-dark);
+    line-height: 1;
+    min-width: 24px;
+    padding-top: 2px;
+  }
+  .benefit-text {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--white);
+  }
+  .benefit-text small {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--grey-mid);
+    margin-top: 2px;
+    letter-spacing: 0;
+  }
+
+  /* Privacy note */
+  .privacy-note {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px dashed #2a2a2a;
+    margin-bottom: 16px;
+  }
+  .privacy-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--grey-mid);
+  }
+  .privacy-text {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--grey-mid);
+    letter-spacing: 0.02em;
+  }
+
+  /* Spacer */
+  .spacer { flex: 1; }
+
+  /* CTA block */
+  .cta-block {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    border: none;
+  }
+  .cta-primary {
+    background: var(--red-dark);
+    color: var(--white);
+  }
+  .cta-tertiary {
+    background: transparent;
+    color: var(--grey-mid);
+    height: 44px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ===== USER FLOW SECTION ===== */
+  .flow-section {
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 40px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+  }
+  .flow-section h3 {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red-dark);
+    margin-bottom: 20px;
+  }
+  .flow-section h2 {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+    margin-top: 32px;
+  }
+  .flow-step {
+    position: relative;
+    padding-left: 32px;
+    border-left: 2px solid var(--red-dark);
+  }
+  .flow-step::before {
+    content: attr(data-step);
+    position: absolute;
+    top: -2px;
+    left: -16px;
+    width: 28px;
+    height: 28px;
+    background: var(--black);
+    border: 2px solid var(--red-dark);
+    color: var(--red-dark);
+    font-weight: 900;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-step h4 {
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .flow-step p {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #BBBBBB;
+  }
+  .flow-step strong {
+    color: var(--white);
+    font-weight: 700;
+  }
+  .flow-step code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--red-dark);
+  }
+
+  /* ===== TRIGGER ROW ===== */
+  .triggers {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .trigger-card {
+    padding: 16px;
+    background: rgba(0,0,0,0.4);
+    border-left: 3px solid var(--red-dark);
+  }
+  .trigger-when {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--red-dark);
+    margin-bottom: 4px;
+  }
+  .trigger-event {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .trigger-screen {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--grey-mid);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="page-label">Tanren · Health Integration</div>
+  <div class="page-title">Pre-permission prompts</div>
+  <div class="page-desc">Ces écrans Tanren-branded apparaissent AVANT le prompt système iOS/Android. Ils expliquent le bénéfice avec le langage de la marque, augmentant le taux d'acceptation de 40 à 60% par rapport au prompt natif seul.</div>
+</div>
+
+<!-- MOCKUPS -->
+<div class="mockups">
+
+  <!-- ===== PROMPT 1 — WRITE WORKOUT ===== -->
+  <div class="mockup-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="prompt-screen">
+          <div class="bg-grid"></div>
+          <div class="kanji-watermark">鍛錬</div>
+
+          <div class="status-bar">
+            <span>11:42</span>
+            <span style="font-size:12px;">●●●●</span>
+          </div>
+
+          <button class="skip-btn">Plus tard</button>
+
+          <div class="hero">
+            <div class="icon-wrap">
+              <div class="icon-glow"></div>
+              <div class="icon-frame with-corners">
+                <!-- Apple Health-inspired heart icon, Tanren-styled -->
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <path d="M24 42 C 8 30, 6 18, 14 12 C 20 8, 24 14, 24 14 C 24 14, 28 8, 34 12 C 42 18, 40 30, 24 42 Z"
+                        fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="miter"/>
+                  <line x1="14" y1="24" x2="20" y2="24" stroke="#FF2D3F" stroke-width="2.5"/>
+                  <line x1="20" y1="24" x2="22" y2="20" stroke="#FF2D3F" stroke-width="2.5"/>
+                  <line x1="22" y1="20" x2="26" y2="28" stroke="#FF2D3F" stroke-width="2.5"/>
+                  <line x1="26" y1="28" x2="28" y2="24" stroke="#FF2D3F" stroke-width="2.5"/>
+                  <line x1="28" y1="24" x2="34" y2="24" stroke="#FF2D3F" stroke-width="2.5"/>
+                </svg>
+              </div>
+            </div>
+            <div class="tag">鍛 錬</div>
+            <h1 class="prompt-title">Tes séances dans Apple Santé</h1>
+            <p class="prompt-desc">Chaque séance Tanren peut être publiée dans l'app Santé d'iPhone.</p>
+          </div>
+
+          <div class="benefits">
+            <div class="benefit-item">
+              <div class="benefit-num">01</div>
+              <div class="benefit-text">
+                Compte dans tes anneaux d'activité
+                <small>Move, Exercise, Stand</small>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-num">02</div>
+              <div class="benefit-text">
+                Visible aux côtés de tes autres workouts
+                <small>Course, vélo, marche</small>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-num">03</div>
+              <div class="benefit-text">
+                Estimation des calories brûlées
+                <small>Basée sur ton poids et la durée</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="privacy-note">
+            <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2 L4 6 V12 C4 18 12 22 12 22 C12 22 20 18 20 12 V6 L12 2 Z"/>
+            </svg>
+            <span class="privacy-text">Tu peux désactiver à tout moment dans les Réglages.</span>
+          </div>
+
+          <div class="spacer"></div>
+
+          <div class="cta-block">
+            <button class="cta cta-primary">Activer la synchronisation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">01 — Publish Sessions</div>
+    <div class="mockup-context">Affiché à la fin de la 1<sup>re</sup> séance loggée. Permission HK : <code style="font-family:monospace;font-size:11px;">HKWorkout (write)</code></div>
+  </div>
+
+  <!-- ===== PROMPT 2 — READ BODYWEIGHT ===== -->
+  <div class="mockup-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="prompt-screen">
+          <div class="bg-grid"></div>
+          <div class="kanji-watermark">鍛錬</div>
+
+          <div class="status-bar">
+            <span>09:17</span>
+            <span style="font-size:12px;">●●●●</span>
+          </div>
+
+          <button class="skip-btn">Plus tard</button>
+
+          <div class="hero">
+            <div class="icon-wrap">
+              <div class="icon-glow"></div>
+              <div class="icon-frame with-corners">
+                <!-- Stylized scale / weight icon -->
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <rect x="8" y="14" width="32" height="26" rx="2" stroke="white" stroke-width="2.5"/>
+                  <line x1="8" y1="22" x2="40" y2="22" stroke="white" stroke-width="2"/>
+                  <circle cx="24" cy="18" r="2" fill="#FF2D3F"/>
+                  <text x="24" y="35" text-anchor="middle" fill="#FF2D3F"
+                        font-family="Barlow Condensed" font-weight="900" font-size="11">82,4</text>
+                  <text x="24" y="44" text-anchor="middle" fill="white" opacity="0.6"
+                        font-family="Barlow Condensed" font-weight="500" font-size="6">KG</text>
+                </svg>
+              </div>
+            </div>
+            <div class="tag">鍛 錬</div>
+            <h1 class="prompt-title">Synchronise ton poids</h1>
+            <p class="prompt-desc">Tanren peut lire ton poids depuis Apple Santé pour éviter la double saisie.</p>
+          </div>
+
+          <div class="benefits">
+            <div class="benefit-item">
+              <div class="benefit-num">01</div>
+              <div class="benefit-text">
+                Profil pré-rempli en 1 seconde
+                <small>Plus besoin de saisir ton poids</small>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-num">02</div>
+              <div class="benefit-text">
+                Évolution suivie automatiquement
+                <small>Si tu pèses régulièrement</small>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-num">03</div>
+              <div class="benefit-text">
+                Calculs de volume relatif plus précis
+                <small>Volume / bodyweight ratio</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="privacy-note">
+            <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8 V12 L14 14"/>
+            </svg>
+            <span class="privacy-text">Lecture seule. Tanren n'écrit rien dans ton poids.</span>
+          </div>
+
+          <div class="spacer"></div>
+
+          <div class="cta-block">
+            <button class="cta cta-primary">Autoriser la lecture</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">02 — Read Bodyweight</div>
+    <div class="mockup-context">Affiché lors de la création/édition du profil. Permission HK : <code style="font-family:monospace;font-size:11px;">BodyMass (read)</code></div>
+  </div>
+
+</div>
+
+<!-- ===== USER FLOW EXPLAINER ===== -->
+<div class="flow-section">
+  <h3>Strategy</h3>
+  <h2>Why pre-prompts matter</h2>
+  <p style="color:#BBBBBB; font-size:15px; line-height:1.6; max-width:800px;">Le prompt système iOS/Android est <strong style="color:white;">brutal et anonyme</strong>. Sans contexte, les utilisateurs refusent à 60-70% par défaut. Le pre-prompt Tanren-branded explique le bénéfice <strong style="color:white;">avant</strong> que le système ne demande, ce qui transforme le système en formalité plutôt qu'en barrière.</p>
+
+  <div class="flow-grid">
+    <div class="flow-step" data-step="1">
+      <h4>User clicks "Activer"</h4>
+      <p>Sur le pre-prompt Tanren. Il a déjà accepté mentalement. <strong>Aucun appel système n'a encore eu lieu.</strong></p>
+    </div>
+    <div class="flow-step" data-step="2">
+      <h4>System prompt fires</h4>
+      <p>Tanren appelle <code>requestAuthorization()</code>. Le prompt iOS apparaît. Le user clique "OK" car il sait déjà pourquoi.</p>
+    </div>
+    <div class="flow-step" data-step="3">
+      <h4>Action executes</h4>
+      <p>La permission est accordée. Tanren effectue l'action prévue (publier la session, lire le poids, etc.) sans transition.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:48px;">Trigger moments</h3>
+  <div class="triggers" style="grid-template-columns: 1fr 1fr;">
+    <div class="trigger-card">
+      <div class="trigger-when">When</div>
+      <div class="trigger-event">After 1st session save</div>
+      <div class="trigger-screen">Affiche prompt 01 (Publish Sessions)</div>
+    </div>
+    <div class="trigger-card">
+      <div class="trigger-when">When</div>
+      <div class="trigger-event">Profile creation / edit</div>
+      <div class="trigger-screen">Affiche prompt 02 (Read Bodyweight)</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px; padding:20px; background:rgba(232,25,44,0.05); border-left:3px solid #FF2D3F;">
+    <div style="font-weight:700; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#FF2D3F; margin-bottom:6px;">V1 scope</div>
+    <p style="font-size:14px; color:#BBBBBB; line-height:1.5;">Sleep data reading is <strong style="color:white;">explicitly out of scope</strong> for V1. Resting heart rate is opt-in only (no proactive prompt — only triggered if the user manually enables it in Settings). The two prompts above are the only proactive permission requests in the V1 launch.</p>
+  </div>
+</div>
+
+</body>
+</html>

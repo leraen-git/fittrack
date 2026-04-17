@@ -14,7 +14,7 @@
 - **Descriptive baseline:** Eat. Train. Rest.
 - **Positioning:** Strength training app for committed practitioners. Gym/muscu classique ADN.
 
-Replace any legacy references (`FitTrack`, `Sisu`) with `Tanren` everywhere: app name, bundle ID, package names, copy, env vars, documentation. Suggested bundle ID: `app.tanren` or `com.tanren.app`.
+Replace any legacy references with `Tanren` everywhere: app name, bundle ID, package names, copy, env vars, documentation. Bundle ID: `app.tanren`.
 
 ---
 

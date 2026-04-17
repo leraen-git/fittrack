@@ -444,7 +444,8 @@ export const en = {
     xPerWeek: '{{n}}x / week',
   },
   signIn: {
-    tagline: 'Track every rep. Own every PR.',
+    tagline: 'Built rep by rep.',
+    continueWithApple: 'Continue with Apple',
     continueWithGoogle: 'Sign in with Google',
     continueWithEmail: 'Continue with email',
     continueAsGuest: 'Continue as guest',
@@ -464,7 +465,11 @@ export const en = {
     errorSendCode: 'Could not send the code. Please try again.',
     errorInvalidCode: 'Invalid code. Please try again.',
     errorGuest: 'Could not create guest account. Please try again.',
-    legal: 'By continuing you agree to our Terms of Service and Privacy Policy.',
+    legalPrefix: 'By continuing you agree to our ',
+    legalTerms: 'Terms of Service',
+    legalAnd: ' and ',
+    legalPrivacy: 'Privacy Policy',
+    legalSuffix: '.',
   },
   guest: {
     aiLocked: 'Sign in to use AI plan generation',

@@ -14,6 +14,7 @@ type ThemeColors = {
   textPrimary: string
   textMuted: string
   border: string
+  grid: string
   success: string
   warning: string
   danger: string

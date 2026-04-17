@@ -11,20 +11,61 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native'
-import * as AppleAuthentication from 'expo-apple-authentication'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  withRepeat,
+  withSequence,
+  Easing,
+} from 'react-native-reanimated'
+import Svg, { Path, Rect, Circle, Line, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 import { router, useLocalSearchParams } from 'expo-router'
+import { KanjiWatermark } from '@/components/KanjiWatermark'
+import { ForgeMark } from '@/components/ForgeMark'
 
-// Email OTP flow states
 type EmailStep = 'idle' | 'emailInput' | 'sending' | 'otpInput' | 'verifying'
 
+// ── SVG Icons ──────────────────────────────────────────────────────────────
+
+function AppleIcon() {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 384 512" fill="#FFFFFF">
+      <Path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+    </Svg>
+  )
+}
+
+function GoogleIcon() {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24">
+      <Path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+      <Path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <Path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+      <Path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </Svg>
+  )
+}
+
+function MailIcon({ color }: { color: string }) {
+  return (
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2}>
+      <Rect x={3} y={5} width={18} height={14} rx={2} />
+      <Path d="m3 7 9 6 9-6" />
+    </Svg>
+  )
+}
+
+// ── Main Screen ────────────────────────────────────────────────────────────
+
 export default function SignInScreen() {
-  const { colors, typography, spacing, radius } = useTheme()
+  const { colors, typography, spacing, radius, isDark } = useTheme()
   const { t } = useTranslation()
   const params = useLocalSearchParams<{ upgrade?: string }>()
-  // upgrade=1 means a guest is coming here to sign in — don't auto-redirect, don't create new guest
   const isUpgrade = params.upgrade === '1'
 
   const {
@@ -33,41 +74,78 @@ export default function SignInScreen() {
     devSignIn, status,
   } = useAuth()
 
-  // Apple/Google loading
   const [socialLoading, setSocialLoading] = useState(false)
-
-  // Email OTP state machine
   const [emailStep, setEmailStep] = useState<EmailStep>('idle')
   const [emailValue, setEmailValue] = useState('')
   const [otpCode, setOtpCode] = useState('')
   const [otpError, setOtpError] = useState('')
   const [resendCountdown, setResendCountdown] = useState(0)
-
   const otpInputRef = useRef<TextInput>(null)
 
-  // Redirect once authenticated — suppressed in upgrade mode (guest coming to sign in)
+  // ── Animations ─────────────────────────────────────────────────────────
+
+  const logoOpacity = useSharedValue(0)
+  const logoY = useSharedValue(8)
+  const ctaOpacity = useSharedValue(0)
+  const ctaY = useSharedValue(8)
+  const glowScale = useSharedValue(1)
+  const glowOpacity = useSharedValue(0.6)
+
+  useEffect(() => {
+    const ease = Easing.out(Easing.exp)
+    logoOpacity.value = withTiming(1, { duration: 400, easing: ease })
+    logoY.value = withTiming(0, { duration: 400, easing: ease })
+    ctaOpacity.value = withDelay(200, withTiming(1, { duration: 400, easing: ease }))
+    ctaY.value = withDelay(200, withTiming(0, { duration: 400, easing: ease }))
+
+    glowScale.value = withRepeat(
+      withSequence(
+        withTiming(1.10, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+      ), -1, false,
+    )
+    glowOpacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.6, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+      ), -1, false,
+    )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ translateY: logoY.value }],
+  }))
+  const ctaStyle = useAnimatedStyle(() => ({
+    opacity: ctaOpacity.value,
+    transform: [{ translateY: ctaY.value }],
+  }))
+  const glowStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: glowScale.value }],
+    opacity: glowOpacity.value,
+  }))
+
+  // ── Redirects ──────────────────────────────────────────────────────────
+
   useEffect(() => {
     if (status === 'authenticated' && !isUpgrade) {
       router.replace('/(tabs)/' as any)
     }
   }, [status, isUpgrade])
 
-  // Resend countdown tick
   useEffect(() => {
     if (resendCountdown <= 0) return
     const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [resendCountdown])
 
-  // Auto-submit OTP when all 6 digits entered
   useEffect(() => {
-    if (otpCode.length === 6 && emailStep === 'otpInput') {
-      handleVerifyOtp()
-    }
+    if (otpCode.length === 6 && emailStep === 'otpInput') handleVerifyOtp()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpCode])
 
-  // ── Social sign-in handlers ──────────────────────────────────────────────────
+  // ── Handlers ───────────────────────────────────────────────────────────
 
   async function handleAppleSignIn() {
     setSocialLoading(true)
@@ -95,8 +173,6 @@ export default function SignInScreen() {
     }
   }
 
-  // ── Email OTP handlers ───────────────────────────────────────────────────────
-
   async function handleSendCode() {
     const email = emailValue.trim()
     if (!email) return
@@ -107,7 +183,6 @@ export default function SignInScreen() {
       setOtpCode('')
       setOtpError('')
       setResendCountdown(60)
-      // Auto-focus OTP input after a short delay
       setTimeout(() => otpInputRef.current?.focus(), 300)
     } catch (err: any) {
       setEmailStep('emailInput')
@@ -149,11 +224,7 @@ export default function SignInScreen() {
     setResendCountdown(0)
   }
 
-  // ── Guest handler ────────────────────────────────────────────────────────────
-
   async function handleGuestSignIn() {
-    // In upgrade mode (guest came here to sign in), "Continue as guest" means
-    // "go back without changing anything" — do NOT create a new guest account.
     if (status === 'authenticated') {
       router.replace('/(tabs)/' as any)
       return
@@ -169,8 +240,6 @@ export default function SignInScreen() {
     }
   }
 
-  // ── Dev handler ──────────────────────────────────────────────────────────────
-
   async function handleDevSignIn() {
     setSocialLoading(true)
     try {
@@ -182,9 +251,20 @@ export default function SignInScreen() {
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // ── Derived colors ─────────────────────────────────────────────────────
+
+  const bg = colors.background
+  const fg = colors.textPrimary
+  const red = colors.primary
+  const muted = colors.textMuted
+  const borderColor = isDark ? '#333333' : colors.border
+
+  const secondaryBg = isDark ? '#FFFFFF' : '#000000'
+  const secondaryFg = isDark ? '#000000' : '#FFFFFF'
 
   const inEmailFlow = emailStep !== 'idle'
+
+  // ── Render ─────────────────────────────────────────────────────────────
 
   return (
     <KeyboardAvoidingView
@@ -192,42 +272,67 @@ export default function SignInScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={[styles.container, { backgroundColor: bg }]}
         keyboardShouldPersistTaps="handled"
         bounces={false}
       >
-        {/* Hero */}
-        <View style={styles.hero}>
+        {/* Background layers */}
+        <KanjiWatermark color={fg} />
+
+        {/* Logo block */}
+        <Animated.View style={[styles.logoBlock, logoStyle]}>
+          <View style={styles.markWrap}>
+            <Animated.View style={[styles.glow, glowStyle]}>
+              <Svg width={200} height={200} viewBox="0 0 200 200">
+                <Defs>
+                  <RadialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+                    <Stop offset="0%" stopColor={red} stopOpacity={isDark ? 0.45 : 0.3} />
+                    <Stop offset="70%" stopColor={red} stopOpacity={0} />
+                  </RadialGradient>
+                </Defs>
+                <Circle cx={100} cy={100} r={100} fill="url(#glowGrad)" />
+              </Svg>
+            </Animated.View>
+            <ForgeMark size={88} isDark={isDark} />
+          </View>
+
           <Text
-            style={[styles.logo, { color: colors.textPrimary, fontFamily: typography.family.bold }]}
+            style={[styles.wordmark, { color: fg, fontFamily: typography.family.black }]}
             accessibilityRole="header"
           >
             TANREN
           </Text>
-          <Text style={[styles.tagline, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
+
+          <Text style={[styles.kanjiSmall, { color: red, fontFamily: typography.family.notoSerifBold }]}>
+            鍛{'  '}錬
+          </Text>
+
+          <Text style={[styles.baseline, { color: red, fontFamily: typography.family.regular }]}>
             {t('signIn.tagline')}
           </Text>
-        </View>
+        </Animated.View>
 
-        {/* Auth area */}
-        <View style={[styles.authArea, { paddingHorizontal: spacing.lg }]}>
+        {/* Spacer */}
+        <View style={styles.spacer} />
+
+        {/* CTA block */}
+        <Animated.View style={[styles.ctaBlock, { paddingHorizontal: spacing.xl }, ctaStyle]}>
 
           {socialLoading && !inEmailFlow ? (
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator size="large" color={red} />
           ) : inEmailFlow ? (
             /* ── Email OTP flow ── */
             <View style={{ width: '100%', gap: spacing.md }}>
-
               {emailStep === 'emailInput' || emailStep === 'sending' ? (
                 <>
-                  <Text style={[styles.formLabel, { color: colors.textMuted, fontFamily: typography.family.semiBold, fontSize: typography.size.base }]}>
+                  <Text style={[styles.formLabel, { color: muted, fontFamily: typography.family.medium }]}>
                     {t('signIn.emailLabel')}
                   </Text>
                   <TextInput
                     value={emailValue}
                     onChangeText={setEmailValue}
                     placeholder={t('signIn.emailPlaceholder')}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={muted}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -235,21 +340,21 @@ export default function SignInScreen() {
                     returnKeyType="go"
                     onSubmitEditing={handleSendCode}
                     style={[styles.input, {
-                      backgroundColor: colors.surface,
-                      borderRadius: radius.md,
-                      color: colors.textPrimary,
+                      backgroundColor: isDark ? colors.surface : colors.surface,
+                      borderRadius: radius.sm,
+                      color: fg,
                       fontFamily: typography.family.regular,
                       fontSize: typography.size.body,
-                      borderColor: emailValue ? colors.primary : 'transparent',
+                      borderColor: emailValue ? red : 'transparent',
                     }]}
                     accessibilityLabel={t('signIn.emailLabel')}
                   />
                   <TouchableOpacity
                     onPress={handleSendCode}
                     disabled={emailStep === 'sending' || !emailValue.trim()}
-                    style={[styles.primaryButton, {
-                      backgroundColor: emailValue.trim() ? colors.primary : colors.surface2,
-                      borderRadius: radius.lg,
+                    style={[styles.cta, {
+                      backgroundColor: emailValue.trim() ? red : colors.surface2,
+                      borderRadius: radius.sm,
                     }]}
                     accessibilityLabel={t('signIn.sendCode')}
                     accessibilityRole="button"
@@ -257,7 +362,7 @@ export default function SignInScreen() {
                     {emailStep === 'sending' ? (
                       <ActivityIndicator color="#fff" />
                     ) : (
-                      <Text style={[styles.primaryButtonText, { fontFamily: typography.family.extraBold, color: emailValue.trim() ? '#fff' : colors.textMuted }]}>
+                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: emailValue.trim() ? '#fff' : muted }]}>
                         {t('signIn.sendCode')}
                       </Text>
                     )}
@@ -265,7 +370,7 @@ export default function SignInScreen() {
                 </>
               ) : (
                 <>
-                  <Text style={[styles.formLabel, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
+                  <Text style={[styles.formLabel, { color: muted, fontFamily: typography.family.regular }]}>
                     {t('signIn.codeSentTo', { email: emailValue.trim() })}
                   </Text>
                   <TextInput
@@ -276,17 +381,17 @@ export default function SignInScreen() {
                       setOtpError('')
                     }}
                     placeholder={t('signIn.codePlaceholder')}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={muted}
                     keyboardType="number-pad"
                     textContentType="oneTimeCode"
                     maxLength={6}
                     autoFocus
                     style={[styles.otpInput, {
                       backgroundColor: colors.surface,
-                      borderRadius: radius.md,
-                      color: colors.textPrimary,
-                      fontFamily: typography.family.extraBold,
-                      borderColor: otpError ? colors.danger : otpCode.length === 6 ? colors.primary : 'transparent',
+                      borderRadius: radius.sm,
+                      color: fg,
+                      fontFamily: typography.family.bold,
+                      borderColor: otpError ? colors.danger : otpCode.length === 6 ? red : 'transparent',
                     }]}
                     accessibilityLabel={t('signIn.codeLabel')}
                   />
@@ -298,9 +403,9 @@ export default function SignInScreen() {
                   <TouchableOpacity
                     onPress={handleVerifyOtp}
                     disabled={emailStep === 'verifying' || otpCode.length !== 6}
-                    style={[styles.primaryButton, {
-                      backgroundColor: otpCode.length === 6 ? colors.primary : colors.surface2,
-                      borderRadius: radius.lg,
+                    style={[styles.cta, {
+                      backgroundColor: otpCode.length === 6 ? red : colors.surface2,
+                      borderRadius: radius.sm,
                     }]}
                     accessibilityLabel={t('signIn.verify')}
                     accessibilityRole="button"
@@ -308,32 +413,25 @@ export default function SignInScreen() {
                     {emailStep === 'verifying' ? (
                       <ActivityIndicator color="#fff" />
                     ) : (
-                      <Text style={[styles.primaryButtonText, { fontFamily: typography.family.extraBold, color: otpCode.length === 6 ? '#fff' : colors.textMuted }]}>
+                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: otpCode.length === 6 ? '#fff' : muted }]}>
                         {t('signIn.verify')}
                       </Text>
                     )}
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleResendCode}
-                    disabled={resendCountdown > 0}
-                    accessibilityRole="button"
-                  >
-                    <Text style={[styles.linkText, { color: resendCountdown > 0 ? colors.textMuted : colors.primary, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
-                      {resendCountdown > 0
-                        ? t('signIn.resendIn', { s: resendCountdown })
-                        : t('signIn.resendCode')}
+                  <TouchableOpacity onPress={handleResendCode} disabled={resendCountdown > 0} accessibilityRole="button">
+                    <Text style={[styles.linkText, { color: resendCountdown > 0 ? muted : red, fontFamily: typography.family.regular }]}>
+                      {resendCountdown > 0 ? t('signIn.resendIn', { s: resendCountdown }) : t('signIn.resendCode')}
                     </Text>
                   </TouchableOpacity>
                 </>
               )}
 
-              {/* Back to all options */}
               <TouchableOpacity
                 onPress={resetEmailFlow}
                 accessibilityRole="button"
                 style={{ alignItems: 'center', marginTop: spacing.xs }}
               >
-                <Text style={[styles.linkText, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
+                <Text style={[styles.linkText, { color: muted, fontFamily: typography.family.regular }]}>
                   {t('signIn.useOtherMethod')}
                 </Text>
               </TouchableOpacity>
@@ -342,81 +440,94 @@ export default function SignInScreen() {
           ) : (
             /* ── Normal sign-in options ── */
             <>
+              {/* Apple — primary red */}
               {Platform.OS === 'ios' && (
-                <AppleAuthentication.AppleAuthenticationButton
-                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                  buttonStyle={
-                    colors.background === '#0E0E0E'
-                      ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-                      : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-                  }
-                  cornerRadius={12}
-                  style={styles.appleButton}
+                <TouchableOpacity
+                  style={[styles.cta, { backgroundColor: red, borderRadius: radius.sm }]}
                   onPress={handleAppleSignIn}
-                />
+                  accessibilityLabel={t('signIn.continueWithApple')}
+                  accessibilityRole="button"
+                >
+                  <AppleIcon />
+                  <Text style={[styles.ctaText, { color: '#FFFFFF', fontFamily: typography.family.bold }]}>
+                    {t('signIn.continueWithApple')}
+                  </Text>
+                </TouchableOpacity>
               )}
 
+              {/* Google — secondary contrast */}
               {googleAvailable && (
                 <TouchableOpacity
-                  style={[styles.socialButton, { backgroundColor: colors.surface, borderColor: colors.surface2 }]}
+                  style={[styles.cta, { backgroundColor: secondaryBg, borderRadius: radius.sm }]}
                   onPress={handleGoogleSignIn}
                   accessibilityLabel={t('signIn.continueWithGoogle')}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontSize: 18 }}>G</Text>
-                  <Text style={[styles.socialButtonText, { color: colors.textPrimary, fontFamily: typography.family.semiBold }]}>
+                  <GoogleIcon />
+                  <Text style={[styles.ctaText, { color: secondaryFg, fontFamily: typography.family.bold }]}>
                     {t('signIn.continueWithGoogle')}
                   </Text>
                 </TouchableOpacity>
               )}
 
-              {/* Email CTA */}
+              {/* Email — tertiary outlined */}
               <TouchableOpacity
-                style={[styles.socialButton, { backgroundColor: colors.surface, borderColor: colors.surface2 }]}
+                style={[styles.cta, {
+                  backgroundColor: 'transparent',
+                  borderWidth: 1,
+                  borderColor: borderColor,
+                  borderRadius: radius.sm,
+                }]}
                 onPress={() => setEmailStep('emailInput')}
                 accessibilityLabel={t('signIn.continueWithEmail')}
                 accessibilityRole="button"
               >
-                <Text style={{ fontSize: 18 }}>✉️</Text>
-                <Text style={[styles.socialButtonText, { color: colors.textPrimary, fontFamily: typography.family.semiBold }]}>
+                <MailIcon color={fg} />
+                <Text style={[styles.ctaText, { color: fg, fontFamily: typography.family.bold }]}>
                   {t('signIn.continueWithEmail')}
                 </Text>
               </TouchableOpacity>
+
+              {/* Guest link */}
+              <TouchableOpacity
+                onPress={handleGuestSignIn}
+                style={styles.guestWrap}
+                accessibilityLabel={t('signIn.continueAsGuest')}
+                accessibilityRole="button"
+              >
+                <Text style={[styles.guestText, { color: fg, fontFamily: typography.family.medium }]}>
+                  {t('signIn.continueAsGuest')}
+                </Text>
+              </TouchableOpacity>
+
+              {/* DEV bypass */}
+              {__DEV__ && (
+                <TouchableOpacity
+                  style={[styles.devButton, { borderColor: isDark ? '#333333' : muted }]}
+                  onPress={handleDevSignIn}
+                  accessibilityLabel="Dev bypass sign-in"
+                  accessibilityRole="button"
+                >
+                  <Text style={[styles.devText, { color: isDark ? '#555555' : muted, fontFamily: typography.family.medium }]}>
+                    DEV — SKIP SIGN-IN
+                  </Text>
+                </TouchableOpacity>
+              )}
             </>
           )}
 
-          {/* ── Guest button — always visible ── */}
+          {/* Legal text with inline links */}
           {!inEmailFlow && (
-            <TouchableOpacity
-              onPress={handleGuestSignIn}
-              style={{ marginTop: spacing.sm, paddingVertical: spacing.sm }}
-              accessibilityLabel={t('signIn.continueAsGuest')}
-              accessibilityRole="button"
-            >
-              <Text style={[styles.guestText, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.base }]}>
-                {t('signIn.continueAsGuest')}
-              </Text>
-            </TouchableOpacity>
+            <Text style={[styles.legalText, { color: muted, fontFamily: typography.family.regular }]}>
+              {t('signIn.legalPrefix')}
+              <Text style={{ textDecorationLine: 'underline', color: fg }}>{t('signIn.legalTerms')}</Text>
+              {t('signIn.legalAnd')}
+              <Text style={{ textDecorationLine: 'underline', color: fg }}>{t('signIn.legalPrivacy')}</Text>
+              {t('signIn.legalSuffix')}
+            </Text>
           )}
+        </Animated.View>
 
-          {/* ── Dev bypass ── */}
-          {__DEV__ && !inEmailFlow && (
-            <TouchableOpacity
-              style={[styles.devButton, { borderColor: colors.textMuted }]}
-              onPress={handleDevSignIn}
-              accessibilityLabel="Dev bypass sign-in"
-              accessibilityRole="button"
-            >
-              <Text style={[styles.devButtonText, { color: colors.textMuted, fontFamily: typography.family.regular }]}>
-                DEV — Skip sign-in
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          <Text style={[styles.legal, { color: colors.textMuted, fontFamily: typography.family.regular, fontSize: typography.size.xs }]}>
-            {t('signIn.legal')}
-          </Text>
-        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -425,48 +536,69 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingTop: 120,
-    paddingBottom: 60,
+    paddingTop: 80,
+    paddingBottom: 32,
   },
-  hero: {
+  logoBlock: {
     alignItems: 'center',
-    gap: 12,
+    zIndex: 10,
+    marginTop: 40,
   },
-  logo: {
+  markWrap: {
+    width: 88,
+    height: 88,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  glow: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wordmark: {
     fontSize: 56,
-    letterSpacing: 8,
+    letterSpacing: 56 * 0.16,
+    lineHeight: 64,
+    marginBottom: 10,
     textTransform: 'uppercase',
   },
-  tagline: {
+  kanjiSmall: {
+    fontSize: 16,
+    letterSpacing: 16 * 0.4,
+    marginBottom: 20,
+  },
+  baseline: {
+    fontSize: 18,
+    fontStyle: 'italic',
     textAlign: 'center',
   },
-  authArea: {
-    gap: 16,
+  spacer: {
+    flex: 1,
+    minHeight: 40,
+  },
+  ctaBlock: {
+    zIndex: 10,
+    gap: 12,
     alignItems: 'center',
   },
-  appleButton: {
+  cta: {
     width: '100%',
-    height: 50,
-  },
-  orText: {
-    fontSize: 14,
-  },
-  socialButton: {
-    width: '100%',
-    height: 50,
-    borderRadius: 12,
-    borderWidth: 1,
+    height: 52,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
   },
-  socialButtonText: {
-    fontSize: 15,
+  ctaText: {
+    fontSize: 17,
+    letterSpacing: 17 * 0.04,
   },
   formLabel: {
     width: '100%',
+    fontSize: 14,
   },
   input: {
     width: '100%',
@@ -487,38 +619,41 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: -8,
   },
-  primaryButton: {
-    width: '100%',
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButtonText: {
-    fontSize: 17,
-  },
   linkText: {
     textAlign: 'center',
     paddingVertical: 4,
+    fontSize: 14,
+  },
+  guestWrap: {
+    marginTop: 4,
+    paddingVertical: 12,
   },
   guestText: {
+    fontSize: 14,
     textAlign: 'center',
     textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
+    letterSpacing: 14 * 0.02,
   },
   devButton: {
     width: '100%',
     height: 44,
-    borderRadius: 12,
+    borderRadius: 4,
     borderWidth: 1,
+    borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  devButtonText: {
+  devText: {
     fontSize: 13,
-    letterSpacing: 0.5,
+    letterSpacing: 13 * 0.16,
+    textTransform: 'uppercase',
   },
-  legal: {
+  legalText: {
+    fontSize: 11,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 16,
+    letterSpacing: 11 * 0.02,
     marginTop: 4,
   },
 })

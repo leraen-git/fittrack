@@ -1,4 +1,4 @@
-# FitTrack — Dev Guide
+# Tanren — Dev Guide
 
 ## Prerequisites
 
@@ -12,16 +12,16 @@
 
 ```bash
 # 1. Install all dependencies
-cd /Users/ramy/Fitrams
+cd /Users/ramy/Documents/AppClaude/Tanren
 npm install --legacy-peer-deps
 
 # 2. Create the database
-psql -d postgres -c "CREATE DATABASE fittrack OWNER ramy;"
+psql -d postgres -c "CREATE DATABASE tanren OWNER ramy;"
 
 # 3. Generate & apply migrations
 cd apps/api
-DATABASE_URL=postgresql://ramy@localhost:5432/fittrack npx drizzle-kit generate
-DATABASE_URL=postgresql://ramy@localhost:5432/fittrack npx drizzle-kit migrate
+DATABASE_URL=postgresql://ramy@localhost:5432/tanren npx drizzle-kit generate
+DATABASE_URL=postgresql://ramy@localhost:5432/tanren npx drizzle-kit migrate
 
 # 4. Seed exercises, programs, and dev user
 npx tsx --env-file=.env src/db/seed.ts
@@ -32,7 +32,7 @@ npx tsx --env-file=.env src/db/seed.ts
 ## Start the API
 
 ```bash
-cd /Users/ramy/Fitrams/apps/api
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/api
 npx tsx --env-file=.env src/index.ts
 ```
 
@@ -50,7 +50,7 @@ curl http://localhost:3000/trpc/users.me
 ## Start the mobile app
 
 ```bash
-cd /Users/ramy/Fitrams/apps/mobile
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo start
 ```
 
@@ -79,7 +79,7 @@ sudo xcodebuild -license accept
 open -a Simulator
 
 # Or start Expo and auto-open simulator
-cd /Users/ramy/Fitrams/apps/mobile
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo start --ios
 ```
 
@@ -99,7 +99,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 emulator -avd Pixel_8_API_35 &
 
 # Then start Expo and auto-open emulator
-cd /Users/ramy/Fitrams/apps/mobile
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo start --android
 ```
 
@@ -111,7 +111,7 @@ npx expo start --android
 2. Ensure Mac and iPhone are on the same Wi-Fi network
 3. Start Expo:
    ```bash
-   cd /Users/ramy/Fitrams/apps/mobile
+   cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
    npx expo start
    ```
 4. Scan the QR code displayed in the terminal with your iPhone camera
@@ -126,11 +126,11 @@ kill $(lsof -ti:3000) 2>/dev/null
 kill $(lsof -ti:8081) 2>/dev/null
 
 # Restart API
-cd /Users/ramy/Fitrams/apps/api
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/api
 npx tsx --env-file=.env src/index.ts &
 
 # Restart Expo with cleared cache
-cd /Users/ramy/Fitrams/apps/mobile
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo start --clear
 ```
 
@@ -139,7 +139,7 @@ npx expo start --clear
 ## Run unit tests
 
 ```bash
-cd /Users/ramy/Fitrams/packages/shared
+cd /Users/ramy/Documents/AppClaude/Tanren/packages/shared
 npx vitest run
 ```
 
@@ -148,7 +148,7 @@ npx vitest run
 ## Re-seed the database (reset data)
 
 ```bash
-cd /Users/ramy/Fitrams/apps/api
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/api
 npx tsx --env-file=.env src/db/seed.ts
 ```
 
@@ -158,16 +158,17 @@ npx tsx --env-file=.env src/db/seed.ts
 
 | File | Purpose |
 |---|---|
-| `apps/api/.env` | API server config (DB, Redis, Clerk, dev user) |
-| `apps/mobile/.env` | Expo config (API URL, Clerk publishable key) |
+| `apps/api/.env` | API server config (DB, Redis, JWT, dev user) |
+| `apps/mobile/.env` | Expo config (API URL, Google OAuth client IDs) |
 | `.env.example` | Template — copy and fill in for production |
 
 ### `apps/api/.env`
 ```
-DATABASE_URL=postgresql://ramy@localhost:5432/fittrack
+DATABASE_URL=postgresql://ramy@localhost:5432/tanren
 REDIS_URL=redis://localhost:6379
-CLERK_SECRET_KEY=dev_placeholder
-DEV_CLERK_ID=dev_user
+JWT_SECRET=<generated>
+DEV_USER_ID=<uuid>
+ENABLE_DEV_AUTH=true
 NODE_ENV=development
 PORT=3000
 ```
@@ -175,7 +176,7 @@ PORT=3000
 ### `apps/mobile/.env`
 ```
 EXPO_PUBLIC_API_URL=http://localhost:3000
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_placeholder
+EXPO_PUBLIC_DEV_USER_ID=<uuid>
 ```
 
 ---
@@ -183,7 +184,7 @@ EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_placeholder
 ## Project structure
 
 ```
-fittrack/
+tanren/
 ├── apps/
 │   ├── api/          → Fastify + tRPC + Drizzle (port 3000)
 │   └── mobile/       → Expo React Native (port 8081)

@@ -1,16 +1,15 @@
 ---
-name: FitTrack project stack and structure
-description: Core tech stack, monorepo layout, and key scripts for the FitTrack app
+name: Tanren project stack and structure
+description: Core tech stack, monorepo layout, and key scripts for the Tanren app
 type: project
-originSessionId: 3edd2e77-56f9-4e78-9448-a973558947cc
 ---
-FitTrack is a React Native fitness tracking app in a Turborepo monorepo at `/Users/ramy/Documents/App Claude/fittrack`.
+Tanren is a React Native strength training app in a monorepo at `/Users/ramy/Documents/AppClaude/Tanren`.
 
 **Stack:**
 - Mobile: React Native + Expo SDK 53, Expo Router (file-based), New Architecture enabled
 - State: Zustand + TanStack Query v5 via tRPC v11
 - Backend: Node.js + Fastify + TypeScript (Drizzle ORM, PostgreSQL, Redis)
-- Auth: Clerk
+- Auth: Custom JWT — Email OTP (Resend) + Apple Sign-In + Google OAuth
 - Offline sync: PowerSync
 
 **Key paths:**
@@ -30,7 +29,7 @@ FitTrack is a React Native fitness tracking app in a Turborepo monorepo at `/Use
 - iOS simulator: `cd apps/mobile && npx expo run:ios`
 - Android emulator: `cd apps/mobile && npx expo run:android`
 
-**Bundle identifier:** `com.fittrack.app`
+**Bundle identifier:** `app.tanren`
 
 **Why:** Reference for launching, navigating, and extending the project.
 **How to apply:** Use these paths and commands whenever the user asks about running, building, or locating code.

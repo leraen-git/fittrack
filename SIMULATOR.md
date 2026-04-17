@@ -1,4 +1,4 @@
-# FitTrack — Launch Guide (iOS Simulator)
+# Tanren — Launch Guide (iOS Simulator)
 
 Complete step-by-step instructions to run the app locally on the iOS Simulator.
 
@@ -10,9 +10,9 @@ Ensure you have the following installed before proceeding:
 
 | Tool | Required version | Check |
 |------|-----------------|-------|
-| Node.js | ≥ 18.0.0 | `node --version` |
-| npm | ≥ 10 | `npm --version` |
-| Xcode | ≥ 15 (with Command Line Tools) | `xcode-select -p` |
+| Node.js | >= 18.0.0 | `node --version` |
+| npm | >= 10 | `npm --version` |
+| Xcode | >= 15 (with Command Line Tools) | `xcode-select -p` |
 | Expo CLI | bundled via npx | `npx expo --version` |
 
 > **Xcode Command Line Tools** — if not installed: `xcode-select --install`
@@ -24,7 +24,7 @@ Ensure you have the following installed before proceeding:
 From the **root** of the monorepo:
 
 ```bash
-cd "/Users/ramy/Documents/App Claude/fittrack"
+cd /Users/ramy/Documents/AppClaude/Tanren
 npm install
 ```
 
@@ -34,18 +34,17 @@ This installs dependencies for all workspaces (mobile + api + shared) via Turbor
 
 ## Step 2 — Set up environment variables
 
-The API needs its `.env` file. One already exists at `apps/api/.env`.  
+The API needs its `.env` file. One already exists at `apps/api/.env`.
 If it is ever missing, create it with these keys:
 
 ```bash
 # apps/api/.env
-DATABASE_URL=
-REDIS_URL=
-CLERK_SECRET_KEY=
-CLERK_PUBLISHABLE_KEY=
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
+DATABASE_URL=postgresql://localhost/tanren
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=<generate with: openssl rand -base64 64>
+DEV_USER_ID=<uuid>
+ENABLE_DEV_AUTH=true
 EXPO_PUBLIC_API_URL=http://localhost:3000
-JWT_SECRET=
 ```
 
 The mobile app reads `EXPO_PUBLIC_*` variables automatically via Expo's config system.
@@ -57,7 +56,7 @@ The mobile app reads `EXPO_PUBLIC_*` variables automatically via Expo's config s
 Open a **dedicated terminal** and run:
 
 ```bash
-cd "/Users/ramy/Documents/App Claude/fittrack/apps/api"
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/api
 npm run dev
 ```
 
@@ -77,7 +76,7 @@ Leave this terminal running for the entire session.
 > Use this for UI work. Does **not** support `react-native-music-control` (native module).
 
 ```bash
-cd "/Users/ramy/Documents/App Claude/fittrack/apps/mobile"
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo start
 ```
 
@@ -85,16 +84,16 @@ Then press **`i`** in the terminal to open the iOS Simulator.
 
 ---
 
-### Option B — Dev build on Simulator (full native support) ✅ Recommended
+### Option B — Dev build on Simulator (full native support) — Recommended
 
 > Required for music controls, wake lock, and any native module.
 
 ```bash
-cd "/Users/ramy/Documents/App Claude/fittrack/apps/mobile"
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile
 npx expo run:ios
 ```
 
-This compiles the native iOS project and launches it on the **booted simulator** (currently `iPhone 17`).  
+This compiles the native iOS project and launches it on the **booted simulator** (currently `iPhone 17`).
 First run takes 3–5 minutes to compile. Subsequent runs use the incremental build cache.
 
 To target a specific device:
@@ -111,7 +110,7 @@ Your available simulators:
 
 | Device | Status |
 |--------|--------|
-| **iPhone 17** | Booted ← default |
+| **iPhone 17** | Booted (default) |
 | iPhone 17 Pro | Shutdown |
 | iPhone 17 Pro Max | Shutdown |
 | iPhone 17e | Shutdown |
@@ -134,13 +133,13 @@ open -a Simulator
 
 ## Step 6 — Verify the app is running
 
-Once the build completes, the Simulator will launch and show the FitTrack splash screen, then the Home tab.
+Once the build completes, the Simulator will launch and show the Tanren splash screen, then the Home tab.
 
 You should see:
 - Greeting with time of day
 - Streak / sessions / volume stat cards
 - "New session" red CTA button
-- Bottom tab bar: Home · Workouts · History · Profile
+- Bottom tab bar: Home / Workouts / History / Profile
 
 ---
 
@@ -200,9 +199,6 @@ npx expo run:ios
 ### API not reachable from Simulator
 The Simulator shares your Mac's `localhost`. Ensure the API is running on port 3000 and `EXPO_PUBLIC_API_URL=http://localhost:3000` is set.
 
-### Clerk authentication errors
-Make sure `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` in `apps/api/.env` matches your Clerk dashboard publishable key (starts with `pk_test_` or `pk_live_`).
-
 ---
 
 ## File locations (reference)
@@ -216,14 +212,3 @@ Make sure `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` in `apps/api/.env` matches your Cl
 | Zustand stores | [apps/mobile/src/stores/](apps/mobile/src/stores/) |
 | API routes | [apps/api/src/](apps/api/src/) |
 | DB schema | [apps/api/src/db/schema.ts](apps/api/src/db/schema.ts) |
-
-
-
-
-
-
-
-- go fetch on workout.cool all the exercice possible, and the muscular group to add it to the app.
-- lets translate the app in french too. if the phone is french, the app should follow, if no french, the app stays in english
-- in workout, i should be able to change the order of the exercices
-- if the workout of the day is not finished,  the active plan card should be less big, also the cards under should be smaller, giving the space to the workout of the day,

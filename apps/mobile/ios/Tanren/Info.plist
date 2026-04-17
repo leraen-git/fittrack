@@ -64,6 +64,9 @@
       <string>BarlowCondensed_400Regular.ttf</string>
       <string>BarlowCondensed_500Medium.ttf</string>
       <string>BarlowCondensed_700Bold.ttf</string>
+      <string>BarlowCondensed_900Black.ttf</string>
+      <string>NotoSerifJP_700Bold_subset.ttf</string>
+      <string>NotoSerifJP_900Black_subset.ttf</string>
     </array>
     <key>UIBackgroundModes</key>
     <array>

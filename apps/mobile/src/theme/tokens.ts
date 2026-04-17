@@ -1,5 +1,6 @@
 export const colors = {
   white: '#FFFFFF' as const,
+  black: '#000000' as const,
   light: {
     primary: '#E8192C',
     background: '#FFFFFF',
@@ -8,15 +9,17 @@ export const colors = {
     textPrimary: '#0E0E0E',
     textMuted: '#888888',
     border: '#D4D4D4',
+    grid: '#F0F0F0',
   },
   dark: {
-    primary: '#E8192C',
+    primary: '#FF2D3F',
     background: '#000000',
     surface: '#111111',
     surface2: '#1C1C1C',
     textPrimary: '#FFFFFF',
     textMuted: '#666666',
     border: '#2A2A2A',
+    grid: '#141414',
   },
   shared: {
     success: '#22C55E',
@@ -31,9 +34,12 @@ export const typography = {
     light: 'BarlowCondensed_300Light',
     regular: 'BarlowCondensed_400Regular',
     medium: 'BarlowCondensed_500Medium',
-    semiBold: 'BarlowCondensed_500Medium',  // mapped to Medium — no SemiBold in Barlow Condensed
+    semiBold: 'BarlowCondensed_500Medium',
     bold: 'BarlowCondensed_700Bold',
-    extraBold: 'BarlowCondensed_700Bold',  // mapped to Bold — no ExtraBold in Barlow Condensed
+    extraBold: 'BarlowCondensed_700Bold',
+    black: 'BarlowCondensed_900Black',
+    notoSerifBold: 'NotoSerifJP_700Bold_subset',
+    notoSerifBlack: 'NotoSerifJP_900Black_subset',
   },
   size: {
     xs: 11,

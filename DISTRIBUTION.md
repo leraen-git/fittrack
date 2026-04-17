@@ -1,12 +1,12 @@
-# FitTrack — Distribution Guide (Share with Friends on iPhone)
+# Tanren — Distribution Guide (Share with Friends on iPhone)
 
 Two paths depending on how many people and how much setup you want.
 
 ---
 
 ## Option A — TestFlight
-**Best for:** more than 3–4 friends, polished experience  
-**Cost:** $99/year Apple Developer account  
+**Best for:** more than 3–4 friends, polished experience
+**Cost:** $99/year Apple Developer account
 **Limit:** up to 10,000 testers
 
 ### Prerequisites
@@ -21,8 +21,8 @@ Two paths depending on how many people and how much setup you want.
 1. Go to [developer.apple.com](https://developer.apple.com) → **Account** → **Certificates, Identifiers & Profiles**
 2. Click **Identifiers** → **+**
 3. Select **App IDs** → **App** → Continue
-4. Description: `FitTrack`
-5. Bundle ID (Explicit): `com.fittrack.app`
+4. Description: `Tanren`
+5. Bundle ID (Explicit): `app.tanren`
 6. Click **Register**
 
 ---
@@ -30,12 +30,12 @@ Two paths depending on how many people and how much setup you want.
 ### Step 2 — Create a Release build archive
 
 ```bash
-cd /Users/ramy/fittrack/apps/mobile && npx expo run:ios --configuration Release
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile && npx expo run:ios --configuration Release
 ```
 
 Once the app builds and launches in the simulator, switch to Xcode:
 
-1. Open `/Users/ramy/fittrack/apps/mobile/ios/FitTrack.xcworkspace` in Xcode
+1. Open `/Users/ramy/Documents/AppClaude/Tanren/apps/mobile/ios/Tanren.xcworkspace` in Xcode
 2. In the top toolbar, set the target device to **Any iOS Device (arm64)** (not a simulator)
 3. Menu → **Product → Archive**
 4. Wait for the archive to complete — the **Organizer** window opens automatically
@@ -57,16 +57,16 @@ In the Organizer:
 ### Step 4 — Invite your friends
 
 1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
-2. Select **FitTrack** → **TestFlight** tab
+2. Select **Tanren** → **TestFlight** tab
 3. Under **Internal Testing** → click **+** next to Testers
 4. Enter your friends' Apple ID email addresses
-5. They receive an email with a link → they install the **TestFlight** app from the App Store → tap the invite link → install FitTrack
+5. They receive an email with a link → they install the **TestFlight** app from the App Store → tap the invite link → install Tanren
 
 ---
 
 ## Option B — EAS Ad-hoc (Free)
-**Best for:** 2–3 friends quickly, no $99 fee  
-**Cost:** Free (requires free Expo account)  
+**Best for:** 2–3 friends quickly, no $99 fee
+**Cost:** Free (requires free Expo account)
 **Limit:** 100 registered devices
 
 ---
@@ -86,7 +86,7 @@ eas login
 ### Step 3 — Configure EAS in the project
 
 ```bash
-cd /Users/ramy/fittrack/apps/mobile && eas build:configure
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile && eas build:configure
 ```
 
 This creates `eas.json`. Add a `preview` profile to it:
@@ -126,7 +126,7 @@ Follow the prompts and enter each UDID. Or register via browser:
 ### Step 6 — Build the ad-hoc IPA
 
 ```bash
-cd /Users/ramy/fittrack/apps/mobile && eas build --platform ios --profile preview
+cd /Users/ramy/Documents/AppClaude/Tanren/apps/mobile && eas build --platform ios --profile preview
 ```
 
 EAS builds in the cloud (~10–15 min). When done it gives you:
@@ -151,8 +151,8 @@ EAS builds in the cloud (~10–15 min). When done it gives you:
 ## Troubleshooting
 
 **"No provisioning profile" error during archive**
-- Make sure `com.fittrack.app` is registered in your Apple Developer account (Step 1)
-- In Xcode: **FitTrack target → Signing & Capabilities → Automatically manage signing** ✓
+- Make sure `app.tanren` is registered in your Apple Developer account (Step 1)
+- In Xcode: **Tanren target → Signing & Capabilities → Automatically manage signing** ✓
 - Select your Apple Developer team from the dropdown
 
 **Friend says "Unable to install" (ad-hoc)**
