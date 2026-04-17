@@ -1,4 +1,4 @@
-FROM node:22-slim AS base
+FROM node:23-slim AS base
 WORKDIR /app
 
 # Copy full monorepo package manifests so npm ci sees all workspaces
@@ -17,7 +17,7 @@ COPY apps/api/ apps/api/
 RUN cd apps/api && npx tsc
 
 # ── Runtime ──────────────────────────────────────────────
-FROM node:22-slim
+FROM node:23-slim
 WORKDIR /app
 ENV NODE_ENV=production
 
