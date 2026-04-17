@@ -3,12 +3,11 @@ import { ThemeProvider } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
-import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
 import { setupNotificationChannels, requestPermission } from '@/services/notificationPermissions'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -151,7 +150,6 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const [splashDone, setSplashDone] = useState(false)
   const [fontsLoaded] = useFonts({
     BarlowCondensed_300Light,
     BarlowCondensed_400Regular,
@@ -175,14 +173,16 @@ export default function RootLayout() {
             <TRPCProvider>
               <AuthGate>
                 <Stack screenOptions={{ headerShown: false }} />
-                {splashDone && <OnboardingGate />}
+                {fontsLoaded && <OnboardingGate />}
                 <NotificationWatcher />
               </AuthGate>
             </TRPCProvider>
           </AuthProvider>
         </ThemeProvider>
       </ErrorBoundary>
-      {(!splashDone || !fontsLoaded) && <SplashScreen onFinish={() => setSplashDone(true)} />}
+      {!fontsLoaded && (
+        <View style={{ flex: 1, backgroundColor: '#000000', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      )}
     </View>
   )
 }
