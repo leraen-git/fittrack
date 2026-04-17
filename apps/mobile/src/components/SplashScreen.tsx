@@ -221,7 +221,7 @@ export function SplashScreen({ onFinish }: Props) {
   const motoStyle      = useAnimatedStyle(() => ({ opacity: motoOpacity.value }))
   const glowStyle      = useAnimatedStyle(() => ({ transform: [{ scale: glowScale.value }], opacity: glowOpacity.value }))
   const loaderWrapStyle = useAnimatedStyle(() => ({ opacity: loaderOpacity.value }))
-  const loaderBarStyle  = useAnimatedStyle(() => ({ width: `${loaderWidth.value * 100}%` as any }))
+  const loaderBarStyle  = useAnimatedStyle(() => ({ width: `${loaderWidth.value * 100}%` as `${number}%` }))
 
   return (
     <Animated.View style={[styles.root, { backgroundColor: bg }, containerStyle]}>

@@ -10,7 +10,7 @@ interface StatCardProps {
   accessibilityLabel?: string
 }
 
-export function StatCard({ label, value, trend, accessibilityLabel }: StatCardProps) {
+export const StatCard = React.memo(function StatCard({ label, value, trend, accessibilityLabel }: StatCardProps) {
   const { colors, typography, spacing } = useTheme()
 
   const trendColor =
@@ -39,4 +39,4 @@ export function StatCard({ label, value, trend, accessibilityLabel }: StatCardPr
       </Text>
     </Card>
   )
-}
+})

@@ -7,7 +7,7 @@ interface SkeletonCardProps {
   width?: number | string
 }
 
-export function SkeletonCard({ height = 80, width = '100%' }: SkeletonCardProps) {
+export const SkeletonCard = React.memo(function SkeletonCard({ height = 80, width = '100%' }: SkeletonCardProps) {
   const { colors, radius } = useTheme()
   const opacity = useRef(new Animated.Value(0.3)).current
 
@@ -33,4 +33,4 @@ export function SkeletonCard({ height = 80, width = '100%' }: SkeletonCardProps)
       }}
     />
   )
-}
+})

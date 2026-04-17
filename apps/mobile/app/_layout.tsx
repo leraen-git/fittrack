@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus } from 'react-native'
 import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
 import * as Notifications from 'expo-notifications'
@@ -17,6 +17,7 @@ import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { GuestBanner } from '@/components/GuestBanner'
 import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import '@/i18n'
 
 // Handle incoming notification taps — deep-link to the relevant screen
@@ -88,13 +89,21 @@ function OnboardingGate() {
 }
 
 function NotificationWatcher() {
-  const settings = useNotificationSettingsStore()
+  const settingsRef = useRef(useNotificationSettingsStore.getState())
   const { i18n } = useTranslation()
-  const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
+  const langRef = useRef<'en' | 'fr'>((i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr')
+
+  useEffect(() => {
+    langRef.current = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
+  }, [i18n.language])
+
+  useEffect(() => {
+    const unsub = useNotificationSettingsStore.subscribe((s) => { settingsRef.current = s })
+    return unsub
+  }, [])
 
   useEffect(() => {
     setupNotificationChannels()
-    // Ask for notification permission once, on first launch only
     AsyncStorage.getItem('notif_permission_asked').then((asked) => {
       if (!asked) {
         requestPermission().then(() =>
@@ -104,7 +113,7 @@ function NotificationWatcher() {
     })
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
-        rescheduleAll(settings, undefined, lang).catch(() => null)
+        rescheduleAll(settingsRef.current, undefined, langRef.current).catch(() => null)
       }
     })
     const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
@@ -114,7 +123,6 @@ function NotificationWatcher() {
       else router.navigate('/(tabs)/' as any)
     })
     return () => { sub.remove(); tapSub.remove() }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return null
@@ -161,17 +169,19 @@ export default function RootLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ThemeProvider>
-        <AuthProvider>
-          <TRPCProvider>
-            <AuthGate>
-              <Stack screenOptions={{ headerShown: false }} />
-              {splashDone && <OnboardingGate />}
-              <NotificationWatcher />
-            </AuthGate>
-          </TRPCProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <AuthProvider>
+            <TRPCProvider>
+              <AuthGate>
+                <Stack screenOptions={{ headerShown: false }} />
+                {splashDone && <OnboardingGate />}
+                <NotificationWatcher />
+              </AuthGate>
+            </TRPCProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
       {(!splashDone || !fontsLoaded) && <SplashScreen onFinish={() => setSplashDone(true)} />}
     </View>
   )

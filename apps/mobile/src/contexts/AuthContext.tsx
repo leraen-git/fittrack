@@ -60,7 +60,7 @@ async function authFetch(path: string, body: Record<string, unknown>): Promise<{
   if (!res.ok) {
     let message = 'Sign-in failed'
     try {
-      const err = await res.json() as any
+      const err: { error?: { message?: string } } = await res.json()
       message = err?.error?.message ?? message
     } catch {}
     throw new Error(message)

@@ -9,7 +9,7 @@ interface CardProps {
   accessibilityLabel?: string
 }
 
-export function Card({ children, onPress, style, accessibilityLabel }: CardProps) {
+export const Card = React.memo(function Card({ children, onPress, style, accessibilityLabel }: CardProps) {
   const { colors, radius, spacing } = useTheme()
 
   const cardStyle: ViewStyle = {
@@ -33,4 +33,4 @@ export function Card({ children, onPress, style, accessibilityLabel }: CardProps
   }
 
   return <View style={cardStyle}>{children}</View>
-}
+})

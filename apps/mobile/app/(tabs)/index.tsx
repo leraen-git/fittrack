@@ -1,6 +1,6 @@
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -98,13 +98,20 @@ export default function HomeScreen() {
   // todayDietDay comes directly from the server — no client-side JSONB traversal needed
   const todayDietDay = dietToday?.todayDay ?? null
 
-  // Compute day totals from individual meal values so the header always matches
-  // the sum of what's displayed — the AI-provided totals drift from per-meal numbers.
-  const todayMealsSorted = sortMeals((todayDietDay?.meals ?? []) as Array<{ type: string; name: string; calories: number; protein: number; carbs: number; fat: number }>)
-  const todayCalories = todayMealsSorted.reduce((s, m) => s + (m.calories ?? 0), 0)
-  const todayProtein  = todayMealsSorted.reduce((s, m) => s + (m.protein  ?? 0), 0)
-  const todayCarbs    = todayMealsSorted.reduce((s, m) => s + (m.carbs    ?? 0), 0)
-  const todayFat      = todayMealsSorted.reduce((s, m) => s + (m.fat      ?? 0), 0)
+  const todayMealsSorted = useMemo(
+    () => sortMeals((todayDietDay?.meals ?? []) as DietMeal[]),
+    [todayDietDay?.meals],
+  )
+  const { todayCalories, todayProtein, todayCarbs, todayFat } = useMemo(() => {
+    let calories = 0, protein = 0, carbs = 0, fat = 0
+    for (const m of todayMealsSorted) {
+      calories += m.calories ?? 0
+      protein += m.protein ?? 0
+      carbs += m.carbs ?? 0
+      fat += m.fat ?? 0
+    }
+    return { todayCalories: calories, todayProtein: protein, todayCarbs: carbs, todayFat: fat }
+  }, [todayMealsSorted])
 
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.background }}>
@@ -211,9 +218,9 @@ export default function HomeScreen() {
                 </View>
 
                 {/* Meals — already sorted + normalised above as todayMealsSorted */}
-                {todayMealsSorted.map((meal: any, i: number) => (
+                {todayMealsSorted.map((meal) => (
                   <TouchableOpacity
-                    key={i}
+                    key={`${meal.type}-${meal.name}`}
                     onPress={() => setSelectedMeal(meal as DietMeal)}
                     style={{
                       backgroundColor: colors.surface,
