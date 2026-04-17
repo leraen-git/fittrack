@@ -1,9 +1,10 @@
 FROM node:22-slim AS base
 WORKDIR /app
 
-# Install ALL dependencies (need drizzle-kit for migrations)
+# Copy full monorepo package manifests so npm ci sees all workspaces
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
+COPY apps/mobile/package.json apps/mobile/
 COPY packages/shared/package.json packages/shared/
 RUN npm ci --ignore-scripts
 
