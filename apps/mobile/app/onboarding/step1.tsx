@@ -100,7 +100,6 @@ export default function OnboardingStep1() {
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             {(['male', 'female'] as const).map((g) => {
               const selected = gender === g
-              const emoji = g === 'male' ? '♂️' : '♀️'
               const label = g === 'male' ? t('intake.male') : t('intake.female')
               return (
                 <TouchableOpacity
@@ -119,7 +118,6 @@ export default function OnboardingStep1() {
                   accessibilityLabel={label}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontSize: typography.size['3xl'] }}>{emoji}</Text>
                   <Text style={{
                     fontFamily: selected ? typography.family.bold : typography.family.regular,
                     fontSize: typography.size.body,

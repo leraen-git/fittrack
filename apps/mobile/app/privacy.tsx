@@ -5,16 +5,13 @@ import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 
-function Section({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const { colors, typography, spacing, radius } = useTheme()
   return (
     <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.base, gap: spacing.sm }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-        <Text style={{ fontSize: 20 }}>{icon}</Text>
-        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary, flex: 1 }}>
-          {title}
-        </Text>
-      </View>
+      <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
+        {title}
+      </Text>
       {children}
     </View>
   )

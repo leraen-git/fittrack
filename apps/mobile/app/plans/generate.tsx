@@ -67,7 +67,7 @@ export default function GeneratePlanScreen() {
               {t('generate.poweredBy')}
             </Text>
           </View>
-          <Text style={{ fontSize: typography.size['2xl'] }}>✨</Text>
+          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.primary, letterSpacing: 1 }}>AI</Text>
         </View>
 
         <ScrollView

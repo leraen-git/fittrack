@@ -241,15 +241,15 @@ export default function ShareScreen() {
                 paddingVertical: 6, paddingHorizontal: 10,
                 alignSelf: 'flex-start', marginTop: 10,
               }}>
-                <Text style={{ fontSize: 14 }}>🏆</Text>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: RED, letterSpacing: 1 }}>PR</Text>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: RED }}>
-                  {prs} new PR{prs > 1 ? 's' : ''} today
+                  {prs} new PR{prs > 1 ? 's' : ''}
                 </Text>
               </View>
             )}
 
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.2)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 10 }}>
-              Train smarter. Track harder.
+              BUILT REP BY REP.
             </Text>
           </Animated.View>
         </ViewShot>

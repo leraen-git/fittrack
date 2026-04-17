@@ -115,7 +115,7 @@ export default function OnboardingStep3() {
           textAlign: 'center',
           lineHeight: 16,
         }}>
-          🔒 Your data is stored securely on our servers and never shared with third parties.
+          Your data is stored securely on our servers and never shared with third parties.
         </Text>
 
         {/* Finish */}

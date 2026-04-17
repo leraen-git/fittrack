@@ -22,9 +22,9 @@ export default function OnboardingStep2() {
   ]
 
   const GOALS = [
-    { value: 'WEIGHT_LOSS' as const, label: t('profile.goalWeightLoss'), emoji: '🔥' },
-    { value: 'MUSCLE_GAIN' as const, label: t('profile.goalMuscleGain'), emoji: '💪' },
-    { value: 'MAINTENANCE' as const, label: t('profile.goalMaintenance'), emoji: '⚖️' },
+    { value: 'WEIGHT_LOSS' as const, label: t('profile.goalWeightLoss') },
+    { value: 'MUSCLE_GAIN' as const, label: t('profile.goalMuscleGain') },
+    { value: 'MAINTENANCE' as const, label: t('profile.goalMaintenance') },
   ]
 
   const canContinue = level && days && goal
@@ -166,10 +166,9 @@ export default function OnboardingStep2() {
                   accessibilityLabel={g.label}
                   accessibilityRole="button"
                 >
-                  <Text style={{ fontSize: 28 }}>{g.emoji}</Text>
                   <Text style={{
                     fontFamily: selected ? typography.family.bold : typography.family.regular,
-                    fontSize: typography.size.xs,
+                    fontSize: typography.size.body,
                     color: selected ? colors.primary : colors.textMuted,
                     textAlign: 'center',
                   }}>

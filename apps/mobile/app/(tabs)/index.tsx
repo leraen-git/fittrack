@@ -118,7 +118,7 @@ export default function HomeScreen() {
             <SkeletonCard height={36} />
           ) : (
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
-              {user?.name.split(' ')[0] ?? 'Athlete'} 👋
+              {user?.name.split(' ')[0] ?? 'Athlete'}
             </Text>
           )}
         </View>
@@ -133,7 +133,7 @@ export default function HomeScreen() {
           }}>
             {(['workout', 'diet'] as const).map((tab) => {
               const isActive = activeTab === tab
-              const workoutEmoji = isRestDay ? ' 😴' : isTodayWorkoutDone ? ' ✓' : ''
+              const workoutEmoji = isTodayWorkoutDone ? ' ✓' : ''
               return (
                 <TouchableOpacity
                   key={tab}
@@ -260,7 +260,6 @@ export default function HomeScreen() {
               </>
             ) : (
               <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
-                <Text style={{ fontSize: typography.size['3xl'] }}>🥗</Text>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textMuted, textAlign: 'center' }}>
                   {t('home.noMealPlanToday')}
                 </Text>
@@ -389,7 +388,9 @@ export default function HomeScreen() {
                 backgroundColor: isGuest ? colors.surface2 : `${colors.primary}18`,
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <Text style={{ fontSize: 22 }}>{isGuest ? '🔒' : '✨'}</Text>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: isGuest ? colors.textMuted : colors.primary, letterSpacing: 0.5 }}>
+                  AI
+                </Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: isGuest ? colors.textMuted : colors.textPrimary }}>
@@ -445,7 +446,6 @@ export default function HomeScreen() {
             overflow: 'hidden',
           }}>
             <View style={{ padding: spacing.base, gap: spacing.xs, alignItems: 'center' }}>
-              <Text style={{ fontSize: 48 }}>😴</Text>
               <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: colors.textPrimary }}>
                 {t('home.restDay')}
               </Text>
@@ -601,7 +601,6 @@ export default function HomeScreen() {
               alignItems: 'center',
               gap: spacing.sm,
             }}>
-              <Text style={{ fontSize: 40 }}>🎉</Text>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: colors.textPrimary }}>
                 {t('home.allDoneThisWeek')}
               </Text>

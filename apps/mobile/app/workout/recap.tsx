@@ -136,7 +136,7 @@ export default function RecapScreen() {
       <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
-            Session recap 🎉
+            Session recap
           </Text>
           {saveSession.isPending && <ActivityIndicator color={colors.primary} />}
           {saveSession.isSuccess && (

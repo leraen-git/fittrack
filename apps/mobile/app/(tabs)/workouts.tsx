@@ -270,7 +270,6 @@ export default function WorkoutsScreen() {
               accessibilityLabel={t('workout.noWorkoutsYet')}
               accessibilityRole="button"
             >
-              <Text style={{ fontSize: typography.size['3xl'] }}>🏋️</Text>
               <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
                 {t('workout.noWorkoutsYet')}
               </Text>

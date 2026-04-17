@@ -53,8 +53,10 @@ export default function PlanGeneratingScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
       <View style={{ alignItems: 'center', gap: spacing.xl, paddingHorizontal: spacing.xl }}>
-        {/* Icon */}
-        <Text style={{ fontSize: 64 }}>✨</Text>
+        {/* Mark */}
+        <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: `${colors.primary}18`, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: colors.primary, letterSpacing: 1 }}>AI</Text>
+        </View>
 
         {/* Title */}
         <View style={{ alignItems: 'center', gap: spacing.sm }}>

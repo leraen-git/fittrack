@@ -444,7 +444,7 @@ export default function ActiveWorkoutScreen() {
               accessibilityLabel="Finish workout" accessibilityRole="button"
             >
               <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
-                Finish workout 🎉
+                FINISH WORKOUT
               </Text>
             </TouchableOpacity>
           )}

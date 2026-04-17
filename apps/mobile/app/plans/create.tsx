@@ -359,7 +359,7 @@ export default function CreatePlanScreen() {
               backgroundColor: `${colors.primary}18`,
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Text style={{ fontSize: 22 }}>✨</Text>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.primary, letterSpacing: 1 }}>AI</Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>

@@ -208,11 +208,9 @@ export function SplashScreen({ onFinish }: Props) {
       {/* Center content */}
       <View style={styles.center}>
 
-        {/* Red glow behind mark */}
-        <Animated.View style={[styles.glow, glowStyle]} />
-
-        {/* Forge-Spark mark */}
-        <Animated.View style={markStyle}>
+        {/* Forge-Spark mark + glow wrapper — glow centered on the mark */}
+        <Animated.View style={[styles.markWrap, markStyle]}>
+          <Animated.View style={[styles.glow, glowStyle]} />
           <ForgeMark size={140} isDark />
         </Animated.View>
 
@@ -263,6 +261,12 @@ const styles = StyleSheet.create({
     // Simulated grid via border — repeated pattern would require a library.
     // Subtle dark surface behind content.
     opacity: 0.4,
+  },
+  markWrap: {
+    width: 140,
+    height: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   glow: {
     position: 'absolute',

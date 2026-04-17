@@ -8,9 +8,8 @@ import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
 
 function DataRow({
-  icon, label, value, muted,
+  label, value, muted,
 }: {
-  icon: string
   label: string
   value: string
   muted?: boolean
@@ -18,7 +17,6 @@ function DataRow({
   const { colors, typography } = useTheme()
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-      <Text style={{ fontSize: 18, width: 28 }}>{icon}</Text>
       <Text style={{
         fontFamily: typography.family.regular,
         fontSize: typography.size.base,
@@ -107,12 +105,12 @@ export default function OnboardingStep0() {
           }}>
             {isGoogle ? t('onboarding.step0GoogleSection') : t('onboarding.step0AppleSection')}
           </Text>
-          <DataRow icon="✉️" label={t('onboarding.step0Email')} value={displayEmail} />
+          <DataRow label={t('onboarding.step0Email')} value={displayEmail} />
           {hasName && (
-            <DataRow icon="👤" label={t('onboarding.step0Name')} value={user!.name} />
+            <DataRow label={t('onboarding.step0Name')} value={user!.name} />
           )}
           {isGoogle && user?.avatarUrl && (
-            <DataRow icon="🖼️" label={t('onboarding.step0AvatarUrl')} value="✓" />
+            <DataRow label={t('onboarding.step0AvatarUrl')} value="✓" />
           )}
         </View>
 
@@ -132,9 +130,9 @@ export default function OnboardingStep0() {
           }}>
             {t('onboarding.step0YouSection')}
           </Text>
-          <DataRow icon="⚧️" label={t('onboarding.step0Gender')} value={t('onboarding.step0YouEnter')} muted />
-          <DataRow icon="🏋️" label={t('onboarding.step0FitnessProfile')} value={t('onboarding.step0YouEnter')} muted />
-          <DataRow icon="📏" label={t('onboarding.step0Measurements')} value={t('onboarding.step0Optional')} muted />
+          <DataRow label={t('onboarding.step0Gender')} value={t('onboarding.step0YouEnter')} muted />
+          <DataRow label={t('onboarding.step0FitnessProfile')} value={t('onboarding.step0YouEnter')} muted />
+          <DataRow label={t('onboarding.step0Measurements')} value={t('onboarding.step0Optional')} muted />
         </View>
 
         {/* Privacy policy link */}

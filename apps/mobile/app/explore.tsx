@@ -45,14 +45,14 @@ function FeatureRow({ item }: { item: FeatureItem }) {
       accessibilityRole="button"
       accessibilityLabel={item.title}
     >
-      {/* Icon */}
+      {/* Icon label */}
       <View style={{
         width: 40, height: 40,
         borderRadius: radius.md,
         backgroundColor: colors.surface2,
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <Text style={{ fontSize: 20 }}>{item.icon}</Text>
+        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.textMuted, letterSpacing: 0.5 }}>{item.icon}</Text>
       </View>
 
       {/* Text */}
@@ -168,28 +168,28 @@ export default function ExploreScreen() {
       label: t('explore.groupWorkouts'),
       items: [
         {
-          icon: '🏋️',
+          icon: 'WK',
           title: t('explore.workoutBuilder'),
           desc: t('explore.workoutBuilderDesc'),
           route: '/(tabs)/workouts',
           used: hasSessions,
         },
         {
-          icon: '▶️',
+          icon: '▶',
           title: t('explore.activeSession'),
           desc: t('explore.activeSessionDesc'),
           route: '/(tabs)/workouts',
           used: hasSessions,
         },
         {
-          icon: '⏱️',
+          icon: 'T',
           title: t('explore.restTimer'),
           desc: t('explore.restTimerDesc'),
           route: '/(tabs)/workouts',
           used: hasSessions,
         },
         {
-          icon: '🏆',
+          icon: 'PR',
           title: t('explore.personalRecords'),
           desc: t('explore.personalRecordsDesc'),
           route: '/(tabs)/history',
@@ -201,21 +201,21 @@ export default function ExploreScreen() {
       label: t('explore.groupProgress'),
       items: [
         {
-          icon: '📈',
+          icon: '↗',
           title: t('explore.progressCharts'),
           desc: t('explore.progressChartsDesc'),
           route: '/(tabs)/history',
           used: hasSessions,
         },
         {
-          icon: '🔥',
+          icon: 'ST',
           title: t('explore.streakStats'),
           desc: t('explore.streakStatsDesc'),
           route: '/(tabs)/history',
           used: hasSessions,
         },
         {
-          icon: '🎯',
+          icon: 'RC',
           title: t('explore.sessionRecap'),
           desc: t('explore.sessionRecapDesc'),
           route: '/(tabs)/workouts',
@@ -227,7 +227,7 @@ export default function ExploreScreen() {
       label: t('explore.groupPlans'),
       items: [
         {
-          icon: '🤖',
+          icon: 'AI',
           title: t('explore.aiWorkoutPlan'),
           desc: t('explore.aiWorkoutPlanDesc'),
           route: '/plans/generate',
@@ -235,7 +235,7 @@ export default function ExploreScreen() {
           used: hasWorkoutPlan,
         },
         {
-          icon: '📅',
+          icon: 'PG',
           title: t('explore.guidedPrograms'),
           desc: t('explore.guidedProgramsDesc'),
           route: '/(tabs)/workouts',
@@ -247,7 +247,7 @@ export default function ExploreScreen() {
       label: t('explore.groupDiet'),
       items: [
         {
-          icon: '🥗',
+          icon: 'AI',
           title: t('explore.aiDietPlan'),
           desc: t('explore.aiDietPlanDesc'),
           route: '/(tabs)/diet',
@@ -255,7 +255,7 @@ export default function ExploreScreen() {
           used: hasDiet,
         },
         {
-          icon: '🍽️',
+          icon: 'MR',
           title: t('explore.mealRecipes'),
           desc: t('explore.mealRecipesDesc'),
           route: '/(tabs)/diet',
@@ -267,7 +267,7 @@ export default function ExploreScreen() {
       label: t('explore.groupReminders'),
       items: [
         {
-          icon: '🔔',
+          icon: '—',
           title: t('explore.reminders'),
           desc: t('explore.remindersDesc'),
           route: '/settings/reminders',
