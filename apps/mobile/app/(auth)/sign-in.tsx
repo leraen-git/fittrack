@@ -199,7 +199,7 @@ export default function SignInScreen() {
         {/* Hero */}
         <View style={styles.hero}>
           <Text
-            style={[styles.logo, { color: colors.primary, fontFamily: typography.family.extraBold }]}
+            style={[styles.logo, { color: colors.textPrimary, fontFamily: typography.family.bold }]}
             accessibilityRole="header"
           >
             TANREN
@@ -447,8 +447,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   logo: {
-    fontSize: 48,
-    letterSpacing: -1,
+    fontSize: 56,
+    letterSpacing: 8,
+    textTransform: 'uppercase',
   },
   tagline: {
     textAlign: 'center',

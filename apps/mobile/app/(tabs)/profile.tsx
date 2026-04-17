@@ -18,6 +18,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useAuth } from '@/contexts/AuthContext'
+import { formatVolume } from '@/utils/format'
 
 const LEVELS = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const
 const GOALS  = ['WEIGHT_LOSS', 'MUSCLE_GAIN', 'MAINTENANCE'] as const
@@ -486,7 +487,7 @@ export default function ProfileScreen() {
         <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, marginBottom: spacing.xs }}>
           {[
             { label: t('profile.statSessions'), value: String(sessions?.length ?? 0) },
-            { label: t('profile.statVolume'),   value: `${(totalVolume / 1000).toFixed(1)}t` },
+            { label: t('profile.statVolume'),   value: formatVolume(totalVolume) },
             { label: t('profile.statPRs'),      value: String(records?.length ?? 0) },
           ].map(({ label, value }) => (
             <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center', gap: 2 }}>

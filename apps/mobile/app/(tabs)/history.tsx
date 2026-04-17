@@ -8,6 +8,7 @@ import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { MUSCLE_GROUPS } from '@tanren/shared'
+import { formatVolume, formatDuration } from '@/utils/format'
 
 // filter id → translation key
 const DATE_FILTERS = [
@@ -26,11 +27,6 @@ const MG_KEY: Record<string, string> = {
   'Hamstrings': 'hamstrings', 'Glutes': 'glutes', 'Calves': 'calves', 'Full Body': 'fullBody',
 }
 
-function formatDuration(seconds: number): string {
-  const m = Math.round(seconds / 60)
-  if (m < 60) return `${m}min`
-  return `${Math.floor(m / 60)}h ${m % 60}min`
-}
 
 function useFormatDate() {
   const { t } = useTranslation()
@@ -153,7 +149,7 @@ export default function HistoryScreen() {
           <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, marginBottom: spacing.base }}>
             {[
               { label: t('history.sessions'), value: String(filtered.length) },
-              { label: t('history.volume'), value: totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}t` : `${Math.round(totalVolume)}kg` },
+              { label: t('history.volume'), value: formatVolume(totalVolume) },
             ].map(({ label, value }) => (
               <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center' }}>
                 <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.primary }}>{value}</Text>
@@ -182,7 +178,7 @@ export default function HistoryScreen() {
                   </Text>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
                     {formatDuration(s.durationSeconds)}
-                    {(s.totalVolume ?? 0) > 0 ? ` · ${(s.totalVolume! / 1000).toFixed(1)}t` : ''}
+                    {(s.totalVolume ?? 0) > 0 ? ` · ${formatVolume(s.totalVolume!)}` : ''}
                   </Text>
                   {s.muscleGroups && s.muscleGroups.length > 0 && (
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: 2 }}>
