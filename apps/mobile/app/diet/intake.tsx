@@ -137,7 +137,7 @@ export default function DietIntakeScreen() {
       setStep(step + 1)
       scrollRef.current?.scrollTo({ y: 0, animated: false })
     } else {
-      router.push('/diet/generating' as any)
+      router.push('/diet/generating')
     }
   }
 

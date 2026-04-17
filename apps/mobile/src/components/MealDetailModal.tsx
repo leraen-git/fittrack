@@ -43,7 +43,7 @@ export function sortMeals<T extends { type: string; name: string }>(meals: T[]):
   for (const m of meals) typeCounts[m.type] = (typeCounts[m.type] ?? 0) + 1
 
   const normalized = meals.map((m) => {
-    if (typeCounts[m.type] > 1) {
+    if ((typeCounts[m.type] ?? 0) > 1) {
       const lower = m.name.toLowerCase()
       if (SNACK_KEYWORDS.some((k) => lower.includes(k))) return { ...m, type: 'snack' }
     }
@@ -72,7 +72,7 @@ export type DietMeal = {
   recipeVideoUrl?: string
 }
 
-export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onClose: () => void }) {
+export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onClose: () => void }) {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
   if (!meal) return null
@@ -141,8 +141,8 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
             {[
               { label: t('diet.kcal'), value: meal.calories, color: colors.textPrimary },
               { label: t('diet.protein'), value: `${meal.protein}g`, color: colors.primary },
-              { label: t('diet.carbs'), value: `${meal.carbs}g`, color: '#F59E0B' },
-              { label: t('diet.fat'), value: `${meal.fat}g`, color: '#8B5CF6' },
+              { label: t('diet.carbs'), value: `${meal.carbs}g`, color: colors.carbsAccent },
+              { label: t('diet.fat'), value: `${meal.fat}g`, color: colors.fatAccent },
             ].map((m) => (
               <View key={m.label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.sm, alignItems: 'center' }}>
                 <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.base, color: m.color }}>{m.value}</Text>
@@ -203,7 +203,7 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
               onPress={() => Linking.openURL(meal.recipeVideoUrl!)}
               style={{
                 flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-                gap: spacing.sm, backgroundColor: '#FF0000',
+                gap: spacing.sm, backgroundColor: colors.youtubeRed,
                 borderRadius: radius.lg, paddingVertical: spacing.md,
               }}
               accessibilityLabel={t('diet.watchYoutube')} accessibilityRole="link"
@@ -227,4 +227,4 @@ export function MealDetailModal({ meal, onClose }: { meal: DietMeal | null; onCl
       </View>
     </Modal>
   )
-}
+})

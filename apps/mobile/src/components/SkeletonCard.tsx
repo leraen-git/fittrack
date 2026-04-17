@@ -24,6 +24,7 @@ export const SkeletonCard = React.memo(function SkeletonCard({ height = 80, widt
 
   return (
     <Animated.View
+      accessible={false}
       style={{
         height,
         width: width as number,

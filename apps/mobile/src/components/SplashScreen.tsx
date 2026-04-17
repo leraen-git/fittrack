@@ -10,8 +10,9 @@ import Animated, {
   Easing,
   runOnJS,
 } from 'react-native-reanimated'
+import { colors as tokenColors } from '@/theme/tokens'
 
-const RED = '#E8192C'
+const RED = tokenColors.light.primary
 const CELL = 24
 
 // ─── Grid Overlay ─────────────────────────────────────────────────────────────
@@ -65,8 +66,8 @@ function ForgeMark({ size = 140, isDark = true }: MarkProps) {
   const spark1 = { x: Math.round(141.5 * s), y: Math.round(58.5 * s) }
   const spark2 = { x: Math.round(58.5 * s),  y: Math.round(141.5 * s) }
 
-  const ringColor = isDark ? '#FFFFFF' : '#000000'
-  const barsColor = isDark ? '#FFFFFF' : '#000000'
+  const ringColor = isDark ? tokenColors.white : tokenColors.black
+  const barsColor = isDark ? tokenColors.white : tokenColors.black
   const coreColor = RED
 
   return (
@@ -155,10 +156,10 @@ export function SplashScreen({ onFinish }: Props) {
   const scheme = useColorScheme() ?? Appearance.getColorScheme()
   const isDark = scheme === 'dark'
 
-  const bg        = isDark ? '#000000' : '#FFFFFF'
-  const fg        = isDark ? '#FFFFFF' : '#000000'
-  const muted     = isDark ? '#888888' : '#999999'
-  const grid      = isDark ? '#1A1A1A' : '#E0E0E0'
+  const bg        = isDark ? tokenColors.black : tokenColors.white
+  const fg        = isDark ? tokenColors.white : tokenColors.black
+  const muted     = isDark ? tokenColors.dark.textMuted : tokenColors.light.textMuted
+  const grid      = isDark ? tokenColors.dark.surface2 : tokenColors.light.surface2
   const gridLine  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)'
 
   const containerOpacity = useSharedValue(1)

@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React, { useMemo } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface BarChartProps {
@@ -7,20 +7,20 @@ interface BarChartProps {
   height?: number
 }
 
-export function BarChart({ data, height = 120 }: BarChartProps) {
+export const BarChart = React.memo(function BarChart({ data, height = 120 }: BarChartProps) {
   const { colors, typography, spacing } = useTheme()
 
-  const max = Math.max(...data.map((d) => d.value), 1)
+  const max = useMemo(() => Math.max(...data.map((d) => d.value), 1), [data])
 
   return (
     <View style={{ height: height + 24 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', height, gap: 4 }}>
+      <View style={[styles.barRow, { height }]}>
         {data.map((item, i) => {
           const barHeight = Math.max((item.value / max) * height, 2)
           const isActive = item.isCurrent ?? false
           return (
-            <View key={i} style={{ flex: 1, alignItems: 'center', height }}>
-              <View style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}>
+            <View key={i} style={[styles.barCol, { height }]}>
+              <View style={styles.barInner}>
                 <View
                   style={{
                     height: barHeight,
@@ -35,10 +35,9 @@ export function BarChart({ data, height = 120 }: BarChartProps) {
           )
         })}
       </View>
-      {/* X-axis labels (show every 4th to avoid crowding) */}
-      <View style={{ flexDirection: 'row', gap: 4, marginTop: spacing.xs }}>
+      <View style={[styles.labelRow, { marginTop: spacing.xs }]}>
         {data.map((item, i) => (
-          <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+          <View key={i} style={styles.labelCol}>
             {i % 4 === 0 && (
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
                 {item.label}
@@ -49,4 +48,12 @@ export function BarChart({ data, height = 120 }: BarChartProps) {
       </View>
     </View>
   )
-}
+})
+
+const styles = StyleSheet.create({
+  barRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
+  barCol: { flex: 1, alignItems: 'center' },
+  barInner: { flex: 1, justifyContent: 'flex-end', width: '100%' },
+  labelRow: { flexDirection: 'row', gap: 4 },
+  labelCol: { flex: 1, alignItems: 'center' },
+})

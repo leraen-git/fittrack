@@ -16,7 +16,7 @@ export function GuestBanner() {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push('/(auth)/sign-in?upgrade=1' as any)}
+      onPress={() => router.push('/sign-in?upgrade=1')}
       style={{
         backgroundColor: `${colors.warning}22`,
         borderBottomWidth: 1,
@@ -32,7 +32,9 @@ export function GuestBanner() {
       accessibilityLabel={t('guestBanner.message')}
       accessibilityRole="button"
     >
-      <Text style={{ fontSize: 13 }}>👤</Text>
+      <View style={{ width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: colors.warning, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: typography.family.bold, fontSize: 8, color: colors.warning }}>?</Text>
+      </View>
       <Text style={{
         fontFamily: typography.family.regular,
         fontSize: typography.size.xs,

@@ -25,6 +25,9 @@ export const colors = {
     success: '#22C55E',
     warning: '#F59E0B',
     danger: '#E8192C',
+    carbsAccent: '#F59E0B',
+    fatAccent: '#8B5CF6',
+    youtubeRed: '#FF0000',
   },
   heatmap: ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'],
 } as const

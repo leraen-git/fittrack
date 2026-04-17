@@ -86,7 +86,7 @@ export default function HistoryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.sm }}>
           {DATE_FILTERS.map((f) => {
             const selected = dateFilter === f.id
-            const label = t(`history.filter_${f.id}` as any)
+            const label = t(`history.filter_${f.id}`)
             return (
               <TouchableOpacity
                 key={f.id}
@@ -116,7 +116,7 @@ export default function HistoryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.base }}>
           {(['All', ...MUSCLE_GROUPS] as string[]).map((mg) => {
             const selected = muscleFilter === mg
-            const label = mg === 'All' ? t('history.muscleAll') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)
+            const label = mg === 'All' ? t('history.muscleAll') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)
             return (
               <TouchableOpacity
                 key={mg}
@@ -193,7 +193,7 @@ export default function HistoryScreen() {
                           }}
                         >
                           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                            {t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)}
+                            {t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)}
                           </Text>
                         </View>
                       ))}

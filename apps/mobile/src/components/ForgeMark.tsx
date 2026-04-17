@@ -1,5 +1,6 @@
 import React from 'react'
 import Svg, { Circle, Rect, Line } from 'react-native-svg'
+import { colors as tokenColors } from '@/theme/tokens'
 
 interface Props {
   size?: number
@@ -7,9 +8,9 @@ interface Props {
 }
 
 export function ForgeMark({ size = 64, isDark = true }: Props) {
-  const stroke = isDark ? '#FFFFFF' : '#000000'
-  const fill = isDark ? '#FFFFFF' : '#000000'
-  const red = isDark ? '#FF2D3F' : '#E8192C'
+  const stroke = isDark ? tokenColors.white : tokenColors.black
+  const fill = isDark ? tokenColors.white : tokenColors.black
+  const red = isDark ? tokenColors.dark.primary : tokenColors.light.primary
 
   return (
     <Svg width={size} height={size} viewBox="0 0 200 200">

@@ -34,7 +34,7 @@ export default function OnboardingStep1() {
       return
     }
     await updateMe.mutateAsync({ name: name.trim(), gender })
-    router.push('/onboarding/step2' as any)
+    router.push('/onboarding/step2')
   }
 
   return (

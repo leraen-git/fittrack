@@ -1,7 +1,11 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React, { useMemo } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
+
+const CELL_SIZE = 14
+const CELL_GAP = 3
+const HEATMAP = tokenColors.heatmap
 
 interface HeatmapGridProps {
   data: Array<{ date: Date; value: number }>
@@ -9,56 +13,59 @@ interface HeatmapGridProps {
 }
 
 function getIntensityColor(value: number, max: number): string {
-  if (value === 0) return tokenColors.heatmap[0]!
+  if (value === 0) return HEATMAP[0]
   const ratio = value / max
-  if (ratio < 0.25) return tokenColors.heatmap[1]!
-  if (ratio < 0.5) return tokenColors.heatmap[2]!
-  if (ratio < 0.75) return tokenColors.heatmap[3]!
-  return tokenColors.heatmap[4]!
+  if (ratio < 0.25) return HEATMAP[1]
+  if (ratio < 0.5) return HEATMAP[2]
+  if (ratio < 0.75) return HEATMAP[3]
+  return HEATMAP[4]
 }
 
-export function HeatmapGrid({ data, weeks = 16 }: HeatmapGridProps) {
+export const HeatmapGrid = React.memo(function HeatmapGrid({ data, weeks = 16 }: HeatmapGridProps) {
   const { colors, typography, spacing, radius } = useTheme()
 
-  const cellSize = 14
-  const cellGap = 3
+  const { grid, maxValue } = useMemo(() => {
+    const dataMap = new Map<string, number>()
+    let max = 1
 
-  // Build a date-keyed map
-  const dataMap = new Map<string, number>()
-  const maxValue = Math.max(...data.map((d) => d.value), 1)
-
-  for (const entry of data) {
-    const key = entry.date.toISOString().slice(0, 10)
-    dataMap.set(key, (dataMap.get(key) ?? 0) + entry.value)
-  }
-
-  // Build grid: 7 rows (Mon–Sun) × N weeks columns
-  const today = new Date()
-  const grid: Array<Array<{ date: Date; value: number }>> = []
-
-  for (let w = weeks - 1; w >= 0; w--) {
-    const col: Array<{ date: Date; value: number }> = []
-    for (let d = 0; d < 7; d++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() - w * 7 - (6 - d))
-      const key = date.toISOString().slice(0, 10)
-      col.push({ date, value: dataMap.get(key) ?? 0 })
+    for (const entry of data) {
+      const key = entry.date.toISOString().slice(0, 10)
+      const val = (dataMap.get(key) ?? 0) + entry.value
+      dataMap.set(key, val)
+      if (val > max) max = val
     }
-    grid.push(col)
-  }
+
+    const today = new Date()
+    const result: Array<Array<{ date: Date; value: number }>> = []
+
+    for (let w = weeks - 1; w >= 0; w--) {
+      const col: Array<{ date: Date; value: number }> = []
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(today)
+        date.setDate(today.getDate() - w * 7 - (6 - d))
+        const key = date.toISOString().slice(0, 10)
+        col.push({ date, value: dataMap.get(key) ?? 0 })
+      }
+      result.push(col)
+    }
+
+    return { grid: result, maxValue: max }
+  }, [data, weeks])
+
+  const halfRadius = radius.sm / 2
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', gap: cellGap }}>
+      <View style={[styles.gridRow, { gap: CELL_GAP }]}>
         {grid.map((col, wi) => (
-          <View key={wi} style={{ flexDirection: 'column', gap: cellGap }}>
+          <View key={wi} style={[styles.gridCol, { gap: CELL_GAP }]}>
             {col.map((cell, di) => (
               <View
                 key={di}
                 style={{
-                  width: cellSize,
-                  height: cellSize,
-                  borderRadius: radius.sm / 2,
+                  width: CELL_SIZE,
+                  height: CELL_SIZE,
+                  borderRadius: halfRadius,
                   backgroundColor: getIntensityColor(cell.value, maxValue),
                 }}
                 accessibilityLabel={`${cell.date.toLocaleDateString()}: ${cell.value.toFixed(0)} kg volume`}
@@ -68,15 +75,14 @@ export function HeatmapGrid({ data, weeks = 16 }: HeatmapGridProps) {
         ))}
       </View>
 
-      {/* Legend */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm }}>
+      <View style={[styles.legend, { gap: spacing.xs, marginTop: spacing.sm }]}>
         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
           Less
         </Text>
-        {tokenColors.heatmap.map((c, i) => (
+        {HEATMAP.map((c, i) => (
           <View
             key={i}
-            style={{ width: cellSize, height: cellSize, borderRadius: radius.sm / 2, backgroundColor: c }}
+            style={{ width: CELL_SIZE, height: CELL_SIZE, borderRadius: halfRadius, backgroundColor: c }}
           />
         ))}
         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
@@ -85,4 +91,10 @@ export function HeatmapGrid({ data, weeks = 16 }: HeatmapGridProps) {
       </View>
     </View>
   )
-}
+})
+
+const styles = StyleSheet.create({
+  gridRow: { flexDirection: 'row' },
+  gridCol: { flexDirection: 'column' },
+  legend: { flexDirection: 'row', alignItems: 'center' },
+})

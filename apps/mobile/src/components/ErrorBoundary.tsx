@@ -1,7 +1,9 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { withTranslation, type WithTranslation } from 'react-i18next'
+import { colors as tokenColors } from '@/theme/tokens'
 
-interface Props {
+interface Props extends WithTranslation {
   children: ReactNode
 }
 
@@ -10,7 +12,7 @@ interface State {
   error: Error | null
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundaryInner extends Component<Props, State> {
   state: State = { hasError: false, error: null }
 
   static getDerivedStateFromError(error: Error): State {
@@ -29,19 +31,20 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      const { t } = this.props
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>UNE ERREUR EST SURVENUE</Text>
+          <Text style={styles.title}>{t('common.errorOccurred')}</Text>
           {__DEV__ && this.state.error && (
             <Text style={styles.detail}>{this.state.error.message}</Text>
           )}
           <TouchableOpacity
             style={styles.button}
             onPress={this.handleReset}
-            accessibilityLabel="Réessayer"
+            accessibilityLabel={t('common.retry')}
             accessibilityRole="button"
           >
-            <Text style={styles.buttonText}>RÉESSAYER</Text>
+            <Text style={styles.buttonText}>{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       )
@@ -50,10 +53,12 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+export const ErrorBoundary = withTranslation()(ErrorBoundaryInner)
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: tokenColors.black,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -61,19 +66,19 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'BarlowCondensed_700Bold',
     fontSize: 20,
-    color: '#FFFFFF',
+    color: tokenColors.white,
     letterSpacing: 2,
     marginBottom: 12,
   },
   detail: {
     fontFamily: 'BarlowCondensed_400Regular',
     fontSize: 13,
-    color: '#888888',
+    color: tokenColors.dark.textMuted,
     textAlign: 'center',
     marginBottom: 24,
   },
   button: {
-    backgroundColor: '#FF2D3F',
+    backgroundColor: tokenColors.dark.primary,
     borderRadius: 4,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -81,7 +86,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'BarlowCondensed_700Bold',
     fontSize: 16,
-    color: '#FFFFFF',
+    color: tokenColors.white,
     letterSpacing: 1,
   },
 })

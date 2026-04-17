@@ -200,8 +200,8 @@ export default function HomeScreen() {
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                       {[
                         { label: t('diet.protein'), value: `${todayProtein}g`, color: colors.primary },
-                        { label: t('diet.carbs'), value: `${todayCarbs}g`, color: '#F59E0B' },
-                        { label: t('diet.fat'), value: `${todayFat}g`, color: '#8B5CF6' },
+                        { label: t('diet.carbs'), value: `${todayCarbs}g`, color: colors.carbsAccent },
+                        { label: t('diet.fat'), value: `${todayFat}g`, color: colors.fatAccent },
                       ].map(({ label, value, color }) => (
                         <View key={label} style={{
                           flex: 1, borderRadius: radius.md, padding: spacing.sm,
@@ -257,8 +257,8 @@ export default function HomeScreen() {
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                       {[
                         { label: t('diet.proteinShort'), value: `${meal.protein}g`, color: colors.primary },
-                        { label: t('diet.carbsShort'), value: `${meal.carbs}g`, color: '#F59E0B' },
-                        { label: t('diet.fatShort'), value: `${meal.fat}g`, color: '#8B5CF6' },
+                        { label: t('diet.carbsShort'), value: `${meal.carbs}g`, color: colors.carbsAccent },
+                        { label: t('diet.fatShort'), value: `${meal.fat}g`, color: colors.fatAccent },
                       ].map(({ label, value, color }) => (
                         <View key={label} style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface2, borderRadius: radius.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color }}>{value}</Text>
@@ -383,7 +383,7 @@ export default function HomeScreen() {
           <View style={{ gap: spacing.md }}>
             {/* Hero: no plan */}
             <TouchableOpacity
-              onPress={() => router.push('/plans/create' as any)}
+              onPress={() => router.push('/plans/create')}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,
@@ -428,8 +428,8 @@ export default function HomeScreen() {
             {/* AI generate button — locked for guests */}
             <TouchableOpacity
               onPress={() => isGuest
-                ? router.push('/(auth)/sign-in?upgrade=1' as any)
-                : router.push('/plans/generate' as any)
+                ? router.push('/sign-in?upgrade=1')
+                : router.push('/plans/generate')
               }
               style={{
                 backgroundColor: colors.surface,
@@ -467,7 +467,7 @@ export default function HomeScreen() {
 
             {/* Just start an exercise */}
             <TouchableOpacity
-              onPress={() => router.push('/exercise/quick' as any)}
+              onPress={() => router.push('/exercise/quick')}
               style={{ alignItems: 'center', paddingVertical: spacing.sm }}
               accessibilityLabel="Just start an exercise"
               accessibilityRole="button"
@@ -516,7 +516,7 @@ export default function HomeScreen() {
                     {nextWorkout.workoutName}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}` as any)}
+                    onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
                     style={{
                       backgroundColor: colors.primary,
                       borderRadius: radius.md,
@@ -605,7 +605,7 @@ export default function HomeScreen() {
                 {remainingWorkouts.map((d) => (
                   <TouchableOpacity
                     key={d.workoutTemplateId}
-                    onPress={() => router.push(`/workout/preview?templateId=${d.workoutTemplateId}` as any)}
+                    onPress={() => router.push(`/workout/preview?templateId=${d.workoutTemplateId}`)}
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
@@ -664,7 +664,7 @@ export default function HomeScreen() {
                     {t('home.yourNextSession')}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => router.push(`/workout/preview?templateId=${nextUpcoming.workoutTemplateId}` as any)}
+                    onPress={() => router.push(`/workout/preview?templateId=${nextUpcoming.workoutTemplateId}`)}
                     style={{
                       backgroundColor: colors.surface,
                       borderRadius: radius.lg,

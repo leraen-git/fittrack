@@ -128,7 +128,7 @@ export default function RecapScreen() {
     }
     await utils.plans.active.invalidate()
     finishSession()
-    router.replace('/' as any)
+    router.replace('/')
   }
 
   return (
@@ -204,7 +204,7 @@ export default function RecapScreen() {
           label="📲 Share session"
           variant="secondary"
           onPress={() => router.push({
-            pathname: '/workout/share' as any,
+            pathname: '/workout/share',
             params: {
               workoutName: currentWorkout?.name ?? '',
               durationMins: String(durationMins),

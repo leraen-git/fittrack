@@ -25,6 +25,7 @@ import { useWorkletTimer } from '@/hooks/useWorkletTimer'
 const WAKE_LOCK_TAG = 'active-workout'
 const HEARTBEAT_FILE = FileSystem.documentDirectory + 'session-heartbeat.json'
 const HEARTBEAT_INTERVAL_MS = 30_000
+const DEFAULT_REST_SECONDS = 90
 
 export default function ActiveWorkoutScreen() {
   const { colors, typography, spacing, radius } = useTheme()
@@ -40,7 +41,12 @@ export default function ActiveWorkoutScreen() {
     prevExercise,
   } = useActiveSessionStore()
 
-  const { isRunning, secondsRemaining, totalSeconds, start, skip, addSeconds } = useTimerStore()
+  const isRunning = useTimerStore((s) => s.isRunning)
+  const secondsRemaining = useTimerStore((s) => s.secondsRemaining)
+  const totalSeconds = useTimerStore((s) => s.totalSeconds)
+  const start = useTimerStore((s) => s.start)
+  const skip = useTimerStore((s) => s.skip)
+  const addSeconds = useTimerStore((s) => s.addSeconds)
   // UI-thread frame-based timer — replaces JS-thread setInterval
   useWorkletTimer()
 
@@ -118,7 +124,7 @@ export default function ActiveWorkoutScreen() {
     if (isCurrentSetDone) return
     completeSet(currentExerciseIndex, currentSetIndex)
 
-    const restSecs = currentSet?.restSeconds ?? 90
+    const restSecs = currentSet?.restSeconds ?? DEFAULT_REST_SECONDS
     start(restSecs, currentExercise.exerciseName)
     await scheduleRestEndNotification(restSecs, currentExercise.exerciseName)
   }

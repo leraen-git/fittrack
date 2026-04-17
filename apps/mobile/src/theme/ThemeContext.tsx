@@ -18,6 +18,9 @@ type ThemeColors = {
   success: string
   warning: string
   danger: string
+  carbsAccent: string
+  fatAccent: string
+  youtubeRed: string
 }
 
 interface Theme {

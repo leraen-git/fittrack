@@ -39,10 +39,10 @@ export default function DietGeneratingScreen() {
         utils.diet.activePlan.invalidate(),
         utils.diet.todayMeals.invalidate(),
       ])
-      router.replace('/(tabs)/diet' as any)
+      router.replace('/diet')
     },
     onError: (err) => {
-      router.replace('/diet/intake' as any)
+      router.replace('/diet/intake')
       setTimeout(() => {
         const { Alert } = require('react-native')
         Alert.alert('Generation failed', err.message)

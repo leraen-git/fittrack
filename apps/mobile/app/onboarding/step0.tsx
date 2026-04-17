@@ -137,7 +137,7 @@ export default function OnboardingStep0() {
 
         {/* Privacy policy link */}
         <TouchableOpacity
-          onPress={() => router.push('/privacy' as any)}
+          onPress={() => router.push('/privacy')}
           accessibilityRole="link"
           accessibilityLabel={t('onboarding.step0PrivacyLink')}
         >
@@ -154,7 +154,7 @@ export default function OnboardingStep0() {
 
         {/* Agree & continue */}
         <TouchableOpacity
-          onPress={() => router.push('/onboarding/step1' as any)}
+          onPress={() => router.push('/onboarding/step1')}
           style={{
             backgroundColor: colors.primary,
             borderRadius: radius.lg,

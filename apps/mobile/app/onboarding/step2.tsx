@@ -32,7 +32,7 @@ export default function OnboardingStep2() {
   const handleFinish = async () => {
     if (!level || !days || !goal) return
     await updateMe.mutateAsync({ level, weeklyTarget: days, goal })
-    router.push('/onboarding/step3' as any)
+    router.push('/onboarding/step3')
   }
 
   return (

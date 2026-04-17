@@ -229,7 +229,7 @@ export default function WorkoutDetailScreen() {
 
         {/* Start button */}
         <TouchableOpacity
-          onPress={() => router.push(`/workout/preview?templateId=${id}` as any)}
+          onPress={() => router.push(`/workout/preview?templateId=${id}`)}
           style={{
             backgroundColor: colors.primary,
             borderRadius: radius.lg,

@@ -186,7 +186,7 @@ export default function QuickExerciseScreen() {
       true, // isQuick
     )
     setSelected(null)
-    router.push('/workout/active' as any)
+    router.push('/workout/active')
   }
 
   return (

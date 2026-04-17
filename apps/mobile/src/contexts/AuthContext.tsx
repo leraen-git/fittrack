@@ -150,7 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) {
       let message = 'Could not send code'
       try {
-        const err = await res.json() as any
+        const err: { error?: { message?: string } } = await res.json()
         message = err?.error?.message ?? message
       } catch {}
       throw new Error(message)

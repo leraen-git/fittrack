@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
@@ -14,7 +14,7 @@ interface FeatureItem {
   icon: string
   title: string
   desc: string
-  route: string
+  route: Href
   isNew?: boolean
   used: boolean
 }
@@ -32,7 +32,7 @@ function FeatureRow({ item }: { item: FeatureItem }) {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(item.route as any)}
+      onPress={() => router.push(item.route)}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -157,7 +157,7 @@ export default function ExploreScreen() {
 
   const hasSessions   = (sessions?.length ?? 0) > 0
   const hasRecords    = (records?.length ?? 0) > 0
-  const hasDiet       = !!dietMeals?.plan
+  const hasDiet       = !!dietMeals
   const hasWorkoutPlan = !!activePlan
   const hasReminders  = notifSettings.workoutEnabled
     || Object.values(notifSettings.meals).some((m) => m.enabled)

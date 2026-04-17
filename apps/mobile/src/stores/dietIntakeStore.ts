@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export interface DietIntake {
   // Step 1 — Stats
@@ -52,8 +54,14 @@ const defaults: DietIntake = {
   nightSnacking: false,
 }
 
-export const useDietIntakeStore = create<DietIntakeState>((set) => ({
-  intake: { ...defaults },
-  update: (fields) => set((s) => ({ intake: { ...s.intake, ...fields } })),
-  reset: () => set({ intake: { ...defaults } }),
-}))
+export const useDietIntakeStore = create<DietIntakeState>()(
+  persist((set) => ({
+    intake: { ...defaults },
+    update: (fields) => set((s) => ({ intake: { ...s.intake, ...fields } })),
+    reset: () => set({ intake: { ...defaults } }),
+  }), {
+    name: 'tanren-diet-intake',
+    storage: createJSONStorage(() => AsyncStorage),
+    partialize: (state) => ({ intake: state.intake }),
+  }),
+)

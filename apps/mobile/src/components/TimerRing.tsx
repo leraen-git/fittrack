@@ -9,7 +9,7 @@ interface TimerRingProps {
   size?: number
 }
 
-export function TimerRing({ progress, secondsRemaining, size = 200 }: TimerRingProps) {
+export const TimerRing = React.memo(function TimerRing({ progress, secondsRemaining, size = 200 }: TimerRingProps) {
   const { colors, typography } = useTheme()
 
   const strokeWidth = 12
@@ -82,4 +82,4 @@ export function TimerRing({ progress, secondsRemaining, size = 200 }: TimerRingP
       </Text>
     </View>
   )
-}
+})

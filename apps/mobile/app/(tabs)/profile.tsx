@@ -322,7 +322,7 @@ export default function ProfileScreen() {
     onSuccess: async () => {
       await utils.invalidate()
       await signOut()
-      router.replace('/(auth)/sign-in' as any)
+      router.replace('/sign-in')
     },
     onError: (err) => Alert.alert(t('common.error'), err.message),
   })
@@ -340,7 +340,7 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             await signOut()
-            router.replace('/(auth)/sign-in' as any)
+            router.replace('/sign-in')
           },
         },
       ],
@@ -593,13 +593,13 @@ export default function ProfileScreen() {
               icon="✨"
               label={t('explore.title')}
               sublabel={t('profile.exploreSub')}
-              onPress={() => router.push('/explore' as any)}
+              onPress={() => router.push('/explore')}
             />
             <NavRow
               icon="🔔"
               label={t('profile.reminders')}
               sublabel={t('profile.remindersSub')}
-              onPress={() => router.push('/settings/reminders' as any)}
+              onPress={() => router.push('/settings/reminders')}
             />
             <ThemeRow label={t('profile.appearance')} />
           </View>
@@ -611,7 +611,7 @@ export default function ProfileScreen() {
               icon="🔒"
               label={t('profile.dataUsage')}
               sublabel={t('profile.dataUsageSub')}
-              onPress={() => router.push('/privacy' as any)}
+              onPress={() => router.push('/privacy')}
             />
             <InfoRow
               icon=""

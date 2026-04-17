@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
@@ -11,6 +12,7 @@ const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export default function PreviewPlanScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const { proposedPlan, reset } = useAIPlanStore()
   const utils = trpc.useUtils()
 
@@ -19,7 +21,7 @@ export default function PreviewPlanScreen() {
       await utils.plans.active.invalidate()
       await utils.plans.list.invalidate()
       reset()
-      router.replace('/' as any)
+      router.replace('/')
     },
     onError: (err) => Alert.alert('Failed to save plan', err.message),
   })
@@ -27,9 +29,9 @@ export default function PreviewPlanScreen() {
   if (!proposedPlan) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: typography.family.regular, color: colors.textMuted }}>No plan to preview.</Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: spacing.base }}>
-          <Text style={{ fontFamily: typography.family.semiBold, color: colors.primary }}>Go back</Text>
+        <Text style={{ fontFamily: typography.family.regular, color: colors.textMuted }}>{t('plans.noPlans')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: spacing.base }} accessibilityLabel={t('common.back')} accessibilityRole="button">
+          <Text style={{ fontFamily: typography.family.semiBold, color: colors.primary }}>{t('common.back')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )

@@ -100,6 +100,7 @@ function TimeBadge({ time, onPress }: { time: string; onPress: () => void }) {
 
 function PermissionBanner({ onPress }: { onPress: () => void }) {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -115,10 +116,13 @@ function PermissionBanner({ onPress }: { onPress: () => void }) {
         gap: spacing.sm,
       }}
       accessibilityRole="button"
+      accessibilityLabel={t('notifications.permBannerBlocked')}
     >
-      <Text style={{ fontSize: 18 }}>⚠️</Text>
+      <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: colors.warning, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.warning }}>!</Text>
+      </View>
       <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textPrimary, flex: 1 }}>
-        Notifications are blocked. Tap to open Settings.
+        {t('notifications.permBannerBlocked')}
       </Text>
     </TouchableOpacity>
   )

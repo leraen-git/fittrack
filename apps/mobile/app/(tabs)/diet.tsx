@@ -86,7 +86,7 @@ export default function DietScreen() {
 
   const handleDelete = () => {
     // Navigate to intake — the old plan stays active until a new one is successfully generated
-    router.push('/diet/intake' as any)
+    router.push('/diet/intake')
   }
 
   if (isLoading) {
@@ -130,8 +130,8 @@ export default function DietScreen() {
 
           <TouchableOpacity
             onPress={() => isGuest
-              ? router.push('/(auth)/sign-in?upgrade=1' as any)
-              : router.push('/diet/intake' as any)
+              ? router.push('/sign-in?upgrade=1')
+              : router.push('/diet/intake')
             }
             style={{
               backgroundColor: isGuest ? colors.surface2 : colors.primary,
@@ -295,8 +295,8 @@ export default function DietScreen() {
                 <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                   {[
                     { label: t('diet.proteinShort'), value: meal.protein, color: colors.primary },
-                    { label: t('diet.carbsShort'), value: meal.carbs, color: '#F59E0B' },
-                    { label: t('diet.fatShort'), value: meal.fat, color: '#8B5CF6' },
+                    { label: t('diet.carbsShort'), value: meal.carbs, color: colors.carbsAccent },
+                    { label: t('diet.fatShort'), value: meal.fat, color: colors.fatAccent },
                   ].map((m) => (
                     <View key={m.label} style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface2, borderRadius: radius.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                       <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: m.color }}>{m.value}g</Text>
@@ -380,8 +380,8 @@ export default function DietScreen() {
         {/* Regenerate */}
         <TouchableOpacity
           onPress={() => isGuest
-            ? router.push('/(auth)/sign-in?upgrade=1' as any)
-            : router.push('/diet/intake' as any)
+            ? router.push('/sign-in?upgrade=1')
+            : router.push('/diet/intake')
           }
           style={{ margin: spacing.base, alignItems: 'center', paddingVertical: spacing.md }}
           accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.regenerateLink')}

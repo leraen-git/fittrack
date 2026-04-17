@@ -16,7 +16,7 @@ export default function ProgramDetailScreen() {
   const { data: program, isLoading } = trpc.programs.byId.useQuery({ id })
   const enroll = trpc.programs.enroll.useMutation({
     onSuccess: () => {
-      router.push('/(tabs)/index' as any)
+      router.push('/')
     },
   })
 

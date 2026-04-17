@@ -5,6 +5,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { router, protectedProcedure } from '../trpc.js'
 import { users, dietProfiles, dietPlans } from '../db/schema.js'
 
+type RawPlanDay = { dayOfWeek: number; theme?: string; meals: unknown[] }
+type RawPlan = { days?: RawPlanDay[] }
+
 async function resolveUser(db: any, userId: string) {
   const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
   if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
@@ -148,8 +151,8 @@ export const dietRouter = router({
 
     const jsDay = new Date().getDay()         // 0=Sun … 6=Sat
     const dietDow = jsDay === 0 ? 7 : jsDay  // 1=Mon … 7=Sun
-    const raw = plan.rawPlan as any
-    const todayDay = (raw?.days as any[])?.find((d: any) => d.dayOfWeek === dietDow) ?? null
+    const raw = plan.rawPlan as RawPlan | null
+    const todayDay = raw?.days?.find((d) => d.dayOfWeek === dietDow) ?? null
 
     return {
       id: plan.id,
@@ -185,10 +188,11 @@ export const dietRouter = router({
 
       // Rate limit: max 2 AI diet plan generations per week
       const weekStart = startOfWeekUTC()
-      const [{ value: generationsThisWeek }] = await ctx.db
+      const [countRow] = await ctx.db
         .select({ value: count() })
         .from(dietPlans)
         .where(and(eq(dietPlans.userId, user.id), gte(dietPlans.createdAt, weekStart)))
+      const generationsThisWeek = countRow?.value ?? 0
 
       if (generationsThisWeek >= AI_GENERATION_LIMIT) {
         throw new TRPCError({
@@ -397,7 +401,7 @@ Now generate my complete diet plan as JSON.`
         targetCarbs: plan.summary.targetCarbs,
         targetFat: plan.summary.targetFat,
         hydrationLiters: plan.summary.hydrationLiters,
-        rawPlan: plan as any,
+        rawPlan: plan as unknown,
       }).returning()
 
       return saved

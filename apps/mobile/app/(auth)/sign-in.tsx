@@ -23,6 +23,7 @@ import Animated, {
 import Svg, { Path, Rect, Circle, Line, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { router, useLocalSearchParams } from 'expo-router'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
@@ -130,7 +131,7 @@ export default function SignInScreen() {
 
   useEffect(() => {
     if (status === 'authenticated' && !isUpgrade) {
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
     }
   }, [status, isUpgrade])
 
@@ -151,7 +152,7 @@ export default function SignInScreen() {
     setSocialLoading(true)
     try {
       await signInWithApple()
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
     } catch (err: any) {
       if (err?.code !== 'ERR_CANCELED') {
         Alert.alert(t('signIn.errorTitle'), t('signIn.errorApple'))
@@ -165,7 +166,7 @@ export default function SignInScreen() {
     setSocialLoading(true)
     try {
       await signInWithGoogle()
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
     } catch (err: any) {
       Alert.alert(t('signIn.errorTitle'), err?.message ?? t('signIn.errorGoogle'))
     } finally {
@@ -196,7 +197,7 @@ export default function SignInScreen() {
     setOtpError('')
     try {
       await verifyOtp(emailValue.trim(), otpCode)
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
     } catch (err: any) {
       setEmailStep('otpInput')
       setOtpCode('')
@@ -226,13 +227,13 @@ export default function SignInScreen() {
 
   async function handleGuestSignIn() {
     if (status === 'authenticated') {
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
       return
     }
     setSocialLoading(true)
     try {
       await signInAsGuest()
-      router.replace('/(tabs)/' as any)
+      router.replace('/')
     } catch (err: any) {
       Alert.alert(t('signIn.errorTitle'), err?.message ?? t('signIn.errorGuest'))
     } finally {
@@ -257,10 +258,10 @@ export default function SignInScreen() {
   const fg = colors.textPrimary
   const red = colors.primary
   const muted = colors.textMuted
-  const borderColor = isDark ? '#333333' : colors.border
+  const borderColor = isDark ? colors.surface2 : colors.border
 
-  const secondaryBg = isDark ? '#FFFFFF' : '#000000'
-  const secondaryFg = isDark ? '#000000' : '#FFFFFF'
+  const secondaryBg = isDark ? tokenColors.white : tokenColors.black
+  const secondaryFg = isDark ? tokenColors.black : tokenColors.white
 
   const inEmailFlow = emailStep !== 'idle'
 
@@ -360,9 +361,9 @@ export default function SignInScreen() {
                     accessibilityRole="button"
                   >
                     {emailStep === 'sending' ? (
-                      <ActivityIndicator color="#fff" />
+                      <ActivityIndicator color={tokenColors.white} />
                     ) : (
-                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: emailValue.trim() ? '#fff' : muted }]}>
+                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: emailValue.trim() ? tokenColors.white : muted }]}>
                         {t('signIn.sendCode')}
                       </Text>
                     )}
@@ -411,9 +412,9 @@ export default function SignInScreen() {
                     accessibilityRole="button"
                   >
                     {emailStep === 'verifying' ? (
-                      <ActivityIndicator color="#fff" />
+                      <ActivityIndicator color={tokenColors.white} />
                     ) : (
-                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: otpCode.length === 6 ? '#fff' : muted }]}>
+                      <Text style={[styles.ctaText, { fontFamily: typography.family.bold, color: otpCode.length === 6 ? tokenColors.white : muted }]}>
                         {t('signIn.verify')}
                       </Text>
                     )}
@@ -449,7 +450,7 @@ export default function SignInScreen() {
                   accessibilityRole="button"
                 >
                   <AppleIcon />
-                  <Text style={[styles.ctaText, { color: '#FFFFFF', fontFamily: typography.family.bold }]}>
+                  <Text style={[styles.ctaText, { color: tokenColors.white, fontFamily: typography.family.bold }]}>
                     {t('signIn.continueWithApple')}
                   </Text>
                 </TouchableOpacity>
@@ -503,12 +504,12 @@ export default function SignInScreen() {
               {/* DEV bypass */}
               {__DEV__ && (
                 <TouchableOpacity
-                  style={[styles.devButton, { borderColor: isDark ? '#333333' : muted }]}
+                  style={[styles.devButton, { borderColor: isDark ? colors.surface2 : muted }]}
                   onPress={handleDevSignIn}
                   accessibilityLabel="Dev bypass sign-in"
                   accessibilityRole="button"
                 >
-                  <Text style={[styles.devText, { color: isDark ? '#555555' : muted, fontFamily: typography.family.medium }]}>
+                  <Text style={[styles.devText, { color: muted, fontFamily: typography.family.medium }]}>
                     DEV — SKIP SIGN-IN
                   </Text>
                 </TouchableOpacity>

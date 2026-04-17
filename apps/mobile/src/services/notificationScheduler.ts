@@ -111,8 +111,7 @@ export async function rescheduleWorkoutNotifications(
         weekday,
         hour,
         minute,
-        repeats: true,
-      } as any,
+      },
     })
     count++
   }
@@ -150,8 +149,7 @@ export async function rescheduleMealNotifications(settings: NotificationSettings
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour,
         minute,
-        repeats: true,
-      } as any,
+      },
     })
   }
 }
@@ -190,8 +188,7 @@ export async function rescheduleHydrationNotifications(settings: NotificationSet
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour,
         minute,
-        repeats: true,
-      } as any,
+      },
     })
 
     current += settings.hydrationInterval

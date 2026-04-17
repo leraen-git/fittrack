@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 
 interface SetRowProps {
   setNumber: number
@@ -126,7 +127,7 @@ export function SetRow({
         accessibilityLabel={isCompleted ? 'Set completed' : `Complete set ${setNumber}`}
         accessibilityRole="button"
       >
-        <Text style={{ color: isCompleted ? '#fff' : colors.textMuted, fontSize: 16 }}>
+        <Text style={{ color: isCompleted ? tokenColors.white : colors.textMuted, fontSize: 16 }}>
           {isCompleted ? '✓' : '○'}
         </Text>
       </TouchableOpacity>

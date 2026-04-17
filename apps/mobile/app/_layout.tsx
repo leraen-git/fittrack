@@ -81,7 +81,7 @@ function OnboardingGate() {
       redirected.current = true
       // Guests and email users skip the consent screen (no provider data to display)
       const skipConsent = me.data.authProvider === 'guest' || me.data.authProvider === 'email'
-      router.replace((skipConsent ? '/onboarding/step1' : '/onboarding/step0') as any)
+      router.replace(skipConsent ? '/onboarding/step1' : '/onboarding/step0')
     }
   }, [me.data])
 
@@ -118,9 +118,9 @@ function NotificationWatcher() {
     })
     const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
       const screen = response.notification.request.content.data?.screen as string | undefined
-      if (screen === 'workout') router.navigate('/(tabs)/' as any)
-      else if (screen === 'diet') router.navigate('/(tabs)/diet' as any)
-      else router.navigate('/(tabs)/' as any)
+      if (screen === 'workout') router.navigate('/')
+      else if (screen === 'diet') router.navigate('/diet')
+      else router.navigate('/')
     })
     return () => { sub.remove(); tapSub.remove() }
   }, [])
@@ -135,7 +135,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.replace('/(auth)/sign-in' as any)
+      router.replace('/sign-in')
     }
   }, [status])
 

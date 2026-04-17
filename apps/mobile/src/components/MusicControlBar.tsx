@@ -21,6 +21,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import {
   subscribeNowPlaying,
@@ -30,7 +31,7 @@ import {
   type NowPlayingInfo,
 } from '@/services/musicService'
 
-export function MusicControlBar() {
+export const MusicControlBar = React.memo(function MusicControlBar() {
   const { colors, typography, spacing } = useTheme()
   const currentWorkout = useActiveSessionStore((s) => s.currentWorkout)
   const [track, setTrack] = useState<NowPlayingInfo | null>(null)
@@ -118,7 +119,7 @@ export function MusicControlBar() {
           accessibilityLabel={track.isPlaying ? 'Pause' : 'Play'}
           accessibilityRole="button"
         >
-          <Text style={{ fontSize: 16, color: '#fff' }}>
+          <Text style={{ fontSize: 16, color: tokenColors.white }}>
             {track.isPlaying ? '⏸' : '▶'}
           </Text>
         </TouchableOpacity>
@@ -135,7 +136,7 @@ export function MusicControlBar() {
       </View>
     </Animated.View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   container: {

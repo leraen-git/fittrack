@@ -62,7 +62,7 @@ export default function ExerciseLibraryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
           {allFilters.map((mg) => {
             const selected = muscleFilter === mg
-            const label = mg === 'All' ? t('muscleGroups.all') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)
+            const label = mg === 'All' ? t('muscleGroups.all') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)
             return (
               <TouchableOpacity
                 key={mg}
@@ -98,7 +98,7 @@ export default function ExerciseLibraryScreen() {
               {exercise.name}
             </Text>
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {exercise.muscleGroups.map((mg) => t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}` as any)).join(' · ')} · {exercise.difficulty}
+              {exercise.muscleGroups.map((mg) => t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)).join(' · ')} · {exercise.difficulty}
             </Text>
           </Card>
         ))}

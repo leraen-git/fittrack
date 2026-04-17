@@ -61,7 +61,7 @@ export default function WorkoutsScreen() {
         <View>
           <SectionHeader
             title={t('workout.myPlan')}
-            onAdd={() => router.push('/plans/create' as any)}
+            onAdd={() => router.push('/plans/create')}
             addLabel={t('workout.addNew')}
           />
 
@@ -70,7 +70,7 @@ export default function WorkoutsScreen() {
           {/* Active plan */}
           {activePlan && (
             <TouchableOpacity
-              onPress={() => router.push(`/plans/create?id=${activePlan.id}` as any)}
+              onPress={() => router.push(`/plans/create?id=${activePlan.id}`)}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,
@@ -144,7 +144,7 @@ export default function WorkoutsScreen() {
               {inactivePlans.map((plan) => (
                 <TouchableOpacity
                   key={plan.id}
-                  onPress={() => router.push(`/plans/create?id=${plan.id}` as any)}
+                  onPress={() => router.push(`/plans/create?id=${plan.id}`)}
                   style={{
                     backgroundColor: colors.surface,
                     borderRadius: radius.lg,
@@ -189,7 +189,7 @@ export default function WorkoutsScreen() {
 
           {!plansLoading && !plans?.length && (
             <TouchableOpacity
-              onPress={() => router.push('/plans/create' as any)}
+              onPress={() => router.push('/plans/create')}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,
@@ -218,7 +218,7 @@ export default function WorkoutsScreen() {
         <View>
           <SectionHeader
             title={t('tabs.workouts')}
-            onAdd={() => router.push('/workout/build' as any)}
+            onAdd={() => router.push('/workout/build')}
             addLabel={t('workout.addNew')}
           />
 
@@ -228,7 +228,7 @@ export default function WorkoutsScreen() {
             {workouts?.map((w) => (
               <TouchableOpacity
                 key={w.id}
-                onPress={() => router.push(`/workout/${w.id}` as any)}
+                onPress={() => router.push(`/workout/${w.id}`)}
                 style={{
                   backgroundColor: colors.surface,
                   borderRadius: radius.lg,
@@ -256,7 +256,7 @@ export default function WorkoutsScreen() {
 
           {!workoutsLoading && workouts?.length === 0 && (
             <TouchableOpacity
-              onPress={() => router.push('/workout/build' as any)}
+              onPress={() => router.push('/workout/build')}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,

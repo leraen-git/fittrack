@@ -32,10 +32,10 @@ export default function PlanGeneratingScreen() {
   const generate = trpc.plans.generateWithAI.useMutation({
     onSuccess: (data) => {
       setProposedPlan(data.plan, pendingPrompt, data.assistantMessage)
-      router.replace('/plans/preview' as any)
+      router.replace('/plans/preview')
     },
     onError: (err) => {
-      router.replace('/plans/generate' as any)
+      router.replace('/plans/generate')
       // Small delay so screen has transitioned before showing alert
       setTimeout(() => {
         const { Alert } = require('react-native')

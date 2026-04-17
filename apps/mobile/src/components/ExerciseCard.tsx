@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 import { Card } from './Card'
 import type { ExerciseStatus } from '@tanren/shared'
 
@@ -15,7 +16,7 @@ interface ExerciseCardProps {
   onPress?: () => void
 }
 
-export function ExerciseCard({
+export const ExerciseCard = React.memo(function ExerciseCard({
   name,
   muscleGroups,
   currentVolume,
@@ -84,7 +85,7 @@ export function ExerciseCard({
                 paddingVertical: 2,
               }}
             >
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: '#fff' }}>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: tokenColors.white }}>
                 ★ PR
               </Text>
             </View>
@@ -131,4 +132,4 @@ export function ExerciseCard({
       )}
     </Card>
   )
-}
+})

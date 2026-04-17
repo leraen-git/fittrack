@@ -13,17 +13,24 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
-import ViewShot from 'react-native-view-shot'
+import ViewShot, { type CaptureOptions } from 'react-native-view-shot'
+
+// @types/react 19 class component JSX compat workaround
+const ViewShotCompat = ViewShot as unknown as React.ComponentType<
+  { options?: CaptureOptions; style?: import('react-native').StyleProp<import('react-native').ViewStyle>; children?: React.ReactNode } & React.RefAttributes<ViewShot>
+>
 import * as ImagePicker from 'expo-image-picker'
 import * as Sharing from 'expo-sharing'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 
 // 9:16 ratio — standard portrait for Instagram / Stories / TikTok
 const CARD_RATIO = 9 / 16
-const RED = '#E8192C'
-const BG = '#0A0A0A'
-const WHITE = '#F0F0F0'
+const RED = tokenColors.light.primary
+const BG = tokenColors.dark.surface
+const WHITE = tokenColors.white
 
 function makePanResponder(pan: Animated.ValueXY) {
   return PanResponder.create({
@@ -39,6 +46,7 @@ function makePanResponder(pan: Animated.ValueXY) {
 
 export default function ShareScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const finishSession = useActiveSessionStore((s) => s.finishSession)
 
@@ -78,13 +86,13 @@ export default function ShareScreen() {
 
   const finishAndNavigate = () => {
     finishSession()
-    router.replace('/' as any)
+    router.replace('/')
   }
 
   const pickPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to add a background.')
+      Alert.alert(t('share.permissionNeeded'), t('share.allowPhotoAccess'))
       return
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -99,7 +107,7 @@ export default function ShareScreen() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow camera access to take a photo.')
+      Alert.alert(t('share.permissionNeeded'), t('share.allowCameraAccess'))
       return
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -122,9 +130,9 @@ export default function ShareScreen() {
     setSharing(true)
     const uri = await captureCard()
     setSharing(false)
-    if (!uri) { Alert.alert('Error', 'Could not capture card.'); return }
+    if (!uri) { Alert.alert(t('common.error'), t('share.captureError')); return }
     const available = await Sharing.isAvailableAsync()
-    if (!available) { Alert.alert('Sharing not available on this device.'); return }
+    if (!available) { Alert.alert(t('share.sharingUnavailable')); return }
     await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'Share your session' })
   }
 
@@ -140,11 +148,11 @@ export default function ShareScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, paddingVertical: spacing.sm }}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel={t('common.back')} accessibilityRole="button">
           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1, marginLeft: spacing.md }}>
-          Share session
+          {t('share.title')}
         </Text>
         <TouchableOpacity
           onPress={finishAndNavigate}
@@ -156,7 +164,7 @@ export default function ShareScreen() {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          accessibilityLabel="Finish session"
+          accessibilityLabel={t('share.finishSession')}
           accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: WHITE }}>✓</Text>
@@ -165,7 +173,7 @@ export default function ShareScreen() {
 
       {/* Card preview */}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ViewShot
+        <ViewShotCompat
           ref={viewShotRef}
           options={{ format: 'png', quality: 1 }}
           style={{
@@ -197,7 +205,7 @@ export default function ShareScreen() {
             {...titlePanResponder.panHandlers}
           >
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: 'rgba(255,255,255,0.5)', letterSpacing: 2.5, textTransform: 'uppercase' }}>
-              Session complete
+              {t('share.sessionComplete')}
             </Text>
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['3xl'], color: WHITE, lineHeight: 36, marginTop: 4 }} numberOfLines={2}>
               {workoutName ?? 'Workout'}
@@ -221,9 +229,9 @@ export default function ShareScreen() {
             <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.12)', marginBottom: 10 }} />
             <View style={{ flexDirection: 'row' }}>
               {[
-                { label: 'Duration', value: `${durationMins ?? 0}m` },
-                { label: 'Volume', value: volumeDisplay },
-                { label: 'Sets', value: completedSets ?? '0' },
+                { label: t('share.duration'), value: `${durationMins ?? 0}m` },
+                { label: t('share.volume'), value: volumeDisplay },
+                { label: t('share.sets'), value: completedSets ?? '0' },
               ].map((stat, i) => (
                 <View key={stat.label} style={{ flex: 1, alignItems: i === 0 ? 'flex-start' : i === 2 ? 'flex-end' : 'center' }}>
                   <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: WHITE }}>{stat.value}</Text>
@@ -243,7 +251,7 @@ export default function ShareScreen() {
               }}>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: RED, letterSpacing: 1 }}>PR</Text>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.md, color: RED }}>
-                  {prs} new PR{prs > 1 ? 's' : ''}
+                  {prs > 1 ? t('share.newPRs', { count: prs }) : t('share.newPR', { count: prs })}
                 </Text>
               </View>
             )}
@@ -252,39 +260,39 @@ export default function ShareScreen() {
               BUILT REP BY REP.
             </Text>
           </Animated.View>
-        </ViewShot>
+        </ViewShotCompat>
 
         {/* Drag hint */}
         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted, marginTop: spacing.sm }}>
-          Drag blocks to reposition
+          {t('share.dragHint')}
         </Text>
       </View>
 
       {/* Photo + action row */}
       <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.base, paddingBottom: spacing.base }}>
         <TouchableOpacity
-          onPress={() => Alert.alert('Add photo', undefined, [
-            { text: 'Camera', onPress: takePhoto },
-            { text: 'Library', onPress: pickPhoto },
-            ...(photoUri ? [{ text: 'Remove photo', style: 'destructive' as const, onPress: () => setPhotoUri(null) }] : []),
-            { text: 'Cancel', style: 'cancel' },
+          onPress={() => Alert.alert(t('share.addPhoto'), undefined, [
+            { text: t('share.camera'), onPress: takePhoto },
+            { text: t('share.library'), onPress: pickPhoto },
+            ...(photoUri ? [{ text: t('share.removePhoto'), style: 'destructive' as const, onPress: () => setPhotoUri(null) }] : []),
+            { text: t('common.cancel'), style: 'cancel' },
           ])}
           style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.lg, paddingVertical: spacing.base, alignItems: 'center', borderWidth: 1, borderColor: photoUri ? colors.primary : colors.surface2 }}
-          accessibilityLabel="Add background photo" accessibilityRole="button"
+          accessibilityLabel={t('share.addPhoto')} accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: photoUri ? colors.primary : colors.textMuted }}>
-            {photoUri ? '📸 Change photo' : '📸 Add photo'}
+            {photoUri ? t('share.changePhoto') : t('share.addPhoto')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleShare}
           disabled={sharing}
           style={{ flex: 2, backgroundColor: RED, borderRadius: radius.lg, paddingVertical: spacing.base, alignItems: 'center' }}
-          accessibilityLabel="Share" accessibilityRole="button"
+          accessibilityLabel={t('share.share')} accessibilityRole="button"
         >
           {sharing
             ? <ActivityIndicator color={WHITE} />
-            : <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: WHITE }}>Share →</Text>
+            : <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: WHITE }}>{t('share.share')} →</Text>
           }
         </TouchableOpacity>
       </View>

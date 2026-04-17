@@ -44,5 +44,5 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
     html: emailTemplate(code),
   })
 
-  if (error) throw new Error(`Failed to send email: ${(error as any).message ?? 'unknown error'}`)
+  if (error) throw new Error(`Failed to send email: ${error.message ?? 'unknown error'}`)
 }

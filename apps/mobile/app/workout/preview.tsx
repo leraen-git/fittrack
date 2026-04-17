@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
@@ -47,6 +48,7 @@ function ExercisePicker({
   alreadyAdded: string[]
 }) {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
   const { data: allExercises } = trpc.exercises.list.useQuery()
@@ -69,7 +71,7 @@ function ExercisePicker({
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>✕</Text>
           </TouchableOpacity>
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary, flex: 1 }}>
-            Add exercise
+            {t('workout.addExercise')}
           </Text>
         </View>
 
@@ -78,7 +80,7 @@ function ExercisePicker({
           <TextInput
             value={search}
             onChangeText={setSearch}
-            placeholder="Search exercises..."
+            placeholder={t('workout.searchExercises')}
             placeholderTextColor={colors.textMuted}
             style={{
               backgroundColor: colors.surface,
@@ -167,6 +169,7 @@ function ExercisePicker({
 export default function WorkoutPreviewScreen() {
   const { templateId } = useLocalSearchParams<{ templateId: string }>()
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
     { id: templateId ?? '' },
     { enabled: !!templateId },
@@ -240,7 +243,7 @@ export default function WorkoutPreviewScreen() {
       defaultRestSeconds: DEFAULT_REST,
       sets: withCompleted(setsConfig[ex.exerciseId] ?? []),
     }))
-    startSession(workout as any, [...templateExercises, ...additionalExercises])
+    startSession({ id: workout.id, name: workout.name }, [...templateExercises, ...additionalExercises])
     router.push('/workout/active')
   }
 
@@ -327,11 +330,11 @@ export default function WorkoutPreviewScreen() {
         {/* Column headers */}
         <View style={{ flexDirection: 'row', paddingHorizontal: spacing.xs, gap: spacing.sm }}>
           <Text style={{ width: 28, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>#</Text>
-          <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>REPS</Text>
+          <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>{t('workout.columnReps')}</Text>
           <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>
-            KG{hasPrev ? ` (prev ${recWeight}kg)` : recWeight > 0 ? ` (rec ${recWeight}kg)` : ''}
+            {t('workout.columnKg')}{hasPrev ? ` (${t('workout.prevLabel')} ${recWeight}kg)` : recWeight > 0 ? ` (${t('workout.recLabel')} ${recWeight}kg)` : ''}
           </Text>
-          <Text style={{ width: 56, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>REST</Text>
+          <Text style={{ width: 56, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>{t('workout.columnRest')}</Text>
         </View>
 
         {/* Set rows */}
@@ -376,7 +379,7 @@ export default function WorkoutPreviewScreen() {
             style={{ flex: 1, alignItems: 'center', paddingVertical: spacing.xs, borderRadius: radius.md, borderWidth: 1, borderColor: colors.primary }}
             accessibilityLabel="Add set" accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>+ Add set</Text>
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>{t('workout.addSet')}</Text>
           </TouchableOpacity>
           {sets.length > 1 && (
             <TouchableOpacity
@@ -384,7 +387,7 @@ export default function WorkoutPreviewScreen() {
               style={{ paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, borderWidth: 1, borderColor: colors.surface2 }}
               accessibilityLabel="Remove last set" accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>− Set</Text>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>{t('workout.removeSet')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -417,7 +420,7 @@ export default function WorkoutPreviewScreen() {
           accessibilityLabel="Start workout" accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: tokenColors.white, letterSpacing: 2 }}>
-            START
+            {t('workout.start')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -459,10 +462,10 @@ export default function WorkoutPreviewScreen() {
             borderStyle: 'dashed',
             borderColor: colors.primary,
           }}
-          accessibilityLabel="Add exercise" accessibilityRole="button"
+          accessibilityLabel={t('workout.addExercise')} accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.primary }}>+</Text>
-          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>Add exercise</Text>
+          <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.primary }}>{t('workout.addExercise')}</Text>
         </TouchableOpacity>
 
         <View style={{ height: spacing.xl }} />

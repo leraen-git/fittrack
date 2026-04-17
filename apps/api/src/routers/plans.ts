@@ -282,10 +282,11 @@ export const plansRouter = router({
 
       // Rate limit: max 2 AI workout plan generations per week
       const weekStart = startOfWeekUTC()
-      const [{ value: generationsThisWeek }] = await ctx.db
+      const [countRow] = await ctx.db
         .select({ value: count() })
         .from(workoutPlans)
         .where(and(eq(workoutPlans.userId, user.id), gte(workoutPlans.createdAt, weekStart)))
+      const generationsThisWeek = countRow?.value ?? 0
 
       if (generationsThisWeek >= AI_GENERATION_LIMIT) {
         throw new TRPCError({

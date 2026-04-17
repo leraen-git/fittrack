@@ -1,47 +1,42 @@
-import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import React, { useCallback } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
 
-// 0=Sun 1=Mon … 6=Sat — ordered Mon–Sun for display
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 const DAY_LABELS_EN = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const DAY_LABELS_FR = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 
 interface Props {
-  value: number[]  // selected day indices (0=Sun … 6=Sat)
+  value: number[]
   onChange: (days: number[]) => void
   lang?: 'en' | 'fr'
 }
 
-export function DayPicker({ value, onChange, lang = 'en' }: Props) {
+export const DayPicker = React.memo(function DayPicker({ value, onChange, lang = 'en' }: Props) {
   const { colors, typography, spacing, radius } = useTheme()
   const labels = lang === 'fr' ? DAY_LABELS_FR : DAY_LABELS_EN
 
-  const toggle = (day: number) => {
+  const toggle = useCallback((day: number) => {
     if (value.includes(day)) {
       onChange(value.filter((d) => d !== day))
     } else {
       onChange([...value, day])
     }
-  }
+  }, [value, onChange])
 
   return (
-    <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+    <View style={[styles.row, { gap: spacing.xs }]}>
       {DAY_ORDER.map((day, i) => {
         const selected = value.includes(day)
         return (
           <TouchableOpacity
             key={day}
             onPress={() => toggle(day)}
-            style={{
-              flex: 1,
-              aspectRatio: 1,
+            style={[styles.cell, {
               borderRadius: radius.pill,
               backgroundColor: selected ? colors.primary : colors.surface2,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            }]}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: selected }}
             accessibilityLabel={`Day ${labels[i]}`}
@@ -58,4 +53,9 @@ export function DayPicker({ value, onChange, lang = 'en' }: Props) {
       })}
     </View>
   )
-}
+})
+
+const styles = StyleSheet.create({
+  row: { flexDirection: 'row' },
+  cell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
+})

@@ -42,7 +42,7 @@ export default function GeneratePlanScreen() {
       return
     }
     setPendingPrompt(trimmed)
-    router.push('/plans/generating' as any)
+    router.push('/plans/generating')
   }
 
   const isRefinement = conversationHistory.length > 0

@@ -18,7 +18,7 @@ export default function OnboardingStep3() {
       weightKg: weight ? parseFloat(weight) : null,
       onboardingDone: true,
     })
-    router.replace('/' as any)
+    router.replace('/')
   }
 
   const inputStyle = {

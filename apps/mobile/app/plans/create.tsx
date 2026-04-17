@@ -258,7 +258,7 @@ export default function CreatePlanScreen() {
             <TouchableOpacity
               onPress={() => {
                 usePendingWorkoutStore.getState().setDay(selectingDayFor)
-                router.push('/workout/build' as any)
+                router.push('/workout/build')
               }}
               style={{
                 flexDirection: 'row',
@@ -340,7 +340,7 @@ export default function CreatePlanScreen() {
         {/* AI card — only shown when creating (not editing) */}
         {!isEditing && selectingDayFor === null && (
           <TouchableOpacity
-            onPress={() => router.push('/plans/generate' as any)}
+            onPress={() => router.push('/plans/generate')}
             style={{
               backgroundColor: colors.surface,
               borderRadius: radius.lg,
