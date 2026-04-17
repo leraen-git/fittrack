@@ -15,6 +15,8 @@ export interface SessionExercise {
   defaultReps: number
   defaultWeight: number
   defaultRestSeconds: number
+  lastWeight?: number   // last session's weight, used as ghost placeholder
+  lastReps?: number     // last session's reps, used as ghost placeholder
   sets: SetConfig[]
 }
 

@@ -227,6 +227,8 @@ export default function WorkoutPreviewScreen() {
       defaultReps: ex.defaultReps,
       defaultWeight: ex.defaultWeight,
       defaultRestSeconds: ex.defaultRestSeconds,
+      lastWeight: ex.previousSets[0]?.weight,
+      lastReps: ex.previousSets[0]?.reps,
       sets: withCompleted(setsConfig[ex.exerciseId] ?? []),
     }))
     const additionalExercises = extraExercises.map((ex) => ({
@@ -371,10 +373,10 @@ export default function WorkoutPreviewScreen() {
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
           <TouchableOpacity
             onPress={() => addSet(exerciseId, sets[sets.length - 1] ?? { reps: opts.defaultReps, weight: recWeight, restSeconds: opts.defaultRestSeconds })}
-            style={{ flex: 1, alignItems: 'center', paddingVertical: spacing.xs, borderRadius: radius.md, borderWidth: 1, borderColor: colors.surface2 }}
+            style={{ flex: 1, alignItems: 'center', paddingVertical: spacing.xs, borderRadius: radius.md, borderWidth: 1, borderColor: colors.primary }}
             accessibilityLabel="Add set" accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>+ Add set</Text>
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>+ Add set</Text>
           </TouchableOpacity>
           {sets.length > 1 && (
             <TouchableOpacity
@@ -382,7 +384,7 @@ export default function WorkoutPreviewScreen() {
               style={{ paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, borderWidth: 1, borderColor: colors.surface2 }}
               accessibilityLabel="Remove last set" accessibilityRole="button"
             >
-              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.danger }}>− Set</Text>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>− Set</Text>
             </TouchableOpacity>
           )}
         </View>

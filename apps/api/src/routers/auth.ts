@@ -14,7 +14,7 @@ const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_RAW ?? 'dev-secret-change
 
 // Apple's public key set — fetched once and cached automatically by jose
 const APPLE_JWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'))
-const APPLE_BUNDLE_ID = 'com.fittrack.app'
+const APPLE_BUNDLE_ID = 'app.tanren'
 
 // ─── Token helpers ────────────────────────────────────────────────────────────
 
@@ -282,7 +282,7 @@ export const authRouter = router({
         authId: `guest_${guestId}`,
         authProvider: 'guest',
         name: 'Guest',
-        email: `guest_${guestId.slice(0, 8)}@guest.fittrack.app`,
+        email: `guest_${guestId.slice(0, 8)}@guest.tanren.app`,
       }).returning()
 
       const token = await signToken(user!.id, '7d')

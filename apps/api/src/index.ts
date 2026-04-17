@@ -69,4 +69,4 @@ server.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOSt
 
 const port = Number(process.env['PORT'] ?? 3000)
 await server.listen({ port, host: '0.0.0.0' })
-server.log.info(`FitTrack API running on http://localhost:${port}`)
+server.log.info(`Tanren API running on http://localhost:${port}`)

@@ -1,4 +1,5 @@
-import { create } from 'zustand'
+import { createStore } from 'zustand/vanilla'
+import { useStore } from 'zustand'
 
 interface TimerState {
   isRunning: boolean
@@ -13,7 +14,7 @@ interface TimerState {
   tick: () => void
 }
 
-export const useTimerStore = create<TimerState>((set) => ({
+export const timerStore = createStore<TimerState>((set) => ({
   isRunning: false,
   secondsRemaining: 0,
   totalSeconds: 0,
@@ -40,3 +41,7 @@ export const useTimerStore = create<TimerState>((set) => ({
       return { secondsRemaining: s.secondsRemaining - 1 }
     }),
 }))
+
+export function useTimerStore<T>(selector: (s: TimerState) => T): T {
+  return useStore(timerStore, selector)
+}

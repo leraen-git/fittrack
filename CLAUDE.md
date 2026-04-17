@@ -1,62 +1,116 @@
 # ═══════════════════════════════════════════════════════════
-# FITTRACK — AI Workout Builder App
+# TANREN (鍛錬) — AI Workout Builder App
 # Full-stack prompt for Claude Code
 # ═══════════════════════════════════════════════════════════
 
-## PROJECT OVERVIEW
+## Project
 
-You are building FitTrack, a mobile-first strength training app.
-The app allows users to create custom workout sessions, track
-sets/reps/weight, rest with a configurable timer, follow guided
-programs, and visualize their long-term progression.
+**Tanren** (鍛錬) — a mobile strength training app.
+
+- **Name:** Tanren (pronounced *tan-ren*, /ˈtan.ɾen/)
+- **Etymology:** Japanese — *forging through intense, repeated training*. Composed of 鍛 (tan, "to forge / hammer metal") and 錬 (ren, "to refine / temper through repetition").
+- **Tagline / Moto:** *Built rep by rep.*
+- **Descriptive baseline:** Eat. Train. Rest.
+- **Positioning:** Strength training app for committed practitioners. Gym/muscu classique ADN.
+- **Bundle ID:** `app.tanren` · **Deep link scheme:** `tanren://` · **Package:** `@tanren/*`
+
+Replace any legacy references (`FitTrack`) with `Tanren` everywhere.
+
+---
+
+## Brand identity (non-negotiable design constraints)
+
+### Color palette
+
+Strict three-color system. Do not introduce additional brand colors.
+
+| Token | Hex (light) | Hex (dark) | Usage |
+|---|---|---|---|
+| `color.bg.primary` | `#FFFFFF` | `#000000` | Main background |
+| `color.text.primary` | `#000000` | `#FFFFFF` | Main text |
+| `color.accent` | `#E8192C` | `#FF2D3F` | PRs, CTAs, active states, logo |
+| `color.text.secondary` | `#888888` | `#888888` | Timestamps, captions |
+| `color.border` | `#CCCCCC` | `#222222` | Dividers, card outlines |
+| `color.surface.raised` | `#F7F7F7` | `#111111` | Cards, modals |
+
+Semantic colors (volume comparison only):
+
+| Token | Hex | Usage |
+|---|---|---|
+| `color.semantic.up` | `#1A7F2C` | Volume increased vs last session |
+| `color.semantic.flat` | `#D98E00` | Volume matched vs last session |
+| `color.semantic.down` | `#E8192C` / `#FF2D3F` | Volume decreased vs last session |
+
+Use `useColorScheme()` + React context for dark/light switching.
+Every screen must support both modes without exception.
+
+### Typography
+
+- **Single typeface:** Barlow Condensed (via `@expo-google-fonts/barlow-condensed`)
+- **Weights in use:** Bold (700) · Medium (500) · Regular (400) · Light (300)
+- **ALL CAPS** for headers, CTAs, labels — never for body text
+- **Numbers always bold** — weights, reps, sets, PRs
+- **Italic** reserved exclusively for the moto (*Built rep by rep.*)
+- Scale: 10 / 11 / 12 / 13 / 14 / 17 / 20 / 24 / 32px
+
+### Spacing & radius
+
+Spacing scale: 4 / 8 / 12 / 16 / 20 / 24px
+Border radius: 4 / 6 / 8 / 12px (tight — no pill shapes in core UI)
+
+### Units & locale (France launch)
+
+Tanren launches in France first. All weights use the **metric system**, no exceptions.
+
+| Measurement | Unit | Display format |
+|---|---|---|
+| Weight (load) | kg | `100 kg`, `82,5 kg` |
+| Volume / tonnage | kg | `12 450 kg` (space thousands separator) |
+| Date format | French | `DD/MM/YYYY` or `DD MMM YYYY` |
+| First day of week | Monday | Heatmap and calendar |
+| Decimal separator | comma (UI copy) | `82,5 kg` in prose; `82.5` in inputs/code |
+
+**No `lbs` anywhere in the UI.** Database stores all weights as `Float` in kilograms.
+
+### Voice & copy rules
+
+- Direct, informed, never condescending. Never performative, never cute.
+- No emojis anywhere in the app UI.
+- No wellness/journey/gamification language.
+- Forge-themed copy ≤ 1 instance per screen (use sparingly for flavor).
+
+**Never use:** Wellness · Journey · Transformation · Crushing it · Leveling up · Beast mode · Badges · Points · Score
+
+### Logo & splash
+
+The logo: forge-spark mark (ring + bars + red sparks) + TANREN wordmark + optional 鍛錬 kanji stamp.
+SVG assets in `/assets/brand/logo/`: `mark-dark.svg`, `mark-light.svg`.
+Splash: dark bg `#000000`, 24px grid overlay, centered mark with red glow pulse, TANREN wordmark, 鍛錬 kanji, italic moto, baseline `EAT. TRAIN. REST.`
+
+---
 
 ## TECH STACK
 
 Frontend:   React Native + Expo (SDK 53+)
 Navigation: Expo Router (file-based, tab layout)
-State:      Zustand (global) + TanStack Query v5 (server state)
+State:      Zustand v5 (global) + TanStack Query v5 (server state)
 API layer:  tRPC v11 (end-to-end type safety, no code generation)
 Backend:    Node.js + Fastify + TypeScript
 Database:   PostgreSQL (via Drizzle ORM)
 Cache:      Redis (ioredis)
-Auth:       Clerk (JWT, Apple Sign-In, Google OAuth)
+Auth:       Custom JWT — Email OTP (Resend) + Apple Sign-In + Google OAuth
+            No Clerk. Token stored in expo-secure-store (key: tanren_auth_token).
 Offline:    PowerSync (Postgres-native offline sync, conflict resolution)
 Charts:     Victory Native XL (React Native Skia, GPU-rendered)
-Notifs:     expo-notifications (local, timer alerts)
+Notifs:     expo-notifications (local, timer alerts) — permission requested once on first launch
 Testing:    Vitest (unit) + Maestro (E2E)
 Linting:    ESLint + Prettier + TypeScript strict mode
 
-## DESIGN SYSTEM
-
-Implement a strict design token system. All values below must
-be defined in src/theme/tokens.ts and never hardcoded.
-
-### Color palette
-Primary red:  #E8192C (light)  #FF2D3F (dark)
-Background:   #FFFFFF (light)  #0E0E0E (dark)
-Surface:      #F5F5F5 (light)  #1A1A1A (dark)
-Surface 2:    #EBEBEB (light)  #252525 (dark)
-Text primary: #0E0E0E (light)  #F0F0F0 (dark)
-Text muted:   #888888 (light)  #555555 (dark)
-Success:      #22C55E
-Warning:      #F59E0B
-Danger:       #E8192C
-
-Use useColorScheme() + React context for dark/light switching.
-Every screen must support both modes without exception.
-
-### Typography
-Font family: Inter (via expo-font)
-Weights:     400 Regular, 600 SemiBold, 700 Bold, 800 ExtraBold
-Scale:       10 / 11 / 12 / 13 / 14 / 17 / 20 / 24 / 32px
-
-### Spacing & radius
-Spacing scale: 4 / 8 / 12 / 16 / 20 / 24px
-Border radius: 8 / 12 / 16 / 24 / 9999px (pill)
+---
 
 ## PROJECT STRUCTURE
 
-fittrack/
+tanren/
 ├── apps/
 │   ├── mobile/              # Expo app
 │   │   ├── app/             # Expo Router screens
@@ -69,67 +123,66 @@ fittrack/
 │   │   │   │   ├── [id].tsx           # Session detail
 │   │   │   │   ├── active.tsx         # Active session screen
 │   │   │   │   ├── recap.tsx          # Post-session recap
-│   │   │   │   └── create.tsx         # Create/edit session
+│   │   │   │   └── preview.tsx        # Pre-session setup
 │   │   │   ├── exercise/
 │   │   │   │   ├── [id].tsx           # Exercise long-term chart
 │   │   │   │   └── library.tsx        # Exercise browser
-│   │   │   └── programs/
-│   │   │       └── [id].tsx           # Guided program detail
+│   │   │   ├── plans/                 # AI workout plan generation
+│   │   │   ├── onboarding/            # 4-step onboarding flow
+│   │   │   └── (auth)/                # Sign-in / OTP screens
 │   │   ├── src/
 │   │   │   ├── components/            # Reusable UI
 │   │   │   ├── hooks/                 # Custom hooks
 │   │   │   ├── stores/                # Zustand stores
-│   │   │   ├── services/              # API calls
-│   │   │   ├── theme/                 # Design tokens
-│   │   │   └── utils/                 # Helpers
-│   │   └── db/                        # WatermelonDB schema
+│   │   │   ├── services/              # Auth, notifications, music
+│   │   │   ├── theme/                 # Design tokens (tokens.ts + ThemeContext.tsx)
+│   │   │   └── utils/                 # format.ts (fr-FR formatters), progression.ts
+│   │   └── assets/brand/logo/         # SVG mark assets
 │   └── api/                 # Fastify backend
 │       ├── src/
-│       │   ├── routes/
-│       │   ├── services/
-│       │   ├── plugins/
-│       │   └── prisma/
-│       └── prisma/
-│           └── schema.prisma
+│       │   ├── routers/               # tRPC routers
+│       │   ├── db/                    # Drizzle schema + seed
+│       │   ├── services/              # AI, email (Resend)
+│       │   └── trpc.ts                # Router + middleware
+│       └── drizzle/
+│           └── schema.ts
 └── packages/
     └── shared/              # Shared types & utils (TS)
 
+---
+
 ## DATABASE SCHEMA (Drizzle ORM)
 
-Create the following models in src/db/schema.ts (Drizzle):
-
 ### User
-id, clerkId (unique), name, email, avatarUrl,
+id, authId (unique), authProvider (email | apple | google | guest),
+name, email, avatarUrl, gender,
 level (BEGINNER | INTERMEDIATE | ADVANCED),
 goal (WEIGHT_LOSS | MUSCLE_GAIN | MAINTENANCE),
-weeklyTarget (Int), createdAt, updatedAt
+weeklyTarget (Int), heightCm (Float?), weightKg (Float?),
+onboardingDone (Bool), createdAt, updatedAt
 
 ### WorkoutTemplate
 id, userId, name, description, muscleGroups (String[]),
 estimatedDuration (Int, minutes), isTemplate (Bool),
 isProgramWorkout (Bool), order (Int), createdAt
-Relations: User, WorkoutExercise[], WorkoutSession[]
 
 ### Exercise
 id, name, muscleGroups (String[]), equipment (String[]),
 description, videoUrl, imageUrl, difficulty,
-isCustom (Bool), userId (optional, for custom exercises)
+isCustom (Bool), userId (optional)
 
 ### WorkoutExercise
 id, workoutTemplateId, exerciseId, order,
 defaultSets (Int), defaultReps (Int),
-defaultWeight (Float), defaultRestSeconds (Int),
-notes (optional)
+defaultWeight (Float), defaultRestSeconds (Int), notes (optional)
 
 ### WorkoutSession
 id, userId, workoutTemplateId, startedAt, completedAt,
 durationSeconds (Int), totalVolume (Float),
 notes (optional), perceivedExertion (1-10, optional)
-Relations: User, WorkoutTemplate, SessionExercise[]
 
 ### SessionExercise
 id, workoutSessionId, exerciseId, order
-Relations: WorkoutSession, Exercise, ExerciseSet[]
 
 ### ExerciseSet
 id, sessionExerciseId, setNumber,
@@ -139,282 +192,242 @@ isCompleted (Bool), completedAt, notes (optional)
 ### Program
 id, name, description, level, goal, durationWeeks (Int),
 sessionsPerWeek (Int), imageUrl, isOfficial (Bool)
-Relations: ProgramWeek[]
 
 ### PersonalRecord
 id, userId, exerciseId, weight (Float), reps (Int),
 volume (Float), achievedAt, sessionId
 
+---
+
 ## CORE FEATURES — IMPLEMENTATION GUIDE
 
 ### 1. Home screen (app/(tabs)/index.tsx)
 - Greeting with user first name + time of day
-- 3 stat cards: current streak (days), total sessions, total
-  volume gain (%)
-- "New session" CTA button (primary red, full width)
-- Recent workouts list (last 5), tap to repeat or view
-- Guided programs shelf (horizontal scroll)
+- Compact stat strip: sessions this week, streak, last session PRs
+- Workout/diet tab toggle (when both plans are active)
+- Today's workout card with inline Start button
+- Auto-switches to diet tab when today's workout is done
+- "Workout complete" card shown when today's session is logged
 - Pull-to-refresh, skeleton loaders on initial load
 
 ### 2. Active workout screen (app/workout/active.tsx)
-- One exercise visible at a time, swipe to navigate
-- Current set highlighted, tap to mark complete
-- Input fields: reps, weight (numeric keyboard)
-- Persistent previous session data shown as ghost values
-- "Validate set" button triggers rest timer automatically
+- One exercise at a time with nav arrows
+- Set rows: reps + weight inputs pre-filled from last session (per exercise, across all sessions)
+- Rest timer overlay on set completion
+- Session heartbeat written to disk every 30s for crash recovery
+- Screen kept awake via expo-keep-awake
 
 ### 3. Rest timer
-- Circular SVG progress ring (red stroke on dark fill)
-- Countdown in MM:SS format, large typography
+- Circular Skia progress ring (red stroke)
+- Countdown in MM:SS, large Barlow Condensed Bold
 - ±15s quick-adjust buttons
-- "Skip" button to proceed immediately
-- Local notification triggered when rest ends (works
-  when app is backgrounded)
-- Default rest time comes from ExerciseSet.restSeconds,
-  editable per-exercise in session
+- Skip button
+- Local notification when rest ends (backgrounded)
+- Driven by Reanimated frame callback (UI thread) via useWorkletTimer hook
 
 ### 4. Post-session recap (app/workout/recap.tsx)
-Global comparison vs previous session of same template:
-- Total volume: current vs previous + % delta
-- Badge summary: X improved / Y stable / Z declined
-- Per-exercise breakdown with colored comparison bars:
-    green  = current volume > previous  (+X%)
-    amber  = equal  (=)
-    red    = current volume < previous  (-X%)
-- Each exercise card shows:
-    previous: Nsets × Mreps @ Wkg
-    current:  Nsets × Mreps @ Wkg
-    volume delta per set
-- New personal records highlighted with star badge
-- "Save & finish" button writes session to DB
+- Volume: current vs previous + % delta
+- Per-exercise comparison bars: green / amber / red
+- New PRs highlighted
+- Save & finish writes session to DB
 
 ### 5. Progress & history (app/(tabs)/history.tsx)
-Global view:
-- Time filter pills: 4w / 3m / 6m / All
-- Stats: volume trend %, sessions count, sessions/week
-- Activity heatmap (GitHub-style, 7 cols × 4 rows)
-  5 intensity levels: none / low / medium / high / max
+- Time filter: 4w / 3m / 6m / All
+- Activity heatmap (GitHub-style, Monday-first)
   Color ramp: #141414 → #4A0A10 → #8A1520 → #C01E2E → #FF2D3F
-- Weekly volume bar chart (12 bars, current week = red)
-- Personal records list per compound lift
+- Weekly volume bar chart (Victory Native XL)
+- PRs per compound lift
 
-Drill-down (tap exercise → app/exercise/[id].tsx):
-- Toggle: Charge max / Volume / Reps
-- Line chart with fill area (Victory Native XL, Skia-rendered)
-  X axis: session dates, Y axis: value
-  Red line + red fill with opacity
-  Dotted line for target/goal
-- Session-by-session table: date | max weight | volume | Δ%
-- Milestone card when PR is beaten
-- Goal progress bar: start → current → target
-- Contextual coaching tip (rule-based):
-    If 3+ consecutive sessions improved → suggest +2.5kg
-    If 3+ sessions flat → suggest deload or variation
-    If 2+ sessions declined → flag recovery warning
+### 6. Exercise drill-down (app/exercise/[id].tsx)
+- Toggle: Max weight / Volume / Reps
+- Line chart with fill area (Victory Native XL, Skia)
+- Coaching tip rule engine:
+    3+ sessions improved → suggest +2.5 kg
+    3+ sessions flat → suggest deload
+    2+ sessions declined → flag recovery warning
 
-### 6. Guided programs
-- Seed database with 6 official programs:
-    Beginner Muscle Gain 8wk (3d/wk)
-    Beginner Fat Loss 8wk (3d/wk)
-    Beginner Maintenance 6wk (2d/wk)
-    Intermediate Push/Pull/Legs 12wk (6d/wk)
-    Intermediate Upper/Lower 10wk (4d/wk)
-    Advanced Powerlifting 16wk (5d/wk)
+### 7. Guided programs
+- 6 official programs seeded (Beginner → Advanced)
 - Program detail: week overview, session list
-- "Start program" enrolls user, locks template
-- Progress indicator per week
-- Sessions can be duplicated and customized
+- Enroll → locks template
 
-### 7. Exercise library (app/exercise/library.tsx)
-- Search bar + muscle group filter chips
-- 200+ seeded exercises with: name, primaryMuscle[],
-  secondaryMuscle[], equipment[], difficulty
+### 8. Exercise library (app/exercise/library.tsx)
+- Search + muscle group filter chips
+- 200+ seeded exercises
 - User can create custom exercises
-- Exercise detail: description, animated GIF placeholder,
-  muscles targeted diagram (SVG body map)
+
+### 9. AI workout plan generation (app/plans/)
+- Generate plan via Anthropic API (gated for guests)
+- Preview + customize before activating
+- Active plan drives home screen workout card
+
+### 10. Diet plan (app/diet/)
+- AI-generated daily meal plan (gated for guests)
+- Meal detail modal with ingredients/recipe
+- Today's meals shown on home diet tab
+- Diet screen unchanged from original design
+
+---
 
 ## API ROUTES (tRPC + Fastify)
 
-All routers require Clerk JWT verification via
-@clerk/fastify plugin. tRPC replaces REST — types flow
-automatically from server to client with no code generation.
+All routers require JWT verification (custom middleware, no Clerk).
+Token: Bearer JWT in Authorization header, verified with jose.
 
-Define routers in apps/api/src/routers/:
+health.query                     — server health check
 
-health.query          — server health check
+auth.emailOtp.mutate             — send OTP code via Resend
+auth.verifyOtp.mutate            — verify OTP, return JWT
+auth.apple.mutate                — verify Apple identity token, return JWT
+auth.google.mutate               — verify Google ID token, return JWT
+auth.guest.mutate                — create guest session, return JWT
 
-users.sync            — upsert from Clerk webhook
-users.me.query        — get current user
-users.me.mutate       — update current user
+users.me.query                   — get current user
+users.updateMe.mutate            — update profile
 
-workouts.list.query          — user's templates
+workouts.list.query              — user's templates
 workouts.create.mutate
-workouts.byId.query
+workouts.detail.query            — includes previousSets per exercise (cross-session)
 workouts.update.mutate
 workouts.delete.mutate
 
-sessions.start.mutate        — start session
-sessions.complete.mutate     — complete + write to DB
+sessions.start.mutate            — start session
+sessions.complete.mutate         — complete + write to DB
 sessions.byId.query
-sessions.history.query       — paginated history
+sessions.history.query           — paginated history
 
-exercises.list.query         — library (cached Redis 24h)
-exercises.create.mutate      — create custom
+exercises.list.query             — library (cached Redis 24h)
+exercises.create.mutate
 exercises.byId.query
 
-progress.exercise.query      — long-term chart data
-progress.sessionRecap.query  — vs previous session
-progress.records.query       — personal records
-progress.heatmap.query       — activity heatmap data
+progress.exercise.query          — long-term chart data
+progress.sessionRecap.query      — vs previous session
+progress.records.query           — personal records
+progress.heatmap.query           — activity heatmap data
+progress.lastSessionPRCount.query
 
-programs.list.query
-programs.byId.query
-programs.enroll.mutate
+plans.active.query               — active workout plan
+plans.generate.mutate            — AI plan generation
+plans.create.mutate
+plans.delete.mutate
 
-## OFFLINE-FIRST STRATEGY
+diet.todayMeals.query            — today's meals (lightweight, no full rawPlan)
+diet.generate.mutate             — AI diet plan generation
 
-Use PowerSync for local persistence with automatic Postgres sync.
-PowerSync eliminates the need for a custom /sync endpoint —
-it connects directly to Postgres and handles conflict resolution.
-
-Setup:
-- apps/mobile/src/db/powersync.ts — PowerSync client config
-- apps/mobile/src/db/schema.ts    — local SQLite table definitions
-  (mirrors server: workouts, exercises, sessions, sets)
-- apps/api/src/plugins/powersync.ts — PowerSync backend connector
-
-Sync flow:
-1. PowerSync streams Postgres changes to device automatically
-2. Active session writes locally first via SQLite (immediate)
-3. On session complete: local write syncs to Postgres via PowerSync
-4. Conflict resolution handled by PowerSync (last-write-wins + hooks)
-5. Optimistic UI everywhere — never block on network
-6. Offline banner when no connection (non-blocking, PowerSync status API)
-
-## NOTIFICATIONS
-
-Implement in src/services/timerService.ts:
-- Schedule local notification when rest timer starts
-- Cancel notification if user skips manually
-- Notification payload: exercise name + next set info
-- Use expo-notifications scheduleNotificationAsync
-- Request permissions on first active session only
+---
 
 ## STATE MANAGEMENT
 
-Define these Zustand stores in src/stores/:
+Zustand stores in src/stores/:
 
 activeSessionStore.ts
-  currentWorkout, currentExerciseIndex, currentSetIndex,
-  sets (Map<exerciseId, ExerciseSet[]>), startedAt,
-  actions: nextExercise, prevExercise, completeSet,
-  updateSet, finishSession
+  currentWorkout, exercises (SessionExercise[]), currentExerciseIndex,
+  currentSetIndex, startedAt, isQuickSession
+  SessionExercise includes: lastWeight?, lastReps? (ghost placeholder values)
+  actions: startSession, nextExercise, prevExercise, completeSet,
+           updateSet, addExercise, finishSession
 
-timerStore.ts
-  isRunning, secondsRemaining, totalSeconds, exerciseName,
-  actions: start, pause, skip, addSeconds, reset
+timerStore.ts (vanilla store via createStore + useStore)
+  isRunning, secondsRemaining, totalSeconds, exerciseName
+  actions: start, pause, skip, addSeconds, reset, tick
+  Export both timerStore (vanilla, for .getState()) and useTimerStore (hook)
 
 userStore.ts
-  profile, preferences (units kg/lbs, theme),
+  profile, preferences (theme only — metric kg is fixed)
   actions: updateProfile, toggleTheme
+
+notificationSettingsStore.ts
+  workout reminders, meal reminders, hydration reminders
+
+---
+
+## NOTIFICATIONS
+
+- Permission requested **once** on first app launch (AsyncStorage key: notif_permission_asked)
+- Never requested again from active session screen
+- Rest timer: scheduleRestEndNotification / cancelRestNotification
+- Workout reminders: scheduled via notificationScheduler.ts
+- Android channels: workout-reminders / meal-reminders / hydration-reminders
+
+---
 
 ## VOLUME CALCULATION LOGIC
 
 Implement in src/utils/progression.ts:
 
-// Volume per set
 setVolume = reps × weight
-
-// Volume per exercise (session)
 exerciseVolume = sum(setVolume for all completed sets)
-
-// Session total volume
 sessionVolume = sum(exerciseVolume for all exercises)
-
-// Progression delta (exercise level)
 delta = (currentVolume - previousVolume) / previousVolume
 
-// Status thresholds
-improved  → delta > 0.01  (+1% or more)
+improved  → delta > 0.01
 stable    → delta between -0.01 and +0.01
 declined  → delta < -0.01
 
-// Coaching rule engine
-type Trend = 'improving' | 'plateauing' | 'declining'
-function getTrend(last5sessions: number[]): Trend
-function getCoachingTip(exercise, trend, currentMax): string
-
-## COMPONENT LIBRARY
-
-Build these base components in src/components/:
-
-Button       — primary (red), secondary, ghost, icon variants
-Card         — surface card with optional press handler
-SetRow       — set number + reps/weight inputs + status
-ExerciseCard — name, muscle tags, comparison bars, delta badge
-TimerRing    — Skia circular countdown (react-native-skia)
-ProgressBar  — labeled start/current/target bar
-HeatmapGrid  — 7×N grid of colored cells (activity map)
-BarChart     — weekly volume bars (Victory Native XL)
-LineChart    — progression curve with fill area (Victory Native XL)
-StatCard     — metric label + large value + trend indicator
-PillFilter   — horizontal scrollable filter chips
-SkeletonCard — shimmer placeholder (react-native-reanimated)
+---
 
 ## ENVIRONMENT VARIABLES
 
-Create .env.example with:
-DATABASE_URL=
-REDIS_URL=
-CLERK_SECRET_KEY=
-CLERK_PUBLISHABLE_KEY=
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
-EXPO_PUBLIC_API_URL=
+apps/api/.env:
+DATABASE_URL=postgresql://localhost/tanren
+REDIS_URL=redis://localhost:6379
+PORT=3000
 JWT_SECRET=
+ANTHROPIC_API_KEY=
+RESEND_API_KEY=
+FROM_EMAIL=Tanren <noreply@tanren.app>
+ENABLE_DEV_AUTH=true
+
+apps/mobile/.env:
+EXPO_PUBLIC_API_URL=http://localhost:3000
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=
+
+---
 
 ## CODE QUALITY RULES
 
-- TypeScript strict mode, no any
-- All tRPC procedures typed with Zod input schemas (output types inferred)
+- TypeScript strict mode, no `any`
+- All tRPC procedures typed with Zod input schemas
 - No business logic in components — use custom hooks
-- Every hook must have a corresponding unit test
 - All colors via theme tokens — zero hardcoded hex values
-- All text via i18n keys (react-i18next), EN locale only
-- Accessibility: all interactive elements have
-  accessibilityLabel and accessibilityRole
+- All text via i18n keys (react-i18next), FR + EN locales
+- Weights displayed in kg only — no lbs anywhere
+- Numbers use fr-FR formatting: comma decimal, space thousands
+- Accessibility: all interactive elements have accessibilityLabel and accessibilityRole
+- No emojis in UI
 - No console.log in production — use logger service
+- Notification permission: requested once on first launch only
 
-## SEED DATA
+---
 
-Create apps/api/src/db/seed.ts with:
-- 200+ exercises across all muscle groups
-- 6 official programs (see Guided programs section)
-- 1 demo user with 12 weeks of realistic session history
-  (for local dev/testing of history & progress screens)
+## UI/UX PRINCIPLES
 
-## START SEQUENCE
+- **Numbers carry meaning** — weights, reps, volume are always the most prominent element
+- **Red is signal, not decoration** — reserved for PRs, active states, destructive actions, logo
+- **Black/white contrast is absolute** — no gradients on primary backgrounds
+- **Industrial, not friendly** — Barlow Condensed caps, sharp dividers
+- **Respect user competence** — do not explain basic gym concepts unprompted
+- **The forge metaphor lives in micro-interactions** — subtle red flash on PR, not spelled out
 
-When starting from scratch, proceed in this exact order:
+---
 
-1.  Scaffold monorepo with Turborepo
-2.  Initialize Expo app (SDK 53, TypeScript template, New Architecture enabled)
-3.  Initialize Fastify API (TypeScript, ESM)
-4.  Set up Drizzle ORM + run initial migration
-5.  Configure Clerk (backend plugin + Expo SDK)
-6.  Set up tRPC router (Fastify adapter + Expo client)
-7.  Implement design tokens + theme provider
-8.  Create base component library (Skia for timer/charts)
-9.  Configure PowerSync (backend connector + mobile client + schema)
-10. Build all tRPC procedures with Zod input validation
-11. Build screens in order: Home → Workouts → Active
-    → Timer → Recap → History → Exercise detail → Programs
-12. Wire up Zustand stores + TanStack Query (via tRPC)
-13. Add notifications service
-14. Implement progression calculation utils
-15. Seed database
-16. Write unit tests for hooks + utils
-17. Write Maestro E2E flows for critical paths
-18. Final pass: dark mode audit, accessibility audit
+## CHECKLIST FOR ANY NEW SCREEN
+
+- [ ] Uses only colors from the palette
+- [ ] Uses only Barlow Condensed (Noto Serif JP for kanji only)
+- [ ] All numbers are bold
+- [ ] All weights in kg, no lbs
+- [ ] Numbers use fr-FR format (comma decimal, space thousands)
+- [ ] No emojis in UI strings
+- [ ] Copy passes the "no performative motivation" test
+- [ ] Red used only for signal, not decoration
+- [ ] No badges, points, or gamification hooks
+- [ ] Dark mode parity
+
+---
+
+*Tanren · 鍛錬 · Built rep by rep.*
 
 # ═══════════════════════════════════════════════════════════
 # END OF PROMPT

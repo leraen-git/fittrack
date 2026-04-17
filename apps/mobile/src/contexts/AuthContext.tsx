@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'] ?? '',
   })
 
-  const googleAvailable = !!(
+  const googleAvailable = __DEV__ || !!(
     process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'] &&
     process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID']
   )

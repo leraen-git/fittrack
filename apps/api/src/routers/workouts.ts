@@ -165,32 +165,33 @@ export const workoutsRouter = router({
         .where(eq(workoutExercises.workoutTemplateId, input.id))
         .orderBy(workoutExercises.order)
 
-      // Find the most recent completed session for this template
-      const [lastSession] = await ctx.db
-        .select()
-        .from(workoutSessions)
-        .where(and(
-          eq(workoutSessions.userId, user.id),
-          eq(workoutSessions.workoutTemplateId, input.id),
-        ))
-        .orderBy(desc(workoutSessions.startedAt))
-        .limit(1)
-
-      // Get previous sets per exercise from that session
+      // For each exercise, find the last sets performed — across any session,
+      // so weights carry over even when the user switches templates.
       const previousSets: Record<string, { reps: number; weight: number }[]> = {}
-      if (lastSession) {
-        const lastSessionExs = await ctx.db
-          .select()
+      for (const ex of workoutExs) {
+        const [lastSessionEx] = await ctx.db
+          .select({ id: sessionExercises.id })
           .from(sessionExercises)
-          .where(eq(sessionExercises.workoutSessionId, lastSession.id))
+          .innerJoin(workoutSessions, eq(sessionExercises.workoutSessionId, workoutSessions.id))
+          .where(and(
+            eq(sessionExercises.exerciseId, ex.exerciseId),
+            eq(workoutSessions.userId, user.id),
+          ))
+          .orderBy(desc(workoutSessions.startedAt))
+          .limit(1)
 
-        for (const se of lastSessionExs) {
+        if (lastSessionEx) {
           const sets = await ctx.db
             .select()
             .from(exerciseSets)
-            .where(eq(exerciseSets.sessionExerciseId, se.id))
+            .where(and(
+              eq(exerciseSets.sessionExerciseId, lastSessionEx.id),
+              eq(exerciseSets.isCompleted, true),
+            ))
             .orderBy(exerciseSets.setNumber)
-          previousSets[se.exerciseId] = sets.map((s) => ({ reps: s.reps, weight: s.weight }))
+          if (sets.length > 0) {
+            previousSets[ex.exerciseId] = sets.map((s) => ({ reps: s.reps, weight: s.weight }))
+          }
         }
       }
 

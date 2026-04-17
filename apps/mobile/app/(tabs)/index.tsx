@@ -76,7 +76,7 @@ export default function HomeScreen() {
     if (isRestDay || isTodayWorkoutDone) setActiveTab('diet')
   }, [isRestDay, isTodayWorkoutDone])
 
-  // Reset manual override when date changes (checked on each focus)
+  // Reset manual override when date changes; auto-switch to diet on focus if workout done
   const lastDateRef = useRef(new Date().toDateString())
   useFocusEffect(useCallback(() => {
     const today = new Date().toDateString()
@@ -84,7 +84,11 @@ export default function HomeScreen() {
       lastDateRef.current = today
       hasManuallySet.current = false
     }
-  }, []))
+    // Always auto-open diet tab when returning to home after completing today's workout
+    if (!hasManuallySet.current && (isRestDay || isTodayWorkoutDone)) {
+      setActiveTab('diet')
+    }
+  }, [isRestDay, isTodayWorkoutDone]))
 
   const handleTabChange = (tab: 'workout' | 'diet') => {
     hasManuallySet.current = true
@@ -272,6 +276,39 @@ export default function HomeScreen() {
         {(!showTodayTabs || activeTab === 'workout') && (
           <>
 
+        {/* Today's workout complete card */}
+        {isTodayWorkoutDone && (
+          <View style={{
+            backgroundColor: colors.surface,
+            borderRadius: radius.lg,
+            overflow: 'hidden',
+          }}>
+            <View style={{ height: 3, backgroundColor: colors.success }} />
+            <View style={{ padding: spacing.base, gap: spacing.xs }}>
+              <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.success, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Today
+              </Text>
+              <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size['2xl'], color: colors.textPrimary }}>
+                Workout complete
+              </Text>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
+                Time to fuel your recovery.
+              </Text>
+            </View>
+            {showTodayTabs && (
+              <TouchableOpacity
+                onPress={() => handleTabChange('diet')}
+                style={{ margin: spacing.base, marginTop: 0, backgroundColor: colors.success, borderRadius: radius.md, paddingVertical: spacing.sm, alignItems: 'center' }}
+                accessibilityLabel="View today's diet" accessibilityRole="button"
+              >
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: '#FFFFFF' }}>
+                  View today's meals →
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
         {/* Active plan banner */}
         {activePlan ? (
           (isTodayWorkout || isRestDay) ? (
@@ -317,7 +354,25 @@ export default function HomeScreen() {
               </Text>
             </View>
           )
-        ) : (
+        ) : null}
+
+        {/* Compact stat strip — below the plan banner */}
+        {activePlan && (
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            {[
+              { label: t('home.thisWeek'), value: stats ? `${stats.sessionsThisWeek}/${stats.plannedThisWeek}` : '—', up: !!(stats && stats.sessionsThisWeek >= stats.plannedThisWeek) },
+              { label: t('home.streak'),   value: stats ? `${stats.streak}w` : '—', up: !!(stats && stats.streak > 0) },
+              { label: t('home.lastPRs'),  value: lastSessionPRCount != null ? String(lastSessionPRCount) : '—', up: !!(lastSessionPRCount && lastSessionPRCount > 0) },
+            ].map(({ label, value, up }) => (
+              <View key={label} style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.sm, alignItems: 'center', gap: 2 }}>
+                <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color: up ? colors.success : colors.textPrimary }}>{value}</Text>
+                <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>{label}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {activePlan ? null : (
           <View style={{ gap: spacing.md }}>
             {/* Hero: no plan */}
             <TouchableOpacity
@@ -417,27 +472,6 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Stats — hidden when today's workout is pending (give space to hero card) */}
-        {activePlan && !isTodayWorkout && (
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-            <StatCard
-              label={t('home.thisWeek')}
-              value={stats ? `${stats.sessionsThisWeek}/${stats.plannedThisWeek}` : '—'}
-              trend={stats && stats.sessionsThisWeek >= stats.plannedThisWeek ? 'up' : 'neutral'}
-            />
-            <StatCard
-              label={t('home.streak')}
-              value={stats ? `${stats.streak}w` : '—'}
-              trend={stats && stats.streak > 0 ? 'up' : 'neutral'}
-            />
-            <StatCard
-              label={t('home.lastPRs')}
-              value={lastSessionPRCount != null ? String(lastSessionPRCount) : '—'}
-              trend={lastSessionPRCount != null && lastSessionPRCount > 0 ? 'up' : 'neutral'}
-            />
-          </View>
-        )}
-
         {/* Rest day hero card — matches workout hero style */}
         {isRestDay && (
           <View style={{
@@ -470,9 +504,26 @@ export default function HomeScreen() {
             }}>
               {/* Header */}
               <View style={{ padding: spacing.base, gap: spacing.xs }}>
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: isTodayWorkout ? typography.size['3xl'] : typography.size['2xl'], color: colors.textPrimary }}>
-                  {nextWorkout.workoutName}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                  <Text style={{ fontFamily: typography.family.extraBold, fontSize: isTodayWorkout ? typography.size['2xl'] : typography.size.xl, color: colors.textPrimary, flex: 1 }} numberOfLines={1}>
+                    {nextWorkout.workoutName}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}` as any)}
+                    style={{
+                      backgroundColor: colors.primary,
+                      borderRadius: radius.md,
+                      paddingVertical: spacing.sm,
+                      paddingHorizontal: spacing.md,
+                    }}
+                    accessibilityLabel={`Start ${nextWorkout.workoutName}`}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color: '#FFFFFF' }}>
+                      {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
                 <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textMuted }}>
                   {isTodayWorkout ? `${nextWorkout.estimatedDuration} min` : `${DAY_NAMES_FULL[nextWorkout.dayOfWeek]} · ${nextWorkout.estimatedDuration} min`}
                 </Text>
@@ -536,24 +587,6 @@ export default function HomeScreen() {
                 )}
               </View>
 
-              {/* Start button — larger when today's workout */}
-              <TouchableOpacity
-                onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}` as any)}
-                style={{
-                  backgroundColor: colors.primary,
-                  margin: spacing.base,
-                  marginTop: 0,
-                  borderRadius: radius.lg,
-                  paddingVertical: isTodayWorkout ? spacing.xl : spacing.lg,
-                  alignItems: 'center',
-                }}
-                accessibilityLabel={`Start ${nextWorkout.workoutName}`}
-                accessibilityRole="button"
-              >
-                <Text style={{ fontFamily: typography.family.extraBold, fontSize: isTodayWorkout ? typography.size['3xl'] : typography.size['2xl'], color: '#FFFFFF' }}>
-                  {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
-                </Text>
-              </TouchableOpacity>
             </View>
 
             {/* Other workouts this week */}

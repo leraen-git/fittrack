@@ -357,30 +357,17 @@ export default function SignInScreen() {
               )}
 
               {googleAvailable && (
-                <>
-                  {Platform.OS === 'ios' && (
-                    <Text style={[styles.orText, { color: colors.textMuted, fontFamily: typography.family.regular }]}>
-                      {t('common.or')}
-                    </Text>
-                  )}
-                  <TouchableOpacity
-                    style={[styles.socialButton, { backgroundColor: colors.surface, borderColor: colors.surface2 }]}
-                    onPress={handleGoogleSignIn}
-                    accessibilityLabel={t('signIn.continueWithGoogle')}
-                    accessibilityRole="button"
-                  >
-                    <Text style={{ fontSize: 18 }}>G</Text>
-                    <Text style={[styles.socialButtonText, { color: colors.textPrimary, fontFamily: typography.family.semiBold }]}>
-                      {t('signIn.continueWithGoogle')}
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              )}
-
-              {(Platform.OS === 'ios' || googleAvailable) && (
-                <Text style={[styles.orText, { color: colors.textMuted, fontFamily: typography.family.regular }]}>
-                  {t('common.or')}
-                </Text>
+                <TouchableOpacity
+                  style={[styles.socialButton, { backgroundColor: colors.surface, borderColor: colors.surface2 }]}
+                  onPress={handleGoogleSignIn}
+                  accessibilityLabel={t('signIn.continueWithGoogle')}
+                  accessibilityRole="button"
+                >
+                  <Text style={{ fontSize: 18 }}>G</Text>
+                  <Text style={[styles.socialButtonText, { color: colors.textPrimary, fontFamily: typography.family.semiBold }]}>
+                    {t('signIn.continueWithGoogle')}
+                  </Text>
+                </TouchableOpacity>
               )}
 
               {/* Email CTA */}

@@ -8,9 +8,20 @@
 
 import * as SecureStore from 'expo-secure-store'
 
-const TOKEN_KEY = 'fittrack_auth_token'
+const TOKEN_KEY = 'tanren_auth_token'
+const LEGACY_KEY = 'fittrack_auth_token'
+
+// One-time migration: move token from the old key to the new one
+async function migrateLegacyToken(): Promise<void> {
+  const legacy = await SecureStore.getItemAsync(LEGACY_KEY)
+  if (legacy) {
+    await SecureStore.setItemAsync(TOKEN_KEY, legacy)
+    await SecureStore.deleteItemAsync(LEGACY_KEY)
+  }
+}
 
 export async function getToken(): Promise<string | null> {
+  await migrateLegacyToken()
   return SecureStore.getItemAsync(TOKEN_KEY)
 }
 

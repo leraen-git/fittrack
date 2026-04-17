@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   View,
   Text,
@@ -16,8 +16,8 @@ import * as FileSystem from 'expo-file-system'
 import { useTheme } from '@/theme/ThemeContext'
 import { TimerRing } from '@/components/TimerRing'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
-import { useTimerStore } from '@/stores/timerStore'
-import { scheduleRestEndNotification, cancelRestNotification, requestNotificationPermissions } from '@/services/timerService'
+import { useTimerStore, timerStore } from '@/stores/timerStore'
+import { scheduleRestEndNotification, cancelRestNotification } from '@/services/timerService'
 import { colors as tokenColors } from '@/theme/tokens'
 import { MusicControlBar } from '@/components/MusicControlBar'
 import { useWorkletTimer } from '@/hooks/useWorkletTimer'
@@ -41,17 +41,10 @@ export default function ActiveWorkoutScreen() {
   } = useActiveSessionStore()
 
   const { isRunning, secondsRemaining, totalSeconds, start, skip, addSeconds } = useTimerStore()
-  const [notifPermission, setNotifPermission] = useState(false)
-
   // UI-thread frame-based timer — replaces JS-thread setInterval
   useWorkletTimer()
 
   const currentExercise = exercises[currentExerciseIndex]
-
-  // Request notification permissions once
-  useEffect(() => {
-    requestNotificationPermissions().then(setNotifPermission)
-  }, [])
 
   // Wake lock — keep screen on during active session, respect AppState
   useEffect(() => {
@@ -127,9 +120,7 @@ export default function ActiveWorkoutScreen() {
 
     const restSecs = currentSet?.restSeconds ?? 90
     start(restSecs, currentExercise.exerciseName)
-    if (notifPermission) {
-      await scheduleRestEndNotification(restSecs, currentExercise.exerciseName)
-    }
+    await scheduleRestEndNotification(restSecs, currentExercise.exerciseName)
   }
 
   const handleSkipRest = async () => {
@@ -144,7 +135,7 @@ export default function ActiveWorkoutScreen() {
         text: 'Finish',
         style: 'destructive',
         onPress: () => {
-          useTimerStore.getState().reset()
+          timerStore.getState().reset()
           FileSystem.deleteAsync(HEARTBEAT_FILE, { idempotent: true }).catch(() => null)
           router.push('/workout/recap')
         },
@@ -320,7 +311,7 @@ export default function ActiveWorkoutScreen() {
                     value={s.reps > 0 ? String(s.reps) : ''}
                     onChangeText={(v) => updateSet(currentExerciseIndex, idx, { reps: parseInt(v) || 0 })}
                     keyboardType="number-pad"
-                    placeholder={String(currentExercise.defaultReps)}
+                    placeholder={String(currentExercise.lastReps ?? currentExercise.defaultReps)}
                     placeholderTextColor={colors.textMuted}
                     editable={!s.isCompleted}
                     style={{
@@ -344,7 +335,7 @@ export default function ActiveWorkoutScreen() {
                     value={s.weight > 0 ? String(s.weight) : ''}
                     onChangeText={(v) => updateSet(currentExerciseIndex, idx, { weight: parseFloat(v) || 0 })}
                     keyboardType="decimal-pad"
-                    placeholder={String(currentExercise.defaultWeight || '0')}
+                    placeholder={String((currentExercise.lastWeight ?? currentExercise.defaultWeight) || '0')}
                     placeholderTextColor={colors.textMuted}
                     editable={!s.isCompleted}
                     style={{

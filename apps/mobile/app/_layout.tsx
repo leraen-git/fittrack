@@ -10,7 +10,8 @@ import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
-import { setupNotificationChannels } from '@/services/notificationPermissions'
+import { setupNotificationChannels, requestPermission } from '@/services/notificationPermissions'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
@@ -93,6 +94,14 @@ function NotificationWatcher() {
 
   useEffect(() => {
     setupNotificationChannels()
+    // Ask for notification permission once, on first launch only
+    AsyncStorage.getItem('notif_permission_asked').then((asked) => {
+      if (!asked) {
+        requestPermission().then(() =>
+          AsyncStorage.setItem('notif_permission_asked', '1'),
+        )
+      }
+    })
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
         rescheduleAll(settings, undefined, lang).catch(() => null)

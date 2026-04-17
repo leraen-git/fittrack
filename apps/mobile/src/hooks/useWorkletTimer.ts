@@ -17,10 +17,12 @@
 
 import { useEffect } from 'react'
 import { useSharedValue, useFrameCallback, runOnJS } from 'react-native-reanimated'
-import { useTimerStore } from '@/stores/timerStore'
+import { useTimerStore, timerStore } from '@/stores/timerStore'
 
 export function useWorkletTimer(): void {
   const isRunning = useTimerStore((s) => s.isRunning)
+  // Capture tick on the JS thread so the worklet never calls getState()
+  const tick = useTimerStore((s) => s.tick)
 
   // Shared values live on the UI thread — no JS bridge crossing on every frame
   const running = useSharedValue(false)
@@ -43,7 +45,7 @@ export function useWorkletTimer(): void {
     if (now - lastTickMs.value >= 1000) {
       lastTickMs.value = now
       // Bridge back to JS thread only for the store update — one call/second
-      runOnJS(useTimerStore.getState().tick)()
+      runOnJS(tick)()
     }
   })
 }

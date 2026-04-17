@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, useColorScheme, Appearance, useWindowDimensions } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,10 +12,31 @@ import Animated, {
 } from 'react-native-reanimated'
 
 const RED = '#E8192C'
-const BG = '#000000'
-const WHITE = '#FFFFFF'
-const GREY = '#888888'
-const GRID = '#1A1A1A'
+const CELL = 24
+
+// ─── Grid Overlay ─────────────────────────────────────────────────────────────
+
+function GridOverlay({ color }: { color: string }) {
+  const { width, height } = useWindowDimensions()
+  const cols = Math.ceil(width  / CELL) + 1
+  const rows = Math.ceil(height / CELL) + 1
+  return (
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      {Array.from({ length: cols }).map((_, i) => (
+        <View key={`v${i}`} style={{
+          position: 'absolute', top: 0, bottom: 0,
+          left: i * CELL, width: 1, backgroundColor: color,
+        }} />
+      ))}
+      {Array.from({ length: rows }).map((_, i) => (
+        <View key={`h${i}`} style={{
+          position: 'absolute', left: 0, right: 0,
+          top: i * CELL, height: 1, backgroundColor: color,
+        }} />
+      ))}
+    </View>
+  )
+}
 
 // ─── Forge-Spark Mark ────────────────────────────────────────────────────────
 // Geometric interpretation of the SVG mark (200×200 viewBox scaled to 140×140).
@@ -44,8 +65,8 @@ function ForgeMark({ size = 140, isDark = true }: MarkProps) {
   const spark1 = { x: Math.round(141.5 * s), y: Math.round(58.5 * s) }
   const spark2 = { x: Math.round(58.5 * s),  y: Math.round(141.5 * s) }
 
-  const ringColor = isDark ? WHITE : '#000000'
-  const barsColor = isDark ? WHITE : '#000000'
+  const ringColor = isDark ? '#FFFFFF' : '#000000'
+  const barsColor = isDark ? '#FFFFFF' : '#000000'
   const coreColor = RED
 
   return (
@@ -131,6 +152,15 @@ interface Props {
 }
 
 export function SplashScreen({ onFinish }: Props) {
+  const scheme = useColorScheme() ?? Appearance.getColorScheme()
+  const isDark = scheme === 'dark'
+
+  const bg        = isDark ? '#000000' : '#FFFFFF'
+  const fg        = isDark ? '#FFFFFF' : '#000000'
+  const muted     = isDark ? '#888888' : '#999999'
+  const grid      = isDark ? '#1A1A1A' : '#E0E0E0'
+  const gridLine  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)'
+
   const containerOpacity = useSharedValue(1)
   const markOpacity      = useSharedValue(0)
   const markScale        = useSharedValue(0.8)
@@ -194,16 +224,16 @@ export function SplashScreen({ onFinish }: Props) {
   const loaderBarStyle  = useAnimatedStyle(() => ({ width: `${loaderWidth.value * 100}%` as any }))
 
   return (
-    <Animated.View style={[styles.root, containerStyle]}>
+    <Animated.View style={[styles.root, { backgroundColor: bg }, containerStyle]}>
 
-      {/* Grid overlay */}
-      <View style={styles.gridOverlay} pointerEvents="none" />
+      {/* Grid overlay — 24px cell size, matching reference */}
+      <GridOverlay color={gridLine} />
 
       {/* Corners */}
-      <View style={[styles.corner, styles.cornerTL]} />
-      <View style={[styles.corner, styles.cornerTR]} />
-      <View style={[styles.corner, styles.cornerBL]} />
-      <View style={[styles.corner, styles.cornerBR]} />
+      <View style={[styles.corner, styles.cornerTL, { borderColor: grid }]} />
+      <View style={[styles.corner, styles.cornerTR, { borderColor: grid }]} />
+      <View style={[styles.corner, styles.cornerBL, { borderColor: grid }]} />
+      <View style={[styles.corner, styles.cornerBR, { borderColor: grid }]} />
 
       {/* Center content */}
       <View style={styles.center}>
@@ -211,11 +241,11 @@ export function SplashScreen({ onFinish }: Props) {
         {/* Forge-Spark mark + glow wrapper — glow centered on the mark */}
         <Animated.View style={[styles.markWrap, markStyle]}>
           <Animated.View style={[styles.glow, glowStyle]} />
-          <ForgeMark size={140} isDark />
+          <ForgeMark size={140} isDark={isDark} />
         </Animated.View>
 
         {/* Wordmark — TANREN */}
-        <Animated.Text style={[styles.wordmark, wordStyle]}>
+        <Animated.Text style={[styles.wordmark, { color: fg }, wordStyle]}>
           TANREN
         </Animated.Text>
 
@@ -233,14 +263,14 @@ export function SplashScreen({ onFinish }: Props) {
 
       {/* Loader bar */}
       <Animated.View style={[styles.loaderWrap, loaderWrapStyle]}>
-        <View style={styles.loaderTrack}>
+        <View style={[styles.loaderTrack, { backgroundColor: grid }]}>
           <Animated.View style={[styles.loaderBar, loaderBarStyle]} />
         </View>
       </Animated.View>
 
       {/* Baseline — anchored at bottom */}
       <View style={styles.baseline}>
-        <Text style={styles.baselineText}>EAT.{'  '}TRAIN.{'  '}REST.</Text>
+        <Text style={[styles.baselineText, { color: muted }]}>EAT.{'  '}TRAIN.{'  '}REST.</Text>
       </View>
 
     </Animated.View>
@@ -250,17 +280,10 @@ export function SplashScreen({ onFinish }: Props) {
 const styles = StyleSheet.create({
   root: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: BG,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 9999,
     elevation: 9999,
-  },
-  gridOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    // Simulated grid via border — repeated pattern would require a library.
-    // Subtle dark surface behind content.
-    opacity: 0.4,
   },
   markWrap: {
     width: 140,
@@ -279,7 +302,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 16,
     height: 16,
-    borderColor: GRID,
   },
   cornerTL: { top: '10%', left: '8%', borderTopWidth: 1, borderLeftWidth: 1 },
   cornerTR: { top: '10%', right: '8%', borderTopWidth: 1, borderRightWidth: 1 },
@@ -292,7 +314,6 @@ const styles = StyleSheet.create({
   wordmark: {
     fontFamily: 'BarlowCondensed_700Bold',
     fontSize: 68,
-    color: WHITE,
     letterSpacing: 10,
     marginTop: 20,
     lineHeight: 72,
@@ -319,7 +340,6 @@ const styles = StyleSheet.create({
   },
   loaderTrack: {
     height: 1,
-    backgroundColor: GRID,
     overflow: 'hidden',
   },
   loaderBar: {
@@ -335,6 +355,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 5,
     textTransform: 'uppercase',
-    color: GREY,
   },
 })
