@@ -5,12 +5,12 @@ import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 
-function Section({ icon, title, children }: { icon?: string; title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const { colors, typography, spacing, radius } = useTheme()
   return (
     <View style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.base, gap: spacing.sm }}>
       <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-        {icon ? `${icon} ` : ''}{title}
+        {title}
       </Text>
       {children}
     </View>
@@ -75,7 +75,6 @@ export default function PrivacyScreen() {
 
         {/* What we collect */}
         <Section
-          icon="📋"
           title={isFr ? 'Ce que nous collectons' : 'What we collect'}
         >
           <Body text={isFr
@@ -146,25 +145,24 @@ export default function PrivacyScreen() {
 
         {/* Where it's stored */}
         <Section
-          icon="🗄️"
           title={isFr ? 'Où sont stockées tes données' : 'Where your data is stored'}
         >
           <Body text={isFr
-            ? 'Tes données sont hébergées sur une base de données PostgreSQL sécurisée. Elles ne sont jamais partagées, vendues ou transmises à des tiers, sauf exceptions listées ci-dessous.'
-            : 'Your data is hosted on a secure PostgreSQL database. It is never shared, sold or transferred to third parties, except as listed below.'
+            ? 'Tes données sont hébergées sur une base de données sécurisée. Tes informations personnelles (nom, e-mail) sont chiffrées au repos. Elles ne sont jamais partagées, vendues ou transmises à des tiers, sauf exceptions listées ci-dessous.'
+            : 'Your data is hosted on a secure database. Your personal information (name, email) is encrypted at rest. It is never shared, sold or transferred to third parties, except as listed below.'
           } />
-          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels (stockage local AsyncStorage)' : 'On device: reminder preferences (local AsyncStorage)'} />
+          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels et catalogue d\'exercices (stockage local)' : 'On device: reminder preferences and exercise catalog (local storage)'} />
           <Bullet text={isFr ? 'Serveur : toutes les autres données (authentification, séances, plans)' : 'Server: all other data (authentication, sessions, plans)'} />
+          <Bullet text={isFr ? 'Les sessions de connexion expirent automatiquement après une période d\'inactivité' : 'Login sessions expire automatically after a period of inactivity'} />
         </Section>
 
         {/* Third parties */}
         <Section
-          icon="🤝"
           title={isFr ? 'Tiers impliqués' : 'Third parties involved'}
         >
           <Body text={isFr
-            ? 'Seuls trois services tiers accèdent à des données dans le cadre du fonctionnement normal de l\'app :'
-            : 'Only three third-party services access data as part of normal app operation:'
+            ? 'Seuls quatre services tiers accèdent à des données dans le cadre du fonctionnement normal de l\'app :'
+            : 'Only four third-party services access data as part of normal app operation:'
           } />
 
           <View style={{ gap: 4, paddingTop: 4 }}>
@@ -196,11 +194,20 @@ export default function PrivacyScreen() {
               : 'Used only to generate diet and workout plans. Requests contain your food preferences, level and goals — never your name, email or identifying data. Anthropic does not retain these requests beyond immediate processing.'
             } />
           </View>
+
+          <View style={{ gap: 4, paddingTop: 4 }}>
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textPrimary }}>
+              Resend {isFr ? '(e-mail)' : '(email)'}
+            </Text>
+            <Body text={isFr
+              ? 'Utilisé pour envoyer les codes de connexion par e-mail (OTP). Seule ton adresse e-mail est transmise pour l\'envoi du code. Aucune autre donnée n\'est partagée avec ce service.'
+              : 'Used to send login codes by email (OTP). Only your email address is transmitted to send the code. No other data is shared with this service.'
+            } />
+          </View>
         </Section>
 
         {/* AI & your data */}
         <Section
-          icon="🤖"
           title={isFr ? 'L\'IA et tes données' : 'AI and your data'}
         >
           <Body text={isFr
@@ -215,7 +222,6 @@ export default function PrivacyScreen() {
 
         {/* Notifications */}
         <Section
-          icon="🔔"
           title={isFr ? 'Notifications locales' : 'Local notifications'}
         >
           <Body text={isFr
@@ -224,9 +230,18 @@ export default function PrivacyScreen() {
           } />
         </Section>
 
+        {/* Camera & photos */}
+        <Section
+          title={isFr ? 'Appareil photo et photos' : 'Camera and photos'}
+        >
+          <Body text={isFr
+            ? 'Tanren peut demander l\'accès à ta caméra et ta photothèque uniquement pour ajouter une photo de fond à ta carte de partage de séance. Ces photos restent sur ton appareil et ne sont jamais envoyées à nos serveurs.'
+            : 'Tanren may request access to your camera and photo library only to add a background photo to your session share card. These photos stay on your device and are never sent to our servers.'
+          } />
+        </Section>
+
         {/* Your rights */}
         <Section
-          icon="⚖️"
           title={isFr ? 'Tes droits' : 'Your rights'}
         >
           <Bullet text={isFr ? 'Consulter toutes tes données via les écrans de l\'app' : 'View all your data via the app screens'} />
@@ -237,7 +252,6 @@ export default function PrivacyScreen() {
 
         {/* Data retention */}
         <Section
-          icon="🕐"
           title={isFr ? 'Conservation des données' : 'Data retention'}
         >
           <Body text={isFr
