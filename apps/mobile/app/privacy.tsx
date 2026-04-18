@@ -254,6 +254,7 @@ export default function PrivacyScreen() {
           <TouchableOpacity
             onPress={() => Linking.openURL('mailto:privacy@tanren.app')}
             accessibilityRole="link"
+            accessibilityLabel="Email privacy@tanren.app"
           >
             <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.primary }}>
               privacy@tanren.app

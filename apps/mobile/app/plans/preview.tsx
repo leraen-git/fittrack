@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
+import { colors as tokenColors } from '@/theme/tokens'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
@@ -93,7 +94,7 @@ export default function PreviewPlanScreen() {
                   paddingVertical: 2,
                   paddingHorizontal: spacing.sm,
                 }}>
-                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: '#FFFFFF' }}>
+                  <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: tokenColors.white }}>
                     {DAY_NAMES[day.dayOfWeek]}
                   </Text>
                 </View>

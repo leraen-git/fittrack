@@ -308,7 +308,7 @@ export default function HomeScreen() {
                 style={{ margin: spacing.base, marginTop: 0, backgroundColor: colors.success, borderRadius: radius.md, paddingVertical: spacing.sm, alignItems: 'center' }}
                 accessibilityLabel="View today's diet" accessibilityRole="button"
               >
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: '#FFFFFF' }}>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>
                   View today's meals →
                 </Text>
               </TouchableOpacity>
@@ -526,7 +526,7 @@ export default function HomeScreen() {
                     accessibilityLabel={`Start ${nextWorkout.workoutName}`}
                     accessibilityRole="button"
                   >
-                    <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color: '#FFFFFF' }}>
+                    <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.body, color: tokenColors.white }}>
                       {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
                     </Text>
                   </TouchableOpacity>

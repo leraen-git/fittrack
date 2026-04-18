@@ -30,6 +30,13 @@ export const colors = {
     youtubeRed: '#FF0000',
   },
   heatmap: ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'],
+  overlay: {
+    backdrop: 'rgba(0,0,0,0.5)',
+    whiteSubtle: 'rgba(255,255,255,0.04)',
+    blackSubtle: 'rgba(0,0,0,0.05)',
+    whiteMuted: 'rgba(255,255,255,0.7)',
+    redGlow: 'rgba(232,25,44,0.22)',
+  },
 } as const
 
 export const typography = {

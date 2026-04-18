@@ -9,10 +9,15 @@ export interface Context {
   userId: string | null
 }
 
+const isDev = process.env['NODE_ENV'] === 'development'
+
 const t = initTRPC.context<Context>().create({
   errorFormatter({ shape, error }) {
+    const isDbError = error.cause?.constructor?.name === 'DrizzleQueryError'
+      || error.message?.includes('Failed query:')
     return {
       ...shape,
+      message: isDbError && !isDev ? 'An internal error occurred.' : shape.message,
       data: {
         ...shape.data,
         zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,

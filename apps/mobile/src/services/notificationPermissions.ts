@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications'
 import { Platform, Linking } from 'react-native'
+import { colors as tokenColors } from '@/theme/tokens'
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined'
 
@@ -49,7 +50,7 @@ export function setupNotificationChannels(): void {
     name: 'Workout Reminders',
     importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: [0, 250, 250, 250],
-    lightColor: '#E8192C',
+    lightColor: tokenColors.light.primary,
   })
   Notifications.setNotificationChannelAsync('meal-reminders', {
     name: 'Meal Reminders',

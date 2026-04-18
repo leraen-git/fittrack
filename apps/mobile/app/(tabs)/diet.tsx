@@ -208,8 +208,8 @@ export default function DietScreen() {
           {/* Macro targets */}
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
             <MacroBar label={t('diet.protein')} value={plan.targetProtein} target={plan.targetProtein} color={colors.primary} />
-            <MacroBar label={t('diet.carbs')} value={plan.targetCarbs} target={plan.targetCarbs} color="#F59E0B" />
-            <MacroBar label={t('diet.fat')} value={plan.targetFat} target={plan.targetFat} color="#8B5CF6" />
+            <MacroBar label={t('diet.carbs')} value={plan.targetCarbs} target={plan.targetCarbs} color={tokenColors.shared.carbsAccent} />
+            <MacroBar label={t('diet.fat')} value={plan.targetFat} target={plan.targetFat} color={tokenColors.shared.fatAccent} />
           </View>
           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
             💧 {rawPlan.summary.hydrationLiters}{t('diet.water')}

@@ -94,7 +94,7 @@ export const MealDetailModal = React.memo(function MealDetailModal({ meal, onClo
 
       {/* Backdrop */}
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
+        style={{ flex: 1, backgroundColor: tokenColors.overlay.backdrop }}
         activeOpacity={1}
         onPress={onClose}
         accessibilityLabel="Close meal detail"

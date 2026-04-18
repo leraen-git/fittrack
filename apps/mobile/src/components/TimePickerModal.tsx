@@ -73,7 +73,7 @@ export function TimePickerModal({ visible, value, onConfirm, onClose, label }: P
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+        <View style={{ flex: 1, backgroundColor: tokenColors.overlay.backdrop, justifyContent: 'flex-end' }}>
           <TouchableWithoutFeedback>
             <View style={{
               backgroundColor: colors.background,

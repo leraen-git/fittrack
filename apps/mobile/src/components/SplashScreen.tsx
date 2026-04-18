@@ -160,7 +160,7 @@ export function SplashScreen({ onFinish }: Props) {
   const fg        = isDark ? tokenColors.white : tokenColors.black
   const muted     = isDark ? tokenColors.dark.textMuted : tokenColors.light.textMuted
   const grid      = isDark ? tokenColors.dark.surface2 : tokenColors.light.surface2
-  const gridLine  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)'
+  const gridLine  = isDark ? tokenColors.overlay.whiteSubtle : tokenColors.overlay.blackSubtle
 
   const containerOpacity = useSharedValue(1)
   const markOpacity      = useSharedValue(0)
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(232,25,44,0.22)',
+    backgroundColor: tokenColors.overlay.redGlow,
   },
   corner: {
     position: 'absolute',

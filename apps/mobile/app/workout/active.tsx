@@ -104,7 +104,7 @@ export default function ActiveWorkoutScreen() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.base }}>
         <Text style={{ color: colors.textMuted, fontFamily: typography.family.regular }}>No active workout</Text>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityLabel="Go back" accessibilityRole="button">
           <Text style={{ color: colors.primary, fontFamily: typography.family.semiBold }}>Go back</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -416,7 +416,7 @@ export default function ActiveWorkoutScreen() {
               <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
                 Set {currentSetIndex + 1} — Done ✓
               </Text>
-              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+              <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: tokenColors.overlay.whiteMuted, marginTop: 2 }}>
                 Starts rest timer
               </Text>
             </TouchableOpacity>

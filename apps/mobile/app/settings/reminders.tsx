@@ -60,7 +60,7 @@ function SettingRow({
         borderBottomWidth: 1,
         borderBottomColor: colors.surface2,
       }}
-      {...(onPress ? { accessibilityRole: 'button' as const } : {})}
+      {...(onPress ? { accessibilityRole: 'button' as const, accessibilityLabel: label } : {})}
     >
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.body, color: colors.textPrimary }}>
@@ -215,6 +215,7 @@ function PillSelector<T extends string | number>({
             }}
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
+            accessibilityLabel={label}
           >
             <Text style={{
               fontFamily: selected ? typography.family.bold : typography.family.regular,

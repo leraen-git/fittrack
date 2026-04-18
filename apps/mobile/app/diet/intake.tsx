@@ -45,6 +45,7 @@ function Chip({
         borderColor: colors.surface2,
       }}
       accessibilityRole="button"
+      accessibilityLabel={label}
     >
       <Text style={{
         fontFamily: selected ? typography.family.semiBold : typography.family.regular,
@@ -382,6 +383,7 @@ export default function DietIntakeScreen() {
                         borderColor: intake.cookingStyle === o.key ? colors.primary : colors.surface2,
                       }}
                       accessibilityRole="button"
+                      accessibilityLabel={o.label}
                     >
                       <View style={{ flex: 1 }}>
                         <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>{o.label}</Text>
