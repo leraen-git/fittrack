@@ -15,6 +15,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { colors as tokenColors } from '@/theme/tokens'
+import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
 type SetConfig = { reps: number; weight: number; restSeconds: number }
 
@@ -51,7 +52,7 @@ function ExercisePicker({
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
-  const { data: allExercises } = trpc.exercises.list.useQuery()
+  const { data: allExercises } = useExercises()
 
   const filtered = useMemo(() => {
     if (!allExercises) return []
@@ -97,28 +98,31 @@ function ExercisePicker({
           {/* Muscle filter */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-              {MUSCLE_GROUPS.map((mg) => (
-                <TouchableOpacity
-                  key={mg}
-                  onPress={() => setMuscle(mg)}
-                  style={{
-                    paddingVertical: spacing.xs,
-                    paddingHorizontal: spacing.md,
-                    borderRadius: radius.pill,
-                    backgroundColor: muscle === mg ? colors.primary : colors.surface2,
-                  }}
-                  accessibilityLabel={`Filter by ${mg}`}
-                  accessibilityRole="button"
-                >
-                  <Text style={{
-                    fontFamily: muscle === mg ? typography.family.semiBold : typography.family.regular,
-                    fontSize: typography.size.base,
-                    color: muscle === mg ? tokenColors.white : colors.textMuted,
-                  }}>
-                    {mg}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {MUSCLE_GROUPS.map((mg) => {
+                const label = translateMuscleGroup(mg, t)
+                return (
+                  <TouchableOpacity
+                    key={mg}
+                    onPress={() => setMuscle(mg)}
+                    style={{
+                      paddingVertical: spacing.xs,
+                      paddingHorizontal: spacing.md,
+                      borderRadius: radius.pill,
+                      backgroundColor: muscle === mg ? colors.primary : colors.surface2,
+                    }}
+                    accessibilityLabel={label}
+                    accessibilityRole="button"
+                  >
+                    <Text style={{
+                      fontFamily: muscle === mg ? typography.family.semiBold : typography.family.regular,
+                      fontSize: typography.size.base,
+                      color: muscle === mg ? tokenColors.white : colors.textMuted,
+                    }}>
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
             </View>
           </ScrollView>
         </View>
@@ -151,7 +155,7 @@ function ExercisePicker({
                     {ex.name}
                   </Text>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                    {ex.muscleGroups.join(' · ')} · {ex.difficulty}
+                    {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(ex.difficulty, t)}
                   </Text>
                 </View>
                 <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xl, color: added ? colors.textMuted : colors.primary }}>

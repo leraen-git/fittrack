@@ -427,10 +427,8 @@ export default function HomeScreen() {
 
             {/* AI generate button — locked for guests */}
             <TouchableOpacity
-              onPress={() => isGuest
-                ? router.push('/sign-in?upgrade=1')
-                : router.push('/plans/generate')
-              }
+              onPress={isGuest ? undefined : () => router.push('/plans/generate')}
+              disabled={isGuest}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: radius.lg,
@@ -439,10 +437,10 @@ export default function HomeScreen() {
                 alignItems: 'center',
                 gap: spacing.md,
                 borderWidth: 1,
-                borderColor: isGuest ? colors.surface2 : colors.surface2,
-                opacity: isGuest ? 0.85 : 1,
+                borderColor: colors.surface2,
+                opacity: isGuest ? 0.4 : 1,
               }}
-              accessibilityLabel={isGuest ? t('guest.aiLocked') : 'Generate a plan with AI'}
+              accessibilityLabel={isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
               accessibilityRole="button"
             >
               <View style={{

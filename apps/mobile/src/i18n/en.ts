@@ -461,6 +461,11 @@ export const en = {
     calves: 'Calves',
     fullBody: 'Full Body',
   },
+  difficulty: {
+    BEGINNER: 'Beginner',
+    INTERMEDIATE: 'Intermediate',
+    ADVANCED: 'Advanced',
+  },
   generate: {
     title: 'AI Plan Generator',
     titleRefine: 'Ask for changes',
@@ -517,7 +522,7 @@ export const en = {
     signInPrompt: 'Sign in to save your data across devices',
   },
   guestBanner: {
-    message: 'Guest account — your data is tied to this device.',
+    message: 'Guest mode — if you log out or delete the app, all your progress will be lost. Sign in to keep your data safe.',
     signIn: 'Sign in',
   },
   onboarding: {

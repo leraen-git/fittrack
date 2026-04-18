@@ -5,17 +5,16 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
-import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
+import { useExercises, translateMuscleGroup, translateDifficulty, type Exercise } from '@/hooks/useExercises'
 
 const MUSCLE_GROUPS = [
   'All', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps',
   'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body',
 ]
-
-type Exercise = { id: string; name: string; muscleGroups: string[]; difficulty: string }
 
 type SetConfig = { reps: string; weight: string; rest: string }
 
@@ -29,6 +28,7 @@ function ConfigModal({
   onClose: () => void
 }) {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const [numSets, setNumSets] = useState(3)
   const [sets, setSets] = useState<SetConfig[]>([
     { reps: '10', weight: '0', rest: '90' },
@@ -65,26 +65,26 @@ function ConfigModal({
 
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.background }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.base, gap: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2 }}>
-          <TouchableOpacity onPress={onClose} accessibilityLabel="Close" accessibilityRole="button">
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: spacing.base, paddingTop: spacing.md, paddingBottom: spacing.base, gap: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.surface2 }}>
+          <TouchableOpacity onPress={onClose} accessibilityLabel="Close" accessibilityRole="button" style={{ paddingTop: 2 }}>
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>✕</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }} numberOfLines={1}>
+            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: colors.textPrimary }} numberOfLines={2}>
               {exercise.name}
             </Text>
-            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {exercise.muscleGroups.join(' · ')}
+            <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: 2 }}>
+              {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')}
             </Text>
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.base }}>
+        <ScrollView contentContainerStyle={{ padding: spacing.base, gap: spacing.lg }} keyboardShouldPersistTaps="handled">
           {/* Number of sets */}
           <View style={{ gap: spacing.sm }}>
-            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary }}>
+            <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.body, color: colors.textPrimary, textTransform: 'uppercase', letterSpacing: 1 }}>
               Number of sets
             </Text>
             <View style={{ flexDirection: 'row', gap: spacing.sm }}>
@@ -93,7 +93,7 @@ function ConfigModal({
                   key={n}
                   onPress={() => updateSets(n)}
                   style={{
-                    flex: 1, paddingVertical: spacing.sm, borderRadius: radius.sm,
+                    flex: 1, paddingVertical: spacing.md, borderRadius: radius.md,
                     backgroundColor: numSets === n ? colors.primary : colors.surface2,
                     alignItems: 'center',
                   }}
@@ -101,7 +101,7 @@ function ConfigModal({
                   accessibilityRole="button"
                 >
                   <Text style={{
-                    fontFamily: typography.family.bold, fontSize: typography.size.base,
+                    fontFamily: typography.family.bold, fontSize: typography.size.body,
                     color: numSets === n ? tokenColors.white : colors.textMuted,
                   }}>{n}</Text>
                 </TouchableOpacity>
@@ -111,17 +111,17 @@ function ConfigModal({
 
           {/* Column headers */}
           <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.xs }}>
-            <Text style={{ width: 32, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>SET</Text>
-            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>REPS</Text>
-            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>KG</Text>
-            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center' }}>REST (s)</Text>
+            <Text style={{ width: 36, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 }}>SET</Text>
+            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 }}>REPS</Text>
+            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 }}>KG</Text>
+            <Text style={{ flex: 1, fontFamily: typography.family.semiBold, fontSize: typography.size.xs, color: colors.textMuted, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 }}>REST (s)</Text>
           </View>
 
           {/* Sets */}
           {sets.map((s, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.base, color: tokenColors.white }}>{i + 1}</Text>
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: tokenColors.white }}>{i + 1}</Text>
               </View>
               <TextInput value={s.reps} onChangeText={(v) => updateSet(i, 'reps', v)} keyboardType="number-pad" style={{ ...inputStyle, flex: 1 }} accessibilityLabel={`Set ${i + 1} reps`} />
               <TextInput value={s.weight} onChangeText={(v) => updateSet(i, 'weight', v)} keyboardType="decimal-pad" style={{ ...inputStyle, flex: 1 }} accessibilityLabel={`Set ${i + 1} weight`} />
@@ -131,13 +131,13 @@ function ConfigModal({
         </ScrollView>
 
         {/* Start button */}
-        <View style={{ padding: spacing.base }}>
+        <View style={{ paddingHorizontal: spacing.base, paddingTop: spacing.md, paddingBottom: spacing.sm }}>
           <TouchableOpacity
             onPress={() => onStart(sets)}
-            style={{ backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.base, alignItems: 'center' }}
+            style={{ backgroundColor: colors.primary, borderRadius: radius.lg, paddingVertical: spacing.lg, alignItems: 'center' }}
             accessibilityLabel="Start exercise" accessibilityRole="button"
           >
-            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white }}>
+            <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: tokenColors.white, textTransform: 'uppercase', letterSpacing: 1 }}>
               Start exercise →
             </Text>
           </TouchableOpacity>
@@ -152,7 +152,8 @@ export default function QuickExerciseScreen() {
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState('All')
   const [selected, setSelected] = useState<Exercise | null>(null)
-  const { data: exercises, isLoading } = trpc.exercises.list.useQuery()
+  const { t } = useTranslation()
+  const { data: exercises, isLoading } = useExercises()
   const startSession = useActiveSessionStore((s) => s.startSession)
 
   const filtered = useMemo(() => {
@@ -221,24 +222,27 @@ export default function QuickExerciseScreen() {
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-            {MUSCLE_GROUPS.map((mg) => (
-              <TouchableOpacity
-                key={mg}
-                onPress={() => setMuscle(mg)}
-                style={{
-                  paddingVertical: spacing.xs, paddingHorizontal: spacing.md,
-                  borderRadius: radius.pill,
-                  backgroundColor: muscle === mg ? colors.primary : colors.surface2,
-                }}
-                accessibilityLabel={`Filter by ${mg}`} accessibilityRole="button"
-              >
-                <Text style={{
-                  fontFamily: muscle === mg ? typography.family.semiBold : typography.family.regular,
-                  fontSize: typography.size.base,
-                  color: muscle === mg ? tokenColors.white : colors.textMuted,
-                }}>{mg}</Text>
-              </TouchableOpacity>
-            ))}
+            {MUSCLE_GROUPS.map((mg) => {
+              const label = translateMuscleGroup(mg, t)
+              return (
+                <TouchableOpacity
+                  key={mg}
+                  onPress={() => setMuscle(mg)}
+                  style={{
+                    paddingVertical: spacing.xs, paddingHorizontal: spacing.md,
+                    borderRadius: radius.pill,
+                    backgroundColor: muscle === mg ? colors.primary : colors.surface2,
+                  }}
+                  accessibilityLabel={label} accessibilityRole="button"
+                >
+                  <Text style={{
+                    fontFamily: muscle === mg ? typography.family.semiBold : typography.family.regular,
+                    fontSize: typography.size.base,
+                    color: muscle === mg ? tokenColors.white : colors.textMuted,
+                  }}>{label}</Text>
+                </TouchableOpacity>
+              )
+            })}
           </View>
         </ScrollView>
       </View>
@@ -267,7 +271,7 @@ export default function QuickExerciseScreen() {
                 {ex.name}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                {ex.muscleGroups.join(' · ')} · {ex.difficulty}
+                {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(ex.difficulty, t)}
               </Text>
             </View>
             <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>→</Text>

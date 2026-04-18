@@ -9,8 +9,8 @@ import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { MUSCLE_GROUPS } from '@tanren/shared'
 import { formatVolume, formatDuration } from '@/utils/format'
+import { translateMuscleGroup } from '@/hooks/useExercises'
 
-// filter id → translation key
 const DATE_FILTERS = [
   { id: '1w', days: 7 },
   { id: '1m', days: 30 },
@@ -19,13 +19,6 @@ const DATE_FILTERS = [
 ] as const
 
 type FilterId = (typeof DATE_FILTERS)[number]['id']
-
-// muscle group string → translation key
-const MG_KEY: Record<string, string> = {
-  'Chest': 'chest', 'Back': 'back', 'Shoulders': 'shoulders', 'Biceps': 'biceps',
-  'Triceps': 'triceps', 'Forearms': 'forearms', 'Core': 'core', 'Quadriceps': 'quadriceps',
-  'Hamstrings': 'hamstrings', 'Glutes': 'glutes', 'Calves': 'calves', 'Full Body': 'fullBody',
-}
 
 
 function useFormatDate() {
@@ -116,7 +109,7 @@ export default function HistoryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.base, gap: spacing.sm, paddingBottom: spacing.base }}>
           {(['All', ...MUSCLE_GROUPS] as string[]).map((mg) => {
             const selected = muscleFilter === mg
-            const label = mg === 'All' ? t('history.muscleAll') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)
+            const label = mg === 'All' ? t('history.muscleAll') : translateMuscleGroup(mg, t)
             return (
               <TouchableOpacity
                 key={mg}
@@ -193,7 +186,7 @@ export default function HistoryScreen() {
                           }}
                         >
                           <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
-                            {t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)}
+                            {translateMuscleGroup(mg, t)}
                           </Text>
                         </View>
                       ))}

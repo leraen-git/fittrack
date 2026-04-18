@@ -1,21 +1,19 @@
 import { Stack, router } from 'expo-router'
-import { ThemeProvider } from '@/theme/ThemeContext'
+import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
 import React, { useState, useEffect, useRef } from 'react'
-import { View, AppState, type AppStateStatus } from 'react-native'
+import { View, AppState, type AppStateStatus, StatusBar } from 'react-native'
 import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
 import { initMusicService } from '@/services/musicService'
-import { setupNotificationChannels, requestPermission } from '@/services/notificationPermissions'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { setupNotificationChannels } from '@/services/notificationPermissions'
 import { rescheduleAll } from '@/services/notificationScheduler'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
-import { GuestBanner } from '@/components/GuestBanner'
 import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import '@/i18n'
@@ -108,13 +106,6 @@ function NotificationWatcher() {
 
   useEffect(() => {
     setupNotificationChannels()
-    AsyncStorage.getItem('notif_permission_asked').then((asked) => {
-      if (!asked) {
-        requestPermission().then(() =>
-          AsyncStorage.setItem('notif_permission_asked', '1'),
-        )
-      }
-    })
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
         rescheduleAll(settingsRef.current, undefined, langRef.current).catch(() => null)
@@ -130,6 +121,11 @@ function NotificationWatcher() {
   }, [])
 
   return null
+}
+
+function ThemedStatusBar() {
+  const { isDark } = useTheme()
+  return <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 }
 
 function AuthGate({ children }: { children: React.ReactNode }) {
@@ -148,7 +144,6 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   return (
     <GuestBannerProvider value={isGuest ?? false}>
-      <GuestBanner />
       {children}
     </GuestBannerProvider>
   )
@@ -172,13 +167,14 @@ export default function RootLayout() {
   }, [])
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#000000' }}>
       <ErrorBoundary>
         <ThemeProvider>
+          <ThemedStatusBar />
           <AuthProvider>
             <TRPCProvider>
               <AuthGate>
-                <Stack screenOptions={{ headerShown: false }} />
+                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
                 {splashDone && <OnboardingGate />}
                 <NotificationWatcher />
               </AuthGate>

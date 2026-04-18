@@ -6,7 +6,7 @@
  * Full functionality requires a dev build (npx expo run:ios).
  */
 
-import { Audio } from 'expo-av'
+import { setAudioModeAsync } from 'expo-audio'
 
 export interface NowPlayingInfo {
   title: string
@@ -51,14 +51,9 @@ export async function initMusicService(): Promise<void> {
   if (!loadNativeModule()) return // Expo Go — skip silently
 
   try {
-    // Configure audio session so notification sounds mix with music
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: false,
-      staysActiveInBackground: false,
-      interruptionModeIOS: 1,
-      shouldDuckAndroid: true,
-      interruptionModeAndroid: 1,
-      playThroughEarpieceAndroid: false,
+    await setAudioModeAsync({
+      playsInSilentMode: false,
+      shouldRouteThroughEarpiece: false,
     })
 
     MusicControl.enableBackgroundMode(false)

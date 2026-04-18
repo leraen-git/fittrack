@@ -33,7 +33,7 @@ export function GuestBanner() {
       accessibilityRole="button"
     >
       <View style={{ width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: colors.warning, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: typography.family.bold, fontSize: 8, color: colors.warning }}>?</Text>
+        <Text style={{ fontFamily: typography.family.bold, fontSize: 8, color: colors.warning }}>!</Text>
       </View>
       <Text style={{
         fontFamily: typography.family.regular,

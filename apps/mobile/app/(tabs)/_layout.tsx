@@ -1,7 +1,10 @@
+import React from 'react'
+import { View } from 'react-native'
 import { Tabs } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from 'react-i18next'
+import { GuestBanner } from '@/components/GuestBanner'
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -16,6 +19,8 @@ export default function TabLayout() {
   const { t } = useTranslation()
 
   return (
+    <View style={{ flex: 1 }}>
+    <GuestBanner />
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -72,5 +77,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </View>
   )
 }

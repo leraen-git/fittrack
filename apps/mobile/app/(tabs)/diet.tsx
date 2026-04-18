@@ -129,22 +129,21 @@ export default function DietScreen() {
           ))}
 
           <TouchableOpacity
-            onPress={() => isGuest
-              ? router.push('/sign-in?upgrade=1')
-              : router.push('/diet/intake')
-            }
+            onPress={isGuest ? undefined : () => router.push('/diet/intake')}
+            disabled={isGuest}
             style={{
               backgroundColor: isGuest ? colors.surface2 : colors.primary,
               borderRadius: radius.lg,
               paddingVertical: spacing.lg,
               alignItems: 'center',
               gap: 4,
+              opacity: isGuest ? 0.4 : 1,
             }}
             accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.buildPlan')}
             accessibilityRole="button"
           >
             <Text style={{ fontFamily: typography.family.extraBold, fontSize: typography.size.xl, color: isGuest ? colors.textMuted : tokenColors.white }}>
-              {isGuest ? `🔒 ${t('guest.aiLocked')}` : t('diet.buildPlan')}
+              {isGuest ? t('guest.aiLocked') : t('diet.buildPlan')}
             </Text>
             {isGuest && (
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.xs, color: colors.textMuted }}>
@@ -379,17 +378,15 @@ export default function DietScreen() {
 
         {/* Regenerate */}
         <TouchableOpacity
-          onPress={() => isGuest
-            ? router.push('/sign-in?upgrade=1')
-            : router.push('/diet/intake')
-          }
-          style={{ margin: spacing.base, alignItems: 'center', paddingVertical: spacing.md }}
+          onPress={isGuest ? undefined : () => router.push('/diet/intake')}
+          disabled={isGuest}
+          style={{ margin: spacing.base, alignItems: 'center', paddingVertical: spacing.md, opacity: isGuest ? 0.4 : 1 }}
           accessibilityLabel={isGuest ? t('guest.aiLocked') : t('diet.regenerateLink')}
           accessibilityRole="button"
         >
           <Text style={{ fontFamily: typography.family.semiBold, fontSize: typography.size.base, color: colors.textMuted }}>
             {isGuest
-              ? <Text style={{ color: colors.textMuted }}>🔒 {t('guest.aiLocked')}</Text>
+              ? t('guest.aiLocked')
               : <>{t('diet.regeneratePrompt')}{' '}<Text style={{ color: colors.primary }}>{t('diet.regenerateLink')}</Text></>
             }
           </Text>

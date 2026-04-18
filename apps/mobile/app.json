@@ -29,7 +29,9 @@
               "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
             ]
           }
-        ]
+        ],
+        "NSPhotoLibraryUsageDescription": "Tanren needs access to your photo library to add a background photo to your session share card.",
+        "NSCameraUsageDescription": "Tanren needs access to your camera to take a photo for your session share card."
       }
     },
     "android": {
@@ -41,6 +43,7 @@
     },
     "plugins": [
       "./plugins/withFixSpacesInPath",
+      "./plugins/withFmtCpp17Fix",
       "expo-router",
       [
         "expo-font",
@@ -64,7 +67,8 @@
         }
       ],
       "expo-web-browser",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

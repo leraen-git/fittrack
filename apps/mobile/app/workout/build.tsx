@@ -15,6 +15,7 @@ import { trpc } from '@/lib/trpc'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
+import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
 const MUSCLE_GROUPS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body', 'Cardio']
 const DURATIONS = [30, 45, 60, 75, 90]
@@ -51,7 +52,7 @@ function ExercisePicker({
   // activeFilters: empty = show all; otherwise show exercises matching any active filter
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [selected, setSelected] = useState<PickedExercise[]>([])
-  const { data: allExercises } = trpc.exercises.list.useQuery()
+  const { data: allExercises } = useExercises()
 
   // On open: activate all preselected muscles (if any), reset selection
   useEffect(() => {
@@ -70,14 +71,12 @@ function ExercisePicker({
 
   const filtered = useMemo(() => {
     if (!allExercises) return []
-    const lang = t('common.search') === 'Rechercher' ? 'fr' : 'en'
     return allExercises.filter((ex) => {
-      const displayName = (lang === 'fr' && ex.nameFr) ? ex.nameFr : ex.name
-      const matchSearch = displayName.toLowerCase().includes(search.toLowerCase())
+      const matchSearch = ex.name.toLowerCase().includes(search.toLowerCase())
       const matchMuscle = activeFilters.length === 0 || ex.muscleGroups.some((mg) => activeFilters.includes(mg))
       return matchSearch && matchMuscle
     })
-  }, [allExercises, search, activeFilters, t])
+  }, [allExercises, search, activeFilters])
 
   const toggleFilter = (mg: string) => {
     setActiveFilters((prev) =>
@@ -180,6 +179,7 @@ function ExercisePicker({
               {/* Muscle chips: preselected first, rest after */}
               {orderedMuscles.map((mg) => {
                 const isActive = activeFilters.includes(mg)
+                const label = translateMuscleGroup(mg, t)
                 return (
                   <TouchableOpacity
                     key={mg}
@@ -190,7 +190,7 @@ function ExercisePicker({
                       borderRadius: radius.pill,
                       backgroundColor: isActive ? colors.primary : colors.surface2,
                     }}
-                    accessibilityLabel={`${isActive ? 'Remove' : 'Add'} ${mg} filter`}
+                    accessibilityLabel={label}
                     accessibilityRole="button"
                   >
                     <Text style={{
@@ -198,7 +198,7 @@ function ExercisePicker({
                       fontSize: typography.size.base,
                       color: isActive ? tokenColors.white : colors.textMuted,
                     }}>
-                      {mg}
+                      {label}
                     </Text>
                   </TouchableOpacity>
                 )
@@ -212,8 +212,7 @@ function ExercisePicker({
           {filtered.map((ex) => {
             const alreadyIn = alreadyAdded.includes(ex.id)
             const ticked = isSelected(ex.id)
-            const isFr = t('common.search') === 'Rechercher'
-            const displayName = (isFr && ex.nameFr) ? ex.nameFr : ex.name
+            const displayName = ex.name
             return (
               <TouchableOpacity
                 key={ex.id}
@@ -240,7 +239,7 @@ function ExercisePicker({
                     {displayName}
                   </Text>
                   <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                    {ex.muscleGroups.join(' · ')} · {ex.difficulty}
+                    {ex.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(ex.difficulty, t)}
                   </Text>
                 </View>
                 <View style={{
@@ -427,6 +426,7 @@ export default function WorkoutBuildScreen() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             {MUSCLE_GROUPS.map((mg) => {
               const selected = selectedMuscles.includes(mg)
+              const label = translateMuscleGroup(mg, t)
               return (
                 <TouchableOpacity
                   key={mg}
@@ -439,7 +439,7 @@ export default function WorkoutBuildScreen() {
                     borderColor: selected ? colors.primary : colors.surface2,
                     backgroundColor: selected ? `${colors.primary}18` : colors.surface,
                   }}
-                  accessibilityLabel={`${mg} ${selected ? 'selected' : 'not selected'}`}
+                  accessibilityLabel={`${label} ${selected ? 'selected' : 'not selected'}`}
                   accessibilityRole="button"
                 >
                   <Text style={{
@@ -447,7 +447,7 @@ export default function WorkoutBuildScreen() {
                     fontSize: typography.size.base,
                     color: selected ? colors.primary : colors.textMuted,
                   }}>
-                    {mg}
+                    {label}
                   </Text>
                 </TouchableOpacity>
               )

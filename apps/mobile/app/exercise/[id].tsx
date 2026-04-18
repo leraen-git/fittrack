@@ -11,15 +11,19 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { ProgressBar } from '@/components/ProgressBar'
 import { trpc } from '@/lib/trpc'
 import { getTrend, getCoachingTip } from '@tanren/shared'
+import { useTranslation } from 'react-i18next'
+import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
 const METRIC_OPTIONS = ['Max weight', 'Volume', 'Reps']
 
 export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { colors, typography, spacing } = useTheme()
+  const { t } = useTranslation()
   const [metric, setMetric] = useState('Max weight')
 
-  const { data: exercise, isLoading: exLoading } = trpc.exercises.byId.useQuery({ id })
+  const { data: allExercises, isLoading: exLoading } = useExercises()
+  const exercise = allExercises?.find((e) => e.id === id)
   const { data: progressData, isLoading: progLoading } = trpc.progress.exercise.useQuery({ exerciseId: id })
   const { data: records } = trpc.progress.records.useQuery()
 
@@ -57,7 +61,7 @@ export default function ExerciseDetailScreen() {
                 {exercise.name}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted, marginTop: spacing.xs }}>
-                {exercise.muscleGroups.join(' · ')} · {exercise.difficulty}
+                {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(exercise.difficulty, t)}
               </Text>
             </View>
 

@@ -5,22 +5,16 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Card } from '@/components/Card'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { trpc } from '@/lib/trpc'
 import { MUSCLE_GROUPS } from '@tanren/shared'
 import { useTranslation } from 'react-i18next'
-
-const MG_KEY: Record<string, string> = {
-  'Chest': 'chest', 'Back': 'back', 'Shoulders': 'shoulders', 'Biceps': 'biceps',
-  'Triceps': 'triceps', 'Forearms': 'forearms', 'Core': 'core', 'Quadriceps': 'quadriceps',
-  'Hamstrings': 'hamstrings', 'Glutes': 'glutes', 'Calves': 'calves', 'Full Body': 'fullBody',
-}
+import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
 
 export default function ExerciseLibraryScreen() {
   const { colors, typography, spacing, radius } = useTheme()
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [muscleFilter, setMuscleFilter] = useState('All')
-  const { data: exercises, isLoading } = trpc.exercises.list.useQuery()
+  const { data: exercises, isLoading } = useExercises()
 
   const filtered = exercises?.filter((e) => {
     const matchesSearch = e.name.toLowerCase().includes(search.toLowerCase())
@@ -62,7 +56,7 @@ export default function ExerciseLibraryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
           {allFilters.map((mg) => {
             const selected = muscleFilter === mg
-            const label = mg === 'All' ? t('muscleGroups.all') : t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)
+            const label = mg === 'All' ? t('muscleGroups.all') : translateMuscleGroup(mg, t)
             return (
               <TouchableOpacity
                 key={mg}
@@ -98,7 +92,7 @@ export default function ExerciseLibraryScreen() {
               {exercise.name}
             </Text>
             <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-              {exercise.muscleGroups.map((mg) => t(`muscleGroups.${MG_KEY[mg] ?? mg.toLowerCase()}`)).join(' · ')} · {exercise.difficulty}
+              {exercise.muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')} · {translateDifficulty(exercise.difficulty, t)}
             </Text>
           </Card>
         ))}

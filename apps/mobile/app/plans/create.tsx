@@ -15,6 +15,7 @@ import { Card } from '@/components/Card'
 import { trpc } from '@/lib/trpc'
 import { colors as tokenColors } from '@/theme/tokens'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
+import { useTranslation } from 'react-i18next'
 
 const DAYS = [
   { label: 'Mon', value: 1 },
@@ -33,8 +34,11 @@ type PlanDay = {
 
 export default function CreatePlanScreen() {
   const { colors, typography, spacing, radius } = useTheme()
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditing = !!id
+  const { data: user } = trpc.users.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
 
   const [name, setName] = useState('')
   const [planDays, setPlanDays] = useState<PlanDay[]>([])
@@ -340,7 +344,8 @@ export default function CreatePlanScreen() {
         {/* AI card — only shown when creating (not editing) */}
         {!isEditing && selectingDayFor === null && (
           <TouchableOpacity
-            onPress={() => router.push('/plans/generate')}
+            onPress={isGuest ? undefined : () => router.push('/plans/generate')}
+            disabled={isGuest}
             style={{
               backgroundColor: colors.surface,
               borderRadius: radius.lg,
@@ -350,26 +355,27 @@ export default function CreatePlanScreen() {
               gap: spacing.md,
               borderWidth: 1,
               borderColor: colors.surface2,
+              opacity: isGuest ? 0.4 : 1,
             }}
-            accessibilityLabel="Generate a plan with AI"
+            accessibilityLabel={isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
             accessibilityRole="button"
           >
             <View style={{
               width: 44, height: 44, borderRadius: radius.md,
-              backgroundColor: `${colors.primary}18`,
+              backgroundColor: isGuest ? colors.surface2 : `${colors.primary}18`,
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: colors.primary, letterSpacing: 1 }}>AI</Text>
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.xs, color: isGuest ? colors.textMuted : colors.primary, letterSpacing: 1 }}>AI</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: colors.textPrimary }}>
-                Let us help you create a plan
+              <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.body, color: isGuest ? colors.textMuted : colors.textPrimary }}>
+                {isGuest ? t('guest.aiLocked') : t('home.generatePlan')}
               </Text>
               <Text style={{ fontFamily: typography.family.regular, fontSize: typography.size.base, color: colors.textMuted }}>
-                AI generates a plan based on your profile
+                {isGuest ? t('guest.aiLockedDesc') : t('home.generatePlanDesc')}
               </Text>
             </View>
-            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: colors.primary }}>→</Text>
+            <Text style={{ fontFamily: typography.family.bold, fontSize: typography.size.title, color: isGuest ? colors.textMuted : colors.primary }}>→</Text>
           </TouchableOpacity>
         )}
 

@@ -454,6 +454,11 @@ export const fr = {
     calves: 'Mollets',
     fullBody: 'Corps entier',
   },
+  difficulty: {
+    BEGINNER: 'Débutant',
+    INTERMEDIATE: 'Intermédiaire',
+    ADVANCED: 'Avancé',
+  },
   generate: {
     title: 'Générateur de plan IA',
     titleRefine: 'Demander des modifications',
@@ -510,7 +515,7 @@ export const fr = {
     signInPrompt: 'Connecte-toi pour sauvegarder tes données sur tous tes appareils',
   },
   guestBanner: {
-    message: 'Compte invité — tes données sont liées à cet appareil.',
+    message: 'Mode invité — si tu te déconnectes ou supprimes l\'appli, ta progression sera perdue. Connecte-toi pour sauvegarder tes données.',
     signIn: 'Se connecter',
   },
   onboarding: {

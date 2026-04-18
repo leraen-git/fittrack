@@ -13,7 +13,9 @@
     "test": "turbo run test",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
-    "db:seed": "turbo run db:seed"
+    "db:seed": "turbo run db:seed",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "eslint": "^9.17.0",
@@ -32,6 +34,10 @@
   },
   "dependencies": {
     "@expo-google-fonts/noto-serif-jp": "^0.4.3",
-    "react-native-svg": "15.11.2"
-  }
+    "react-native-svg": "15.11.2",
+    "expo": "~53.0.27",
+    "react": "19.0.0",
+    "react-native": "0.79.6"
+  },
+  "version": "1.0.0"
 }

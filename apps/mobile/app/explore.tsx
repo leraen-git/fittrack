@@ -17,6 +17,7 @@ interface FeatureItem {
   route: Href
   isNew?: boolean
   used: boolean
+  locked?: boolean
 }
 
 interface FeatureGroup {
@@ -32,12 +33,14 @@ function FeatureRow({ item }: { item: FeatureItem }) {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(item.route)}
+      onPress={item.locked ? undefined : () => router.push(item.route)}
+      disabled={item.locked}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: spacing.md,
         paddingHorizontal: spacing.base,
+        opacity: item.locked ? 0.4 : 1,
         borderBottomWidth: 1,
         borderBottomColor: colors.surface2,
         gap: spacing.md,
@@ -149,6 +152,8 @@ export default function ExploreScreen() {
   const { t } = useTranslation()
 
   // Dynamic signals — lightweight queries
+  const { data: user }       = trpc.users.me.useQuery()
+  const isGuest = user?.authProvider === 'guest'
   const { data: sessions }   = trpc.sessions.history.useQuery({ limit: 5 })
   const { data: records }    = trpc.progress.records.useQuery()
   const { data: dietMeals }  = trpc.diet.todayMeals.useQuery()
@@ -228,11 +233,12 @@ export default function ExploreScreen() {
       items: [
         {
           icon: 'AI',
-          title: t('explore.aiWorkoutPlan'),
-          desc: t('explore.aiWorkoutPlanDesc'),
+          title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'),
+          desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'),
           route: '/plans/generate',
-          isNew: true,
+          isNew: !isGuest,
           used: hasWorkoutPlan,
+          locked: isGuest,
         },
         {
           icon: 'PG',
@@ -248,11 +254,12 @@ export default function ExploreScreen() {
       items: [
         {
           icon: 'AI',
-          title: t('explore.aiDietPlan'),
-          desc: t('explore.aiDietPlanDesc'),
+          title: isGuest ? t('guest.aiLocked') : t('explore.aiDietPlan'),
+          desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiDietPlanDesc'),
           route: '/(tabs)/diet',
-          isNew: true,
+          isNew: !isGuest,
           used: hasDiet,
+          locked: isGuest,
         },
         {
           icon: 'MR',
