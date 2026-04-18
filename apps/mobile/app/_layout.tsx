@@ -34,13 +34,20 @@ const API_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'http://localhost:3000'
 function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
 
-  // Keep a stable ref to the latest token so the tRPC link closure never goes stale
-  const tokenRef = useRef<string | null>(token)
-  useEffect(() => { tokenRef.current = token }, [token])
-
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
   }))
+
+  const tokenRef = useRef<string | null>(token)
+  const prevTokenRef = useRef<string | null>(token)
+  useEffect(() => {
+    const prev = prevTokenRef.current
+    tokenRef.current = token
+    prevTokenRef.current = token
+    if (prev && prev !== token) {
+      queryClient.clear()
+    }
+  }, [token, queryClient])
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
