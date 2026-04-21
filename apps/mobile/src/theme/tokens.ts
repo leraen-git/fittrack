@@ -1,73 +1,98 @@
-export const colors = {
-  white: '#FFFFFF' as const,
-  black: '#000000' as const,
-  light: {
-    primary: '#E8192C',
-    background: '#FFFFFF',
-    surface: '#F5F5F5',
-    surface2: '#EBEBEB',
-    textPrimary: '#0E0E0E',
-    textMuted: '#888888',
-    border: '#D4D4D4',
-    grid: '#F0F0F0',
-  },
-  dark: {
-    primary: '#FF2D3F',
-    background: '#000000',
-    surface: '#111111',
-    surface2: '#1C1C1C',
-    textPrimary: '#FFFFFF',
-    textMuted: '#666666',
-    border: '#2A2A2A',
-    grid: '#141414',
-  },
-  shared: {
-    success: '#22C55E',
-    warning: '#F59E0B',
-    danger: '#E8192C',
-    carbsAccent: '#F59E0B',
-    fatAccent: '#8B5CF6',
-    youtubeRed: '#FF0000',
-  },
-  heatmap: ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'],
-  overlay: {
-    backdrop: 'rgba(0,0,0,0.5)',
-    whiteSubtle: 'rgba(255,255,255,0.04)',
-    blackSubtle: 'rgba(0,0,0,0.05)',
-    whiteMuted: 'rgba(255,255,255,0.7)',
-    redGlow: 'rgba(232,25,44,0.22)',
-  },
+export const brand = {
+  iron: '#000000',
+  anvil: '#FFFFFF',
+  forgeLight: '#E8192C',
+  forgeDark: '#FF2D3F',
+} as const
+
+export const semantic = {
+  greenLight: '#1A7F2C',
+  greenDark: '#2BAE43',
+  amberLight: '#D98E00',
+  amberDark: '#E8A900',
+} as const
+
+export const darkTheme = {
+  bg: '#000000',
+  text: '#FFFFFF',
+  textDim: '#AAAAAA',
+  textMute: '#888888',
+  textGhost: '#555555',
+  accent: '#FF2D3F',
+  border: '#222222',
+  borderStrong: '#333333',
+  surface1: '#0A0A0A',
+  surface2: '#141414',
+  ghostBg: 'rgba(255,255,255,0.03)',
+  green: '#2BAE43',
+  amber: '#E8A900',
+  overlay: 'rgba(0,0,0,0.72)',
+  kanjiOpacity: 0.04,
+} as const
+
+export const lightTheme = {
+  bg: '#FFFFFF',
+  text: '#000000',
+  textDim: '#555555',
+  textMute: '#888888',
+  textGhost: '#BBBBBB',
+  accent: '#E8192C',
+  border: '#E5E5E5',
+  borderStrong: '#CCCCCC',
+  surface1: '#FAFAFA',
+  surface2: '#F3F3F3',
+  ghostBg: 'rgba(0,0,0,0.025)',
+  green: '#1A7F2C',
+  amber: '#D98E00',
+  overlay: 'rgba(255,255,255,0.85)',
+  kanjiOpacity: 0.05,
+} as const
+
+export type ThemeTokens = typeof darkTheme
+
+export const fonts = {
+  // Charter names
+  sans: 'BarlowCondensed_400Regular',
+  sansM: 'BarlowCondensed_500Medium',
+  sansB: 'BarlowCondensed_700Bold',
+  sansX: 'BarlowCondensed_900Black',
+  jp: 'NotoSerifJP_700Bold_subset',
+  jpX: 'NotoSerifJP_900Black_subset',
+  mono: 'JetBrainsMono_400Regular',
+  monoB: 'JetBrainsMono_700Bold',
+  // Legacy aliases
+  light: 'BarlowCondensed_300Light',
+  regular: 'BarlowCondensed_400Regular',
+  medium: 'BarlowCondensed_500Medium',
+  semiBold: 'BarlowCondensed_500Medium',
+  bold: 'BarlowCondensed_700Bold',
+  extraBold: 'BarlowCondensed_700Bold',
+  black: 'BarlowCondensed_900Black',
+  notoSerifBold: 'NotoSerifJP_700Bold_subset',
+  notoSerifBlack: 'NotoSerifJP_900Black_subset',
 } as const
 
 export const typography = {
-  family: {
-    light: 'BarlowCondensed_300Light',
-    regular: 'BarlowCondensed_400Regular',
-    medium: 'BarlowCondensed_500Medium',
-    semiBold: 'BarlowCondensed_500Medium',
-    bold: 'BarlowCondensed_700Bold',
-    extraBold: 'BarlowCondensed_700Bold',
-    black: 'BarlowCondensed_900Black',
-    notoSerifBold: 'NotoSerifJP_700Bold_subset',
-    notoSerifBlack: 'NotoSerifJP_900Black_subset',
-  },
+  family: fonts,
   size: {
-    xs: 11,
-    sm: 12,
-    md: 13,
+    xs: 9,
+    sm: 10,
+    md: 11,
     base: 14,
     body: 16,
-    title: 19,
-    xl: 22,
-    '2xl': 28,
-    '3xl': 36,
+    title: 17,
+    xl: 20,
+    '2xl': 22,
+    '3xl': 24,
+    '4xl': 32,
+    '5xl': 56,
   },
   letterSpacing: {
     tight: -0.5,
     normal: 0,
-    wide: 1,
-    wider: 2,
-    widest: 3,
+    label: 2,
+    wide: 0.5,
+    wider: 1,
   },
 } as const
 
@@ -78,12 +103,59 @@ export const spacing = {
   base: 16,
   lg: 20,
   xl: 24,
+  xxl: 32,
 } as const
 
 export const radius = {
-  sm: 4,
-  md: 6,
-  lg: 8,
+  none: 0,
+  sm: 2,
+  md: 4,
+  lg: 12,
+  // Legacy aliases — will be removed as screens migrate to radius 0
   xl: 12,
   pill: 9999,
+} as const
+
+export const heatmapColors = ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'] as const
+
+// Legacy aliases for migration — remove after full refactor
+export const colors = {
+  white: '#FFFFFF' as const,
+  black: '#000000' as const,
+  light: {
+    primary: lightTheme.accent,
+    background: lightTheme.bg,
+    surface: lightTheme.surface1,
+    surface2: lightTheme.surface2,
+    textPrimary: lightTheme.text,
+    textMuted: lightTheme.textMute,
+    border: lightTheme.border,
+    grid: lightTheme.surface2,
+  },
+  dark: {
+    primary: darkTheme.accent,
+    background: darkTheme.bg,
+    surface: darkTheme.surface1,
+    surface2: darkTheme.surface2,
+    textPrimary: darkTheme.text,
+    textMuted: darkTheme.textMute,
+    border: darkTheme.border,
+    grid: darkTheme.surface2,
+  },
+  shared: {
+    success: semantic.greenLight,
+    warning: semantic.amberLight,
+    danger: brand.forgeLight,
+    carbsAccent: semantic.amberLight,
+    fatAccent: semantic.greenLight,
+    youtubeRed: '#FF0000',
+  },
+  heatmap: [...heatmapColors],
+  overlay: {
+    backdrop: 'rgba(0,0,0,0.5)',
+    whiteSubtle: 'rgba(255,255,255,0.04)',
+    blackSubtle: 'rgba(0,0,0,0.05)',
+    whiteMuted: 'rgba(255,255,255,0.7)',
+    redGlow: 'rgba(232,25,44,0.22)',
+  },
 } as const

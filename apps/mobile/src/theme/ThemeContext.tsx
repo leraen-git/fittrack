@@ -1,12 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { useColorScheme } from 'react-native'
 import * as FileSystem from 'expo-file-system'
-import { colors, typography, spacing, radius } from './tokens'
+import {
+  darkTheme,
+  lightTheme,
+  fonts,
+  typography,
+  spacing,
+  radius,
+  type ThemeTokens,
+  // Legacy imports for backward compat during migration
+  colors,
+} from './tokens'
 
 export type ThemePreference = 'light' | 'dark' | 'system'
 type ColorScheme = 'light' | 'dark'
 
-type ThemeColors = {
+// Legacy color type (kept during migration)
+type LegacyColors = {
   primary: string
   background: string
   surface: string
@@ -24,7 +35,11 @@ type ThemeColors = {
 }
 
 interface Theme {
-  colors: ThemeColors
+  // New charter tokens
+  tokens: ThemeTokens
+  fonts: typeof fonts
+  // Legacy API (kept during migration — screens use these)
+  colors: LegacyColors
   typography: typeof typography
   spacing: typeof spacing
   radius: typeof radius
@@ -59,7 +74,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const deviceScheme = (useColorScheme() ?? 'dark') as ColorScheme
   const [preference, setPreference] = useState<ThemePreference>('system')
 
-  // Load persisted preference on mount
   useEffect(() => {
     loadPreference().then(setPreference)
   }, [])
@@ -71,8 +85,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const scheme: ColorScheme = preference === 'system' ? deviceScheme : preference
   const isDark = scheme === 'dark'
+  const tokens = isDark ? darkTheme : lightTheme
 
   const theme: Theme = {
+    tokens,
+    fonts,
     colors: {
       ...(isDark ? colors.dark : colors.light),
       ...colors.shared,

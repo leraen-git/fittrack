@@ -6,6 +6,7 @@ import { httpBatchLink } from '@trpc/client'
 import React, { useState, useEffect, useRef } from 'react'
 import { View, AppState, type AppStateStatus, StatusBar } from 'react-native'
 import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
+import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono'
 import * as Notifications from 'expo-notifications'
 import { useTranslation } from 'react-i18next'
 import { SplashScreen } from '@/components/SplashScreen'
@@ -177,6 +178,8 @@ export default function RootLayout() {
     // Subsetted Noto Serif JP — only contains 鍛錬 characters (~2.7KB each)
     NotoSerifJP_700Bold_subset: require('../assets/fonts/NotoSerifJP_700Bold_subset.ttf'),
     NotoSerifJP_900Black_subset: require('../assets/fonts/NotoSerifJP_900Black_subset.ttf'),
+    JetBrainsMono_400Regular,
+    JetBrainsMono_700Bold,
   })
 
   useEffect(() => {
