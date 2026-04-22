@@ -122,6 +122,96 @@ export interface PersonalRecord {
 export type ExerciseStatus = 'improved' | 'stable' | 'declined'
 export type Trend = 'improving' | 'plateauing' | 'declining'
 
+// ─── History ────────────────────────────────────────────────────────────────
+
+export type HistoryPeriod = '1w' | '1m' | '3m' | '1y'
+
+export interface SessionListItem {
+  id: string
+  workoutTemplateId: string | null
+  workoutName: string
+  startedAt: string
+  completedAt: string | null
+  durationSeconds: number | null
+  totalVolume: number | null
+  seriesCount: number
+  muscleGroups: string[]
+  prCount: number
+}
+
+export interface SessionSetDetail {
+  id: string
+  setNumber: number
+  reps: number
+  weight: number
+  restSeconds: number | null
+  isPR: boolean
+  completedAt: string | null
+}
+
+export interface SessionExerciseDetail {
+  exerciseId: string
+  exerciseName: string
+  order: number
+  volume: number
+  sets: SessionSetDetail[]
+}
+
+export interface SessionDetail {
+  id: string
+  workoutTemplateId: string | null
+  workoutName: string
+  startedAt: string
+  completedAt: string | null
+  durationSeconds: number | null
+  totalVolume: number | null
+  seriesCount: number
+  muscleGroups: string[]
+  exercises: SessionExerciseDetail[]
+  prs: Array<{
+    exerciseId: string
+    exerciseName: string
+    reps: number
+    weight: number
+  }>
+}
+
+export interface HeatmapCell {
+  date: string
+  volume: number
+  level: 0 | 1 | 2 | 3 | 4
+}
+
+export interface HeatmapData {
+  cells: HeatmapCell[]
+  startDate: string
+  endDate: string
+  maxVolume: number
+}
+
+export interface WeeklyVolume {
+  weekStart: string
+  volume: number
+  sessionCount: number
+}
+
+export interface HistoryStats {
+  period: HistoryPeriod
+  totalVolume: number
+  previousPeriodVolume: number
+  trendPercent: number
+  heatmap: HeatmapData
+  weeklyVolume: WeeklyVolume[]
+  recentPRs: Array<{
+    sessionId: string
+    exerciseId: string
+    exerciseName: string
+    reps: number
+    weight: number
+    achievedAt: string
+  }>
+}
+
 export interface ExerciseComparison {
   exerciseId: string
   exerciseName: string

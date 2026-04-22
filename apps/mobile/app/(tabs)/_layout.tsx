@@ -10,12 +10,12 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 
 function tabIcon(active: string, inactive: string) {
   return ({ color, focused }: { color: string; focused: boolean }) => (
-    <Ionicons name={(focused ? active : inactive) as IoniconsName} size={22} color={color} />
+    <Ionicons name={(focused ? active : inactive) as IoniconsName} size={28} color={color} />
   )
 }
 
 export default function TabLayout() {
-  const { tokens, fonts } = useTheme()
+  const { tokens } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -24,26 +24,21 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: tokens.surface1,
           borderTopWidth: 1,
           borderTopColor: tokens.border,
+          paddingTop: 8,
         },
         tabBarActiveTintColor: tokens.accent,
         tabBarInactiveTintColor: tokens.textMute,
-        tabBarLabelStyle: {
-          fontFamily: fonts.sansM,
-          fontSize: 9,
-          letterSpacing: 1,
-          textTransform: 'uppercase',
-        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: t('tabs.home'),
-          tabBarLabel: t('tabs.home'),
           tabBarIcon: tabIcon('home', 'home-outline'),
         }}
       />
@@ -51,7 +46,6 @@ export default function TabLayout() {
         name="workouts"
         options={{
           title: t('tabs.training'),
-          tabBarLabel: t('tabs.training'),
           tabBarIcon: tabIcon('barbell', 'barbell-outline'),
         }}
       />
@@ -59,7 +53,6 @@ export default function TabLayout() {
         name="history"
         options={{
           title: t('tabs.history'),
-          tabBarLabel: t('tabs.history'),
           tabBarIcon: tabIcon('time', 'time-outline'),
         }}
       />
@@ -67,15 +60,13 @@ export default function TabLayout() {
         name="diet"
         options={{
           title: t('tabs.diet'),
-          tabBarLabel: t('tabs.diet'),
-          tabBarIcon: tabIcon('shield-checkmark', 'shield-checkmark-outline'),
+          tabBarIcon: tabIcon('restaurant', 'restaurant-outline'),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: t('tabs.profile'),
-          tabBarLabel: t('tabs.profile'),
           tabBarIcon: tabIcon('person', 'person-outline'),
         }}
       />

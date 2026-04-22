@@ -25,7 +25,7 @@ export function formatDuration(seconds: number): string {
   if (m < 60) return `${m} min`
   const h = Math.floor(m / 60)
   const rem = m % 60
-  return rem > 0 ? `${h}h ${rem}min` : `${h}h`
+  return rem > 0 ? `${h}h${String(rem).padStart(2, '0')}` : `${h}h`
 }
 
 /** Format a percentage delta: "+4,2 %", "-1,5 %" */

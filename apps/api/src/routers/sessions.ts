@@ -178,8 +178,9 @@ export const sessionsRouter = router({
           .values({ workoutSessionId: session!.id, exerciseId: ex.exerciseId, order: ex.order })
           .returning()
 
+        let insertedSets: Array<{ id: string; setNumber: number; reps: number; weight: number; isCompleted: boolean }> = []
         if (ex.sets.length > 0) {
-          await ctx.db.insert(exerciseSets).values(
+          insertedSets = await ctx.db.insert(exerciseSets).values(
             ex.sets.map((s) => ({
               sessionExerciseId: sessEx!.id,
               setNumber: s.setNumber,
@@ -189,11 +190,11 @@ export const sessionsRouter = router({
               isCompleted: s.isCompleted,
               completedAt: s.isCompleted ? new Date() : undefined,
             })),
-          )
+          ).returning({ id: exerciseSets.id, setNumber: exerciseSets.setNumber, reps: exerciseSets.reps, weight: exerciseSets.weight, isCompleted: exerciseSets.isCompleted })
         }
 
-        const exerciseCompletedSets = ex.sets.filter((s) => s.isCompleted)
-        const exVolume = exerciseCompletedSets.reduce((sum, s) => sum + s.reps * s.weight, 0)
+        const completedInserted = insertedSets.filter((s) => s.isCompleted)
+        const exVolume = completedInserted.reduce((sum, s) => sum + s.reps * s.weight, 0)
         const prevVol = prevExerciseVolumes[ex.exerciseId] ?? null
         const delta = prevVol !== null && prevVol > 0 ? (exVolume - prevVol) / prevVol : null
         const exName = exerciseNameMap[ex.exerciseId]
@@ -206,13 +207,13 @@ export const sessionsRouter = router({
           delta,
         })
 
-        if (exerciseCompletedSets.length === 0) continue
+        if (completedInserted.length === 0) continue
 
-        const bestSet = exerciseCompletedSets.reduce((best, s) => {
+        const bestSet = completedInserted.reduce((best, s) => {
           if (s.weight > best.weight) return s
           if (s.weight === best.weight && s.reps > best.reps) return s
           return best
-        }, exerciseCompletedSets[0]!)
+        }, completedInserted[0]!)
 
         const [existingPR] = await ctx.db
           .select()
@@ -226,6 +227,7 @@ export const sessionsRouter = router({
           || (bestSet.weight === existingPR.weight && bestSet.reps > existingPR.reps)
 
         if (isPR) {
+          await ctx.db.update(exerciseSets).set({ isPR: true }).where(eq(exerciseSets.id, bestSet.id))
           await ctx.db.insert(personalRecords).values({
             userId: user.id,
             exerciseId: ex.exerciseId,

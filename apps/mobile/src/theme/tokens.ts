@@ -78,7 +78,13 @@ export const fonts = {
   monoB: 'JetBrainsMono_700Bold',
 } as const
 
-export const heatmapColors = ['#141414', '#4A0A10', '#8A1520', '#C01E2E', '#E8192C'] as const
+export const heatmapColors = [
+  '#141414',
+  'rgba(255,45,63,0.2)',
+  'rgba(255,45,63,0.4)',
+  'rgba(255,45,63,0.7)',
+  '#FF2D3F',
+] as const
 
 // Raw color constants for non-themed contexts (splash, error boundary, share cards)
 export const colors = {

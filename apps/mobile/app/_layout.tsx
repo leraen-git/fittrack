@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@/lib/trpc'
 import { httpBatchLink } from '@trpc/client'
 import React, { useState, useEffect, useRef } from 'react'
-import { View, AppState, type AppStateStatus, StatusBar } from 'react-native'
+import { View, AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-native'
 import { useFonts, BarlowCondensed_300Light, BarlowCondensed_400Regular, BarlowCondensed_500Medium, BarlowCondensed_700Bold, BarlowCondensed_900Black } from '@expo-google-fonts/barlow-condensed'
 import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono'
 import * as Notifications from 'expo-notifications'
@@ -202,7 +202,10 @@ export default function RootLayout() {
           </AuthProvider>
         </ThemeProvider>
       </ErrorBoundary>
-      {(!splashDone || !fontsLoaded) && <SplashScreen onFinish={() => setSplashDone(true)} />}
+      {!splashDone && (fontsLoaded
+        ? <SplashScreen onFinish={() => setSplashDone(true)} />
+        : <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#000000', zIndex: 9999 }} />
+      )}
     </View>
   )
 }

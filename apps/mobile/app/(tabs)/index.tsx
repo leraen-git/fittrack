@@ -4,7 +4,6 @@ import { router, useFocusEffect } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
 import { StatsStrip } from '@/components/StatsStrip'
-import { CornerAccent } from '@/components/CornerAccent'
 import { MacroRow } from '@/components/MacroRow'
 import { MealCard } from '@/components/MealCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
@@ -121,7 +120,7 @@ export default function HomeScreen() {
           {userLoading ? (
             <SkeletonCard height={32} />
           ) : (
-            <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text }}>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text, textTransform: 'uppercase' }}>
               {t('home.salut')} <Text style={{ color: tokens.accent }}>{user?.name.split(' ')[0] ?? 'Athlete'}.</Text>
             </Text>
           )}
@@ -266,24 +265,22 @@ export default function HomeScreen() {
         {/* === WORKOUT TAB === */}
         {(!showTodayTabs || activeTab === 'workout') && (
           <>
-            {/* Workout complete */}
+            {/* Workout complete — hero card */}
             {isTodayWorkoutDone && (
-              <View style={{ borderWidth: 1, borderColor: tokens.green }}>
-                <View style={{ padding: 16, gap: 4 }}>
-                  <Text style={{
-                    fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
-                    textTransform: 'uppercase', color: tokens.green,
-                  }}>
-                    {t('home.today')}
-                  </Text>
-                  <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
-                    {t('home.workoutComplete')}
-                  </Text>
-                </View>
+              <View style={{ borderWidth: 1, borderColor: tokens.green, padding: 24, gap: 12, alignItems: 'center' }}>
+                <Text style={{
+                  fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
+                  textTransform: 'uppercase', color: tokens.green,
+                }}>
+                  {t('home.today')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 32, color: tokens.text, textTransform: 'uppercase', textAlign: 'center' }}>
+                  {t('home.workoutComplete')}
+                </Text>
                 {showTodayTabs && (
                   <TouchableOpacity
                     onPress={() => handleTabChange('diet')}
-                    style={{ backgroundColor: tokens.accent, margin: 16, marginTop: 0, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+                    style={{ backgroundColor: tokens.accent, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 4, alignSelf: 'stretch' }}
                     accessibilityLabel="View today's diet" accessibilityRole="button"
                   >
                     <Text style={{ fontFamily: fonts.sansB, fontSize: 14, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
@@ -294,10 +291,10 @@ export default function HomeScreen() {
               </View>
             )}
 
-            {/* Rest day */}
+            {/* Rest day — hero card */}
             {isRestDay && (
-              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 20, alignItems: 'center', gap: 4 }}>
-                <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
+              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 32, alignItems: 'center', gap: 8 }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 32, color: tokens.text, textTransform: 'uppercase' }}>
                   {t('home.restDay')}
                 </Text>
                 <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, textAlign: 'center' }}>
@@ -306,85 +303,36 @@ export default function HomeScreen() {
               </View>
             )}
 
-            {/* Today card with CornerAccent */}
+            {/* Next workout card — always compact row */}
             {nextWorkout && (
-              <View style={{ gap: 12 }}>
-                <View style={{ borderWidth: 1, borderColor: tokens.accent, overflow: 'hidden' }}>
-                  <CornerAccent position="tl" size="md" />
-                  <View style={{ padding: 16, gap: 8 }}>
-                    <Text style={{
-                      fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 1.6,
-                      textTransform: 'uppercase', color: tokens.accent,
-                    }}>
-                      {isTodayWorkout ? t('home.today') : (i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[nextWorkout.dayOfWeek]}
-                    </Text>
-                    <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+              <View style={{ gap: 8 }}>
+                <View style={{ borderBottomWidth: 1, borderBottomColor: tokens.border, paddingBottom: 6 }}>
+                  <Text style={{
+                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
+                    textTransform: 'uppercase', color: tokens.textMute,
+                  }}>
+                    {t('home.nextWorkout')}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
+                  style={{
+                    borderWidth: 1, borderColor: isTodayWorkout ? tokens.accent : tokens.border, padding: 12,
+                    flexDirection: 'row', alignItems: 'center',
+                  }}
+                  accessibilityLabel={`Start ${nextWorkout.workoutName}`}
+                  accessibilityRole="button"
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
                       {nextWorkout.workoutName}
                     </Text>
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>
-                      {t('home.estimatedDuration')} · {nextWorkout.estimatedDuration} min
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                      {isTodayWorkout ? t('home.today') : (i18n.language === 'fr' ? DAY_NAMES_FR : DAY_NAMES_FULL)[nextWorkout.dayOfWeek]} · {nextWorkout.estimatedDuration} min
                     </Text>
-
-                    {/* Muscle tags */}
-                    {nextWorkout.muscleGroups && nextWorkout.muscleGroups.length > 0 && (
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                        {nextWorkout.muscleGroups.map((mg) => (
-                          <View key={mg} style={{
-                            backgroundColor: tokens.surface2,
-                            paddingHorizontal: 8,
-                            paddingVertical: 4,
-                          }}>
-                            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: tokens.text }}>
-                              {mg}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-                    )}
-
-                    {/* Exercise preview with arabic numbers */}
-                    <View style={{ gap: 4, marginTop: 8, borderTopWidth: 1, borderTopColor: tokens.border, paddingTop: 12 }}>
-                      {workoutDetail ? (
-                        <>
-                          {workoutDetail.exercises.slice(0, 3).map((ex, i) => (
-                            <View key={ex.id} style={{ flexDirection: 'row', gap: 8 }}>
-                              <Text style={{ fontFamily: fonts.sansX, fontSize: 14, color: tokens.accent, width: 20 }}>
-                                {i + 1}.
-                              </Text>
-                              <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.text, flex: 1 }}>
-                                {ex.exerciseName} · {ex.defaultSets}×{ex.defaultReps}
-                                {ex.defaultWeight > 0 ? ` · ${ex.defaultWeight} kg` : ''}
-                              </Text>
-                            </View>
-                          ))}
-                          {workoutDetail.exercises.length > 3 && (
-                            <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, fontStyle: 'italic', marginLeft: 20 }}>
-                              +{workoutDetail.exercises.length - 3} {t('home.moreExercises')}
-                            </Text>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <SkeletonCard height={20} />
-                          <SkeletonCard height={20} />
-                          <SkeletonCard height={20} />
-                        </>
-                      )}
-                    </View>
-
-                    {/* CTA */}
-                    <TouchableOpacity
-                      onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
-                      style={{ backgroundColor: tokens.accent, height: 52, alignItems: 'center', justifyContent: 'center', borderRadius: 4, marginTop: 8 }}
-                      accessibilityLabel={`Start ${nextWorkout.workoutName}`}
-                      accessibilityRole="button"
-                    >
-                      <Text style={{ fontFamily: fonts.sansB, fontSize: 15, letterSpacing: 0.6, textTransform: 'uppercase', color: '#FFFFFF' }}>
-                        {isTodayWorkout ? t('home.startNow') : t('home.startWorkout')}
-                      </Text>
-                    </TouchableOpacity>
                   </View>
-                </View>
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
+                </TouchableOpacity>
 
                 {/* This week */}
                 {remainingWorkouts.length > 0 && (

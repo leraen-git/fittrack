@@ -319,8 +319,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     lineHeight: 72,
     textTransform: 'uppercase',
+    textAlign: 'center',
+    paddingLeft: 10,
   },
   kanji: {
+    fontFamily: 'NotoSerifJP_700Bold_subset',
     fontSize: 18,
     color: RED,
     letterSpacing: 8,

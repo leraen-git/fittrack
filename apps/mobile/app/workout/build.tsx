@@ -9,7 +9,7 @@ import {
   Alert,
   Image,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
@@ -96,6 +96,7 @@ function ExercisePicker({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+      <SafeAreaProvider>
       <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
         {/* Header */}
         <View style={{
@@ -291,6 +292,7 @@ function ExercisePicker({
           </View>
         )}
       </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   )
 }

@@ -149,21 +149,76 @@ export const en = {
   history: {
     title: 'Progress',
     screenTitle: 'History',
+    viewList: 'List',
+    viewStats: 'Stats',
+
+    // Filters
     filter_1w: '1w',
     filter_1m: '1m',
     filter_3m: '3m',
+    filter_1y: '1y',
     filter_all: 'All',
+    muscleAll: 'All',
+
+    // Summary
     volume: 'Volume',
     sessions: 'Sessions',
     perWeek: '/week',
-    records: 'Personal records',
-    noSessions: 'No sessions found.',
+
+    // Session card
     done: 'Done',
     incomplete: 'Incomplete',
     defaultWorkout: 'Workout',
+    seriesLabel: 'sets',
+    statusDone: 'Done',
     today: 'Today',
     yesterday: 'Yesterday',
-    muscleAll: 'All',
+    prBadge_one: '{{count}} PR',
+    prBadge_other: '{{count}} PRs',
+
+    // Search
+    searchTitle: 'Search',
+    searchPlaceholder: 'Session name...',
+    searchMinChars: 'Type at least 2 characters.',
+    searchNoResults: 'No session found for "{{query}}".',
+
+    // Empty states
+    noSessions: 'No sessions found.',
+    emptyGlobalLabel: 'Empty history',
+    emptyGlobalTitle: 'No history\nyet',
+    emptyGlobalDesc: 'Finish your first session and it will appear here. Rep by rep, your history is forged.',
+    emptyGlobalCTA: 'Start a session',
+    emptyFilteredTitle: 'No session\nfor this filter',
+    emptyFilteredDesc: 'Try widening the period or changing the muscle group.',
+    emptyFilteredReset: 'Reset filters',
+
+    // Stats
+    statsVolumeTotal: 'Total volume',
+    statsActivity: 'Activity',
+    statsWeeklyVolume: 'Weekly volume',
+    statsRecentPRs: 'Recent records',
+    statsTrendUp: '+{{pct}}% vs previous period',
+    statsTrendFlat: '{{pct}}% vs previous period',
+    statsTrendDown: '-{{pct}}% vs previous period',
+    heatmapLegendLess: 'Less',
+    heatmapLegendMore: 'More',
+
+    // Session detail
+    detailTitle: 'Session',
+    detailDuration: 'Duration',
+    detailVolume: 'Volume',
+    detailSeries: 'Sets',
+    detailExercises: 'Exercises',
+    detailPRBanner_one: '{{count}} Record broken',
+    detailPRBanner_other: '{{count}} Records broken',
+    detailReplay: 'Replay',
+    detailShare: 'Share',
+    detailSetIdx: '#',
+    detailSetReps: 'Reps',
+    detailSetLoad: 'Load',
+    detailSetRest: 'Rest',
+    detailPRMark: 'PR',
+    records: 'Personal records',
   },
   timer: {
     restComplete: 'Rest complete!',

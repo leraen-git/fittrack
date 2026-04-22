@@ -9,6 +9,7 @@ import { programsRouter } from './routers/programs.js'
 import { plansRouter } from './routers/plans.js'
 import { dietRouter } from './routers/diet.js'
 import { notificationsRouter } from './routers/notifications.js'
+import { historyRouter } from './routers/history.js'
 
 export const appRouter = router({
   auth: authRouter,
@@ -21,6 +22,7 @@ export const appRouter = router({
   plans: plansRouter,
   diet: dietRouter,
   notifications: notificationsRouter,
+  history: historyRouter,
 })
 
 export type AppRouter = typeof appRouter

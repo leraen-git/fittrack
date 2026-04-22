@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc'
 
 const CACHE_KEY = 'exercises_cache'
 const CACHE_VERSION_KEY = 'exercises_cache_version'
-const CURRENT_VERSION = '1'
+const CURRENT_VERSION = '2'
 
 interface RawExercise {
   id: string

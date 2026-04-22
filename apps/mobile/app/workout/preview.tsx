@@ -9,7 +9,7 @@ import {
   Modal,
   Image,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
@@ -65,6 +65,7 @@ function ExercisePicker({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+      <SafeAreaProvider>
       <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
         <View style={{
           flexDirection: 'row',
@@ -75,11 +76,11 @@ function ExercisePicker({
           borderBottomColor: tokens.border,
         }}>
           <TouchableOpacity onPress={onClose} accessibilityLabel={t('common.close')} accessibilityRole="button">
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 32, color: tokens.accent }}>X</Text>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>CLOSE</Text>
           </TouchableOpacity>
           <Text numberOfLines={1} style={{
             fontFamily: fonts.sansX,
-            fontSize: 32,
+            fontSize: 17,
             color: tokens.text,
             flex: 1,
             textTransform: 'uppercase',
@@ -187,6 +188,7 @@ function ExercisePicker({
           })}
         </ScrollView>
       </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   )
 }

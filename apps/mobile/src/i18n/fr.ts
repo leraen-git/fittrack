@@ -149,21 +149,76 @@ export const fr = {
   history: {
     title: 'Progrès',
     screenTitle: 'Historique',
-    filter_1w: '1s',
-    filter_1m: '1m',
-    filter_3m: '3m',
+    viewList: 'Liste',
+    viewStats: 'Stats',
+
+    // Filters
+    filter_1w: '1 sem.',
+    filter_1m: '1 mois',
+    filter_3m: '3 mois',
+    filter_1y: '1 an',
     filter_all: 'Tout',
+    muscleAll: 'Tous',
+
+    // Summary
     volume: 'Volume',
     sessions: 'Séances',
     perWeek: '/semaine',
-    records: 'Records personnels',
-    noSessions: 'Aucune séance trouvée.',
-    done: 'Terminé',
-    incomplete: 'Incomplet',
+
+    // Session card
+    done: 'Terminée',
+    incomplete: 'Incomplète',
     defaultWorkout: 'Entraînement',
+    seriesLabel: 'séries',
+    statusDone: 'Terminée',
     today: "Aujourd'hui",
     yesterday: 'Hier',
-    muscleAll: 'Tous',
+    prBadge_one: '{{count}} PR',
+    prBadge_other: '{{count}} PR',
+
+    // Search
+    searchTitle: 'Rechercher',
+    searchPlaceholder: 'Nom de séance...',
+    searchMinChars: 'Tape au moins 2 caractères.',
+    searchNoResults: 'Aucune séance trouvée pour "{{query}}".',
+
+    // Empty states
+    noSessions: 'Aucune séance trouvée.',
+    emptyGlobalLabel: 'Historique vide',
+    emptyGlobalTitle: "Pas encore\nd'historique",
+    emptyGlobalDesc: 'Termine ta première séance et elle apparaîtra ici. Rep après rep, ton histoire se construit.',
+    emptyGlobalCTA: 'Commencer une séance',
+    emptyFilteredTitle: 'Pas de séance\npour ce filtre',
+    emptyFilteredDesc: "Essaie d'élargir la période ou change de groupe musculaire.",
+    emptyFilteredReset: 'Réinitialiser les filtres',
+
+    // Stats
+    statsVolumeTotal: 'Volume total',
+    statsActivity: 'Activité',
+    statsWeeklyVolume: 'Volume hebdomadaire',
+    statsRecentPRs: 'Records récents',
+    statsTrendUp: '+{{pct}}% vs période précédente',
+    statsTrendFlat: '{{pct}}% vs période précédente',
+    statsTrendDown: '-{{pct}}% vs période précédente',
+    heatmapLegendLess: 'Moins',
+    heatmapLegendMore: 'Plus',
+
+    // Session detail
+    detailTitle: 'Séance',
+    detailDuration: 'Durée',
+    detailVolume: 'Volume',
+    detailSeries: 'Séries',
+    detailExercises: 'Exercices',
+    detailPRBanner_one: '{{count}} Record battu',
+    detailPRBanner_other: '{{count}} Records battus',
+    detailReplay: 'Rejouer',
+    detailShare: 'Partager',
+    detailSetIdx: '#',
+    detailSetReps: 'Reps',
+    detailSetLoad: 'Charge',
+    detailSetRest: 'Repos',
+    detailPRMark: 'PR',
+    records: 'Records personnels',
   },
   timer: {
     restComplete: 'Repos terminé !',

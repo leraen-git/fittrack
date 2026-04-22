@@ -7,6 +7,7 @@ import {
   timestamp,
   pgEnum,
   jsonb,
+  index,
 } from 'drizzle-orm/pg-core'
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
@@ -94,7 +95,10 @@ export const workoutSessions = pgTable('workout_sessions', {
   totalVolume: real('total_volume').notNull().default(0),
   notes: text('notes'),
   perceivedExertion: integer('perceived_exertion'),
-})
+}, (table) => [
+  index('ws_user_started_idx').on(table.userId, table.startedAt),
+  index('ws_user_template_idx').on(table.userId, table.workoutTemplateId),
+])
 
 // ─── Session Exercises ────────────────────────────────────────────────────────
 
@@ -103,7 +107,10 @@ export const sessionExercises = pgTable('session_exercises', {
   workoutSessionId: text('workout_session_id').notNull().references(() => workoutSessions.id, { onDelete: 'cascade' }),
   exerciseId: text('exercise_id').notNull().references(() => exercises.id),
   order: integer('order').notNull().default(0),
-})
+}, (table) => [
+  index('se_session_idx').on(table.workoutSessionId),
+  index('se_exercise_idx').on(table.exerciseId),
+])
 
 // ─── Exercise Sets ────────────────────────────────────────────────────────────
 
@@ -115,9 +122,13 @@ export const exerciseSets = pgTable('exercise_sets', {
   weight: real('weight').notNull().default(0),
   restSeconds: integer('rest_seconds').notNull().default(90),
   isCompleted: boolean('is_completed').notNull().default(false),
+  isPR: boolean('is_pr').notNull().default(false),
   completedAt: timestamp('completed_at'),
   notes: text('notes'),
-})
+}, (table) => [
+  index('es_session_exercise_idx').on(table.sessionExerciseId),
+  index('es_is_pr_idx').on(table.sessionExerciseId, table.isPR),
+])
 
 // ─── Programs ─────────────────────────────────────────────────────────────────
 
