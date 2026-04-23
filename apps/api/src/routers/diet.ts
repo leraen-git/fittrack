@@ -258,9 +258,67 @@ export const dietRouter = router({
     return plan ?? null
   }),
 
-  // DEPRECATED: v1 — used only by Home nutrition tab. Remove when Home migrates to v2.
   todayMeals: protectedProcedure.query(async ({ ctx }) => {
     const user = await resolveUser(ctx.db, ctx.userId)
+    const jsDay = new Date().getDay()
+    const dietDow = jsDay === 0 ? 7 : jsDay
+
+    // Try v2 plan first
+    const [v2Plan] = await ctx.db
+      .select()
+      .from(dietPlansV2)
+      .where(and(
+        eq(dietPlansV2.userId, user.id),
+        eq(dietPlansV2.status, 'ACTIVE'),
+        isNull(dietPlansV2.deletedAt),
+      ))
+      .orderBy(desc(dietPlansV2.createdAt))
+      .limit(1)
+
+    if (v2Plan) {
+      const [todayDayRow] = await ctx.db
+        .select()
+        .from(dietPlanDays)
+        .where(and(eq(dietPlanDays.planId, v2Plan.id), eq(dietPlanDays.dayNumber, dietDow)))
+        .limit(1)
+
+      if (!todayDayRow) return { id: v2Plan.id, isActive: true, targetCalories: v2Plan.targetKcal, targetProtein: v2Plan.targetProteinG, targetCarbs: v2Plan.targetCarbsG, targetFat: v2Plan.targetFatG, hydrationLiters: null, todayDay: { dayOfWeek: dietDow, theme: '', meals: [] } }
+
+      const meals = await ctx.db
+        .select()
+        .from(dietMeals)
+        .where(eq(dietMeals.planDayId, todayDayRow.id))
+        .orderBy(dietMeals.orderIndex)
+
+      const mappedMeals = meals.map(m => ({
+        type: (m.mealType ?? '').toLowerCase(),
+        name: m.name,
+        calories: m.kcal,
+        protein: m.proteinG,
+        carbs: m.carbsG,
+        fat: m.fatG,
+        batchCookable: m.isBatchCookFriendly,
+        isTreat: m.isLowCalTreat,
+        prepTime: m.prepTimeMin,
+        ingredients: (m.ingredients as any[])?.map((i: any) => `${i.quantity} ${i.unit} ${i.name}`) ?? [],
+        preparationSteps: (m.recipeSteps as any[])?.sort((a: any, b: any) => a.stepNumber - b.stepNumber).map((s: any) => s.instruction) ?? [],
+        recipeVideoUrl: m.youtubeUrl,
+        suggestedTime: m.suggestedTime,
+      }))
+
+      return {
+        id: v2Plan.id,
+        isActive: true,
+        targetCalories: v2Plan.targetKcal,
+        targetProtein: v2Plan.targetProteinG,
+        targetCarbs: v2Plan.targetCarbsG,
+        targetFat: v2Plan.targetFatG,
+        hydrationLiters: null,
+        todayDay: { dayOfWeek: dietDow, theme: todayDayRow.theme, meals: mappedMeals },
+      }
+    }
+
+    // Fall back to v1 plan
     const [plan] = await ctx.db
       .select({
         id: dietPlans.id,
@@ -279,8 +337,6 @@ export const dietRouter = router({
 
     if (!plan) return null
 
-    const jsDay = new Date().getDay()         // 0=Sun … 6=Sat
-    const dietDow = jsDay === 0 ? 7 : jsDay  // 1=Mon … 7=Sun
     const raw = plan.rawPlan as RawPlan | null
     const todayDay = raw?.days?.find((d) => d.dayOfWeek === dietDow) ?? null
 
