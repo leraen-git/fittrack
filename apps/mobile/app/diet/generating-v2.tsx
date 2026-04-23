@@ -13,10 +13,13 @@ const FREQ_MAP = { '0-1': 1, '2-3': 3, '4+': 5 } as const
 const ALCOHOL_MAP = { '0': 0, '1-5': 3, '6+': 8 } as const
 
 const GEN_STEPS = [
-  { key: 'genStep1', doneAt: 15 },
-  { key: 'genStep2', doneAt: 30 },
-  { key: 'genStep3', doneAt: 70 },
-  { key: 'genStep4', doneAt: 95 },
+  { key: 'genStep1', doneAt: 8 },
+  { key: 'genStep2', doneAt: 18 },
+  { key: 'genStep3', doneAt: 30 },
+  { key: 'genStep4', doneAt: 50 },
+  { key: 'genStep5', doneAt: 70 },
+  { key: 'genStep6', doneAt: 85 },
+  { key: 'genStep7', doneAt: 95 },
 ] as const
 
 export default function GeneratingV2Screen() {
@@ -48,8 +51,8 @@ export default function GeneratingV2Screen() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((p) => Math.min(p + 2, 90))
-    }, 600)
+      setProgress((p) => Math.min(p + 1, 90))
+    }, 800)
     return () => clearInterval(interval)
   }, [])
 
@@ -131,9 +134,17 @@ export default function GeneratingV2Screen() {
 
         <Text style={{
           fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim,
-          textAlign: 'center', lineHeight: 18, maxWidth: 280, marginBottom: 28,
+          textAlign: 'center', lineHeight: 18, maxWidth: 280, marginBottom: 8,
         }}>
           {t('intakeV2.genSub')}
+        </Text>
+
+        <Text style={{
+          fontFamily: fonts.monoB, fontSize: 10, color: tokens.textGhost,
+          textAlign: 'center', letterSpacing: 1.2, textTransform: 'uppercase',
+          marginBottom: 24,
+        }}>
+          {t('intakeV2.genTime')}
         </Text>
 
         {/* Progress bar */}
