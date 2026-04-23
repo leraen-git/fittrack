@@ -226,7 +226,7 @@ interface V2Meal {
   prepTimeMin: number
   isBatchCookFriendly: boolean
   isLowCalTreat: boolean
-  ingredients: { name: string; quantity: string; unit: string; grocerySection: string }[]
+  ingredients: { name: string; quantity: string; unit: string; grocerySection?: string }[]
   recipeSteps: { stepNumber: number; instruction: string }[]
   youtubeUrl: string | null
 }

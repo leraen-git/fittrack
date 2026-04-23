@@ -4,7 +4,6 @@ const ingredientSchema = z.object({
   name: z.string(),
   quantity: z.string(),
   unit: z.string(),
-  grocerySection: z.string(),
 })
 
 const recipeStepSchema = z.object({
@@ -21,14 +20,10 @@ const mealSchema = z.object({
   carbsG: z.number().int(),
   fatG: z.number().int(),
   prepTimeMin: z.number().int(),
-  difficulty: z.string(),
   isBatchCookFriendly: z.boolean(),
   isLowCalTreat: z.boolean(),
   ingredients: z.array(ingredientSchema),
   recipeSteps: z.array(recipeStepSchema),
-  youtubeUrl: z.string(),
-  youtubeChannelName: z.string(),
-  youtubeDurationSec: z.number().int(),
 })
 
 const daySchema = z.object({

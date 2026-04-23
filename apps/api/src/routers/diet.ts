@@ -113,14 +113,10 @@ async function persistPlanFromAi(
         carbsG: m.carbsG,
         fatG: m.fatG,
         prepTimeMin: m.prepTimeMin,
-        difficulty: m.difficulty,
         isBatchCookFriendly: m.isBatchCookFriendly,
         isLowCalTreat: m.isLowCalTreat,
         ingredients: m.ingredients,
         recipeSteps: m.recipeSteps,
-        youtubeUrl: m.youtubeUrl,
-        youtubeChannelName: m.youtubeChannelName,
-        youtubeDurationSec: m.youtubeDurationSec,
       })
     }
   }
