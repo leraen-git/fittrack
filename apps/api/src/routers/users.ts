@@ -1,21 +1,13 @@
+import crypto from 'node:crypto'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure } from '../trpc.js'
 import { users } from '../db/schema.js'
 import { encryptUserFields, decryptUserFields } from '../db/encryption.js'
+import { revokeAllUserSessions } from '../services/sessionService.js'
 
 export const usersRouter = router({
-  me: protectedProcedure.query(async ({ ctx }) => {
-    const [user] = await ctx.db
-      .select()
-      .from(users)
-      .where(eq(users.id, ctx.userId))
-      .limit(1)
-    if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-    return decryptUserFields(user)
-  }),
-
   updateMe: protectedProcedure
     .input(
       z.object({
@@ -53,11 +45,19 @@ export const usersRouter = router({
 
     ctx.req.log.warn(
       { event: 'account_delete', userId: user.id },
-      'User account deleted',
+      'User account soft-deleted',
     )
 
-    // All child records cascade via DB FK ON DELETE CASCADE
-    await ctx.db.delete(users).where(eq(users.id, user.id))
+    const redactedHash = crypto.createHash('sha256').update(`deleted-${ctx.userId}`).digest('hex')
+    await ctx.db.update(users).set({
+      deletedAt: new Date(),
+      email: `deleted-${ctx.userId}@tanren.deleted`,
+      emailHash: redactedHash,
+      name: 'Compte supprimé',
+      avatarUrl: null,
+    }).where(eq(users.id, user.id))
+
+    await revokeAllUserSessions(user.id)
     return { success: true }
   }),
 })

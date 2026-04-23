@@ -1,7 +1,9 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import type { FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
+import { eq, and, isNull } from 'drizzle-orm'
 import type { DB } from './db/index.js'
+import { users } from './db/schema.js'
 import { checkProcedureRateLimit } from './middleware/rateLimit.js'
 
 export interface Context {
@@ -60,10 +62,21 @@ export const router = t.router
 const baseProcedure = t.procedure.use(withRequestValidation)
 export const publicProcedure = baseProcedure
 
-export const protectedProcedure = baseProcedure.use(({ ctx, next, path }) => {
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next, path }) => {
   if (!ctx.userId) {
     ctx.req.log.warn({ event: 'auth_failure', path }, 'Unauthenticated request to protected procedure')
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
+
+  const [user] = await ctx.db
+    .select({ id: users.id })
+    .from(users)
+    .where(and(eq(users.id, ctx.userId), isNull(users.deletedAt)))
+    .limit(1)
+
+  if (!user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Compte introuvable' })
+  }
+
   return next({ ctx: { ...ctx, userId: ctx.userId } })
 })

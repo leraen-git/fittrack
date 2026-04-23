@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto'
 import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { eq, and, isNull } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 import { jwtVerify, createRemoteJWKSet } from 'jose'
 import { router, publicProcedure, protectedProcedure } from '../trpc.js'
@@ -313,7 +313,7 @@ export const authRouter = router({
     const [user] = await ctx.db
       .select()
       .from(users)
-      .where(eq(users.id, ctx.userId))
+      .where(and(eq(users.id, ctx.userId), isNull(users.deletedAt)))
       .limit(1)
     return user ? decryptUserFields(user) : null
   }),
