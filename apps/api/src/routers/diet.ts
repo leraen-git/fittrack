@@ -117,6 +117,7 @@ async function persistPlanFromAi(
         isLowCalTreat: m.isLowCalTreat,
         ingredients: m.ingredients,
         recipeSteps: m.recipeSteps,
+        youtubeUrl: m.youtubeUrl ?? null,
       })
     }
   }

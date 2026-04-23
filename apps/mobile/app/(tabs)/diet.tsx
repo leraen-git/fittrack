@@ -15,14 +15,15 @@ function MacroCell({ label, value, color }: { label: string; value: number; colo
   const { tokens, fonts } = useTheme()
   return (
     <View style={{
-      flex: 1, paddingVertical: 8, alignItems: 'center',
-      borderWidth: 1, borderColor: color,
+      flex: 1, paddingVertical: 10, alignItems: 'center',
+      borderWidth: 1, borderColor: tokens.border,
+      borderTopWidth: 2, borderTopColor: color,
     }}>
-      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: tokens.textMute, textTransform: 'uppercase' }}>
+      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
         {label}
       </Text>
-      <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color }}>
-        {value}<Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>g</Text>
+      <Text style={{ fontFamily: fonts.monoB, fontSize: 15, color }}>
+        {value}<Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>g</Text>
       </Text>
     </View>
   )
@@ -38,7 +39,7 @@ function V2MealCard({
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const borderColor = isDessert ? tokens.amber : tokens.accent
-  const typeColor = isDessert ? tokens.amber : tokens.textGhost
+  const typeColor = isDessert ? tokens.amber : tokens.textMute
 
   return (
     <TouchableOpacity
@@ -46,44 +47,40 @@ function V2MealCard({
       style={{
         borderWidth: 1, borderColor: tokens.border,
         borderLeftWidth: 3, borderLeftColor: borderColor,
-        padding: 14, gap: 8,
+        padding: 14,
       }}
       accessibilityLabel={meal.name}
       accessibilityRole="button"
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1 }}>
-          <Text style={{
-            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.4,
-            color: typeColor, textTransform: 'uppercase',
-          }}>
-            {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
-            {' · '}{meal.suggestedTime}
-            {meal.isBatchCookFriendly ? ` · ${t('diet.v2Batch')}` : ''}
-            {isDessert ? ` · ${t('diet.v2Optionnel')}` : ''}
-          </Text>
-          <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3 }}>
-            {meal.name}
-          </Text>
-        </View>
-        <Text style={{ fontFamily: fonts.monoB, fontSize: 14, color: tokens.accent }}>
-          {meal.kcal}
+      {/* Head: type left, kcal right */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+        <Text style={{
+          fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2.4,
+          color: typeColor, textTransform: 'uppercase',
+        }}>
+          {t(`diet.mealType.${meal.mealType}`, { defaultValue: meal.mealType })}
+          {' · '}{meal.suggestedTime}
+        </Text>
+        <Text style={{ fontFamily: fonts.monoB, fontSize: 13, color: tokens.text }}>
+          {meal.kcal}<Text style={{ fontFamily: fonts.mono, fontSize: 9, color: tokens.textMute }}>kcal</Text>
         </Text>
       </View>
-      <View style={{ flexDirection: 'row', gap: 6 }}>
+      {/* Meal name */}
+      <Text style={{ fontFamily: fonts.sansX, fontSize: 17, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.3, lineHeight: 20, marginBottom: 8 }}>
+        {meal.name}
+      </Text>
+      {/* Macros inline */}
+      <View style={{ flexDirection: 'row', gap: 10 }}>
         {[
           { label: 'P', value: meal.proteinG, color: tokens.accent },
           { label: 'G', value: meal.carbsG, color: tokens.amber },
           { label: 'L', value: meal.fatG, color: tokens.green },
         ].map((m) => (
           <View key={m.label} style={{
-            flex: 1, flexDirection: 'row',
             borderWidth: 1, borderColor: m.color,
             paddingVertical: 3, paddingHorizontal: 6,
-            alignItems: 'center', justifyContent: 'center', gap: 4,
           }}>
-            <Text style={{ fontFamily: fonts.monoB, fontSize: 11, color: m.color }}>{m.value}g</Text>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 8, letterSpacing: 1, color: tokens.textGhost }}>{m.label}</Text>
+            <Text style={{ fontFamily: fonts.monoB, fontSize: 11, color: m.color }}>{m.label} {m.value}</Text>
           </View>
         ))}
       </View>
@@ -274,9 +271,9 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
       {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingBottom: 8 }}>
-        <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
-          Diet
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
+        <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Nutrition
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/diet/regenerate' as any)}
@@ -293,23 +290,30 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
         {days.map((d) => {
           const isToday = d.dayNumber === todayDow
           const isSelected = d.dayNumber === selectedDay
+          const base = new Date()
+          const diff = d.dayNumber - todayDow
+          base.setDate(base.getDate() + diff)
+          const dateNum = base.getDate()
           return (
             <TouchableOpacity
               key={d.dayNumber}
               onPress={() => setSelectedDay(d.dayNumber)}
               style={{
-                alignItems: 'center', gap: 2, paddingVertical: 8, paddingHorizontal: 10,
+                alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6,
                 backgroundColor: isSelected ? tokens.accent : 'transparent',
                 borderWidth: 1,
-                borderColor: isSelected ? tokens.accent : isToday ? tokens.accent : tokens.borderStrong,
-                minWidth: 44,
+                borderColor: isSelected ? tokens.accent : isToday ? tokens.accent : tokens.border,
+                minWidth: 52,
               }}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, color: isSelected ? '#FFFFFF' : tokens.textMute, textTransform: 'uppercase' }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.6, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
                 {d.dayLabel}
               </Text>
-              <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textGhost }}>
+              <Text style={{ fontFamily: fonts.sansX, fontSize: 18, lineHeight: 18, color: isSelected ? '#FFFFFF' : tokens.text }}>
+                {dateNum}
+              </Text>
+              <Text style={{ fontFamily: fonts.mono, fontSize: 8, letterSpacing: 0.3, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textMute, marginTop: 5 }}>
                 {d.targetKcal}
               </Text>
             </TouchableOpacity>
@@ -320,22 +324,29 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
       {currentDay && (
         <View style={{ padding: 16, gap: 14 }}>
           {/* Day theme block */}
-          <View style={{ borderLeftWidth: 3, borderLeftColor: tokens.accent, paddingLeft: 12, gap: 2 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+          <View style={{
+            borderLeftWidth: 3, borderLeftColor: tokens.accent,
+            backgroundColor: 'rgba(255, 45, 63, 0.05)',
+            paddingVertical: 10, paddingHorizontal: 14,
+          }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.accent, textTransform: 'uppercase', marginBottom: 3 }}>
               {currentDay.dayLabel} · {t('diet.v2DayTheme')}
             </Text>
-            <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 14, letterSpacing: 0.3, color: tokens.text, textTransform: 'uppercase', lineHeight: 16 }}>
               {currentDay.theme}
             </Text>
           </View>
 
           {/* Cal target */}
-          <View style={{ gap: 2 }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.textMute, textTransform: 'uppercase' }}>
+          <View style={{
+            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
+            borderWidth: 1, borderColor: tokens.border, padding: 14,
+          }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 2.8, color: tokens.textMute, textTransform: 'uppercase' }}>
               {t('diet.v2DayTarget')}
             </Text>
-            <Text style={{ fontFamily: fonts.sansX, fontSize: 28, color: tokens.text }}>
-              {currentDay.targetKcal}<Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute }}>kcal</Text>
+            <Text style={{ fontFamily: fonts.monoB, fontSize: 22, lineHeight: 22, color: tokens.text }}>
+              {currentDay.targetKcal}<Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}> kcal</Text>
             </Text>
           </View>
 

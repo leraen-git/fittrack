@@ -24,6 +24,7 @@ const mealSchema = z.object({
   isLowCalTreat: z.boolean(),
   ingredients: z.array(ingredientSchema),
   recipeSteps: z.array(recipeStepSchema),
+  youtubeUrl: z.string().nullable().optional(),
 })
 
 const daySchema = z.object({

@@ -4,7 +4,6 @@ import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Eas
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
-import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
 import { useTranslation } from 'react-i18next'
@@ -188,12 +187,6 @@ export default function GeneratingV2Screen() {
           })}
         </View>
 
-        <Button
-          label={t('intakeV2.genCancel')}
-          variant="ghost"
-          onPress={() => router.back()}
-          style={{ marginTop: 32, maxWidth: 240 }}
-        />
       </View>
     </Screen>
   )

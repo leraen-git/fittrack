@@ -17,8 +17,9 @@ MEAL PLAN RULES
 - Use user's top 5 meals as inspiration. Hit daily cal + macro targets.
 - At least 2 meals/week with isLowCalTreat=true, at least 3 with isBatchCookFriendly=true.
 - If alcohol > 0, factor calories into weekend days.
-- Recipe steps: concise, max 4 steps per meal.
-- Ingredients: name + quantity + unit only.
+- Recipe steps: all steps needed to prepare the meal, concise (1-2 sentences each).
+- Ingredients: name + quantity + unit.
+- For each meal, include a real YouTube recipe video URL if one exists (from a reputable French cooking channel). Set youtubeUrl to null if no real video exists — never invent URLs.
 
 GROCERY LIST: Consolidate across the week. Round to retail packages. Sections: "Viandes & poissons", "Féculents", "Fruits & légumes", "Produits laitiers", "Épicerie", "Surgelés".
 
@@ -48,7 +49,8 @@ Respond with ONLY valid JSON (no markdown fences). Match this structure exactly:
       "name": "...", "kcal": 0, "proteinG": 0, "carbsG": 0, "fatG": 0,
       "prepTimeMin": 0, "isBatchCookFriendly": false, "isLowCalTreat": false,
       "ingredients": [{"name":"","quantity":"","unit":""}],
-      "recipeSteps": [{"stepNumber":1,"instruction":""}]
+      "recipeSteps": [{"stepNumber":1,"instruction":""}],
+      "youtubeUrl": "https://..." or null
     }]
   }],
   "groceryItems": [{"section":"","name":"","quantity":""}]

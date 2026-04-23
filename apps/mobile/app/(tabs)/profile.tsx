@@ -300,12 +300,12 @@ export default function ProfileScreen() {
         {/* Screen title */}
         <Text style={{
           fontFamily: fonts.sansX,
-          fontSize: 20,
-          letterSpacing: 0.9,
+          fontSize: 24,
+          letterSpacing: 0.5,
           textTransform: 'uppercase',
           color: tokens.text,
-          paddingTop: 12,
-          paddingBottom: 4,
+          paddingTop: 16,
+          paddingBottom: 8,
         }}>
           {t('profile.title')}
         </Text>
