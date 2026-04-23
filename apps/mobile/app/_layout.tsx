@@ -18,6 +18,8 @@ import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { useActiveSessionStore } from '@/stores/activeSessionStore'
+import { useSyncWorker } from '@/hooks/useSyncWorker'
 import '@/i18n'
 
 // Handle incoming notification taps — deep-link to the relevant screen
@@ -142,6 +144,29 @@ function NotificationWatcher() {
   return null
 }
 
+function SessionResumeChecker() {
+  const checked = useRef(false)
+  useEffect(() => {
+    if (checked.current) return
+    checked.current = true
+    const { currentWorkout, startedAt, finishSession } = useActiveSessionStore.getState()
+    if (currentWorkout && startedAt) {
+      const ageHours = (Date.now() - new Date(startedAt).getTime()) / 3600000
+      if (ageHours < 6) {
+        router.push('/workout/active')
+      } else {
+        finishSession()
+      }
+    }
+  }, [])
+  return null
+}
+
+function SyncWorkerHost() {
+  useSyncWorker()
+  return null
+}
+
 function ThemedStatusBar() {
   const { isDark } = useTheme()
   return <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
@@ -197,6 +222,8 @@ export default function RootLayout() {
               <AuthGate>
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
                 {splashDone && <OnboardingGate />}
+                {splashDone && <SessionResumeChecker />}
+                <SyncWorkerHost />
                 <NotificationWatcher />
               </AuthGate>
             </TRPCProvider>

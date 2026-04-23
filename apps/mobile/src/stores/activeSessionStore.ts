@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { mmkvStateStorage } from '@/lib/storage'
 
 export interface SetConfig {
   reps: number
@@ -40,7 +42,8 @@ interface ActiveSessionState {
   finishSession: () => void
 }
 
-export const useActiveSessionStore = create<ActiveSessionState>((set) => ({
+export const useActiveSessionStore = create<ActiveSessionState>()(
+  persist((set) => ({
   currentWorkout: null,
   isQuickSession: false,
   exercises: [],
@@ -129,4 +132,16 @@ export const useActiveSessionStore = create<ActiveSessionState>((set) => ({
       currentSetIndex: 0,
       startedAt: null,
     }),
-}))
+}), {
+    name: 'active-session-v1',
+    storage: createJSONStorage(() => mmkvStateStorage),
+    partialize: (state) => ({
+      currentWorkout: state.currentWorkout,
+      exercises: state.exercises,
+      currentExerciseIndex: state.currentExerciseIndex,
+      currentSetIndex: state.currentSetIndex,
+      startedAt: state.startedAt,
+      isQuickSession: state.isQuickSession,
+    }),
+  }),
+)
