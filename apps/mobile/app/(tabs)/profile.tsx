@@ -14,6 +14,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatVolume } from '@/utils/format'
+import { SyncStatusBanner } from '@/components/profile/SyncStatusBanner'
 import { useProfileStore } from '@/stores/profileStore'
 import { EditFirstNameModal } from '@/components/profile/EditFirstNameModal'
 import { EditHeightModal } from '@/components/profile/EditHeightModal'
@@ -414,6 +415,8 @@ export default function ProfileScreen() {
             </View>
           ))}
         </View>
+
+        <SyncStatusBanner />
 
         {/* Personnel */}
         <SectionLabel label={t('profile.sectionPersonal')} />

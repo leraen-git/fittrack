@@ -341,6 +341,9 @@ export const fr = {
     logout: 'Se déconnecter',
     level: 'Niveau',
     goal: 'Objectif',
+    syncPendingSingular: 'donnée en attente de sync',
+    syncPendingPlural: 'données en attente de sync',
+    syncNow: 'Sync maintenant',
   },
   share: {
     title: 'Partager ta séance',

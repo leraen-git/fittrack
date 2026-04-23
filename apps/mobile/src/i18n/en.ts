@@ -341,6 +341,9 @@ export const en = {
     logout: 'Log out',
     level: 'Level',
     goal: 'Goal',
+    syncPendingSingular: 'pending sync item',
+    syncPendingPlural: 'pending sync items',
+    syncNow: 'Sync now',
   },
   share: {
     title: 'Share your session',
