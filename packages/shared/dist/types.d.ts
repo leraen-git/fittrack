@@ -1,3 +1,4 @@
+export type AuthProvider = 'apple' | 'google' | 'email' | 'guest';
 export type UserLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type UserGoal = 'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE';
 export interface User {
