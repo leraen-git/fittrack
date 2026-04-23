@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 
 interface ProfileRowProps {
@@ -22,6 +23,7 @@ export function ProfileRow({
   showChevron = true,
 }: ProfileRowProps) {
   const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
 
   const content = (
     <View style={{
@@ -55,7 +57,7 @@ export function ProfileRow({
             textTransform: 'uppercase',
             color: tokens.textMute,
           }}>
-            Bientôt
+            {t('profile.healthSoonBadge')}
           </Text>
         </View>
       )}

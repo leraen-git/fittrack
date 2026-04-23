@@ -4,7 +4,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withSpring,
   runOnJS,
   interpolate,
   Extrapolation,
@@ -38,7 +37,7 @@ export function BottomSheetShell({
 
   useEffect(() => {
     if (open) {
-      translateY.value = withSpring(0, { damping: 20, stiffness: 200 })
+      translateY.value = withTiming(0, { duration: 280 })
       backdropOpacity.value = withTiming(1, { duration: 200 })
     } else {
       translateY.value = withTiming(SCREEN_HEIGHT, { duration: 250 })
@@ -62,7 +61,7 @@ export function BottomSheetShell({
       if (e.translationY > DISMISS_THRESHOLD || e.velocityY > 800) {
         runOnJS(dismiss)()
       } else {
-        translateY.value = withSpring(0, { damping: 20, stiffness: 200 })
+        translateY.value = withTiming(0, { duration: 280 })
       }
     })
 

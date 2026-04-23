@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, router } from 'expo-router'
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -187,7 +188,7 @@ export default function RootLayout() {
   }, [])
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000000' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
       <ErrorBoundary>
         <ThemeProvider>
           <ThemedStatusBar />
@@ -206,6 +207,6 @@ export default function RootLayout() {
         ? <SplashScreen onFinish={() => setSplashDone(true)} />
         : <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#000000', zIndex: 9999 }} />
       )}
-    </View>
+    </GestureHandlerRootView>
   )
 }

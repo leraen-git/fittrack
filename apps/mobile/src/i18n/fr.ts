@@ -233,10 +233,12 @@ export const fr = {
     // Sections
     sectionPersonal: 'Personnel',
     sectionTraining: 'Entraînement',
+    sectionReglages: 'Réglages',
+    sectionAccount: 'Compte & confidentialité',
     sectionSettings: 'Paramètres',
     sectionPrivacy: 'Confidentialité & Compte',
     // Personal fields
-    fieldName: 'Nom',
+    fieldName: 'Prénom',
     fieldNamePlaceholder: 'Ton prénom',
     fieldEmail: 'E-mail',
     fieldHeight: 'Taille',
@@ -246,6 +248,7 @@ export const fr = {
     fieldGoal: 'Objectif',
     weeklyTarget: 'Objectif hebdomadaire',
     sessionsPerWeek: 'séances / semaine',
+    sessionsPerWeekLabel: 'Séances / sem.',
     // Level labels
     levelBeginner: 'Débutant',
     levelIntermediate: 'Intermédiaire',
@@ -312,6 +315,8 @@ export const fr = {
     weightHistoryLabel: 'Historique',
     weightEmptyTitle: 'Aucune pesée pour le moment',
     weightEmptyDesc: 'Ajoute ta première pesée pour commencer le suivi.',
+    weightDeleteTitle: 'Supprimer cette pesée ?',
+    weightDeleteMessage: 'Cette action est irréversible.',
     addWeightTitle: 'Nouvelle pesée',
     addWeightHelper: 'Par pas de 0,1 kg',
     addWeightUnit: 'kg',

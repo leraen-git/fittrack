@@ -233,6 +233,8 @@ export const en = {
     // Sections
     sectionPersonal: 'Personal',
     sectionTraining: 'Training',
+    sectionReglages: 'Settings',
+    sectionAccount: 'Account & privacy',
     sectionSettings: 'Settings',
     sectionPrivacy: 'Privacy & Account',
     // Personal fields
@@ -246,6 +248,7 @@ export const en = {
     fieldGoal: 'Goal',
     weeklyTarget: 'Weekly target',
     sessionsPerWeek: 'sessions / week',
+    sessionsPerWeekLabel: 'Sessions / wk',
     // Level labels
     levelBeginner: 'Beginner',
     levelIntermediate: 'Intermediate',
@@ -312,6 +315,8 @@ export const en = {
     weightHistoryLabel: 'History',
     weightEmptyTitle: 'No weigh-ins yet',
     weightEmptyDesc: 'Add your first weigh-in to start tracking.',
+    weightDeleteTitle: 'Delete this weigh-in?',
+    weightDeleteMessage: 'This action cannot be undone.',
     addWeightTitle: 'New weigh-in',
     addWeightHelper: 'Step of 0.1 kg',
     addWeightUnit: 'kg',
