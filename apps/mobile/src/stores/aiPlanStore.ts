@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkvStateStorage } from '@/lib/storage'
 
 export interface GeneratedExercise {
   exerciseId: string
@@ -64,7 +64,7 @@ export const useAIPlanStore = create<AIPlanState>()(
   reset: () => set({ proposedPlan: null, conversationHistory: [], lastPrompt: '', pendingPrompt: '' }),
 }), {
     name: 'tanren-ai-plan',
-    storage: createJSONStorage(() => AsyncStorage),
+    storage: createJSONStorage(() => mmkvStateStorage),
     partialize: (state) => ({
       proposedPlan: state.proposedPlan,
       conversationHistory: state.conversationHistory,

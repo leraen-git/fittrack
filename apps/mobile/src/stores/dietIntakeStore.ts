@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkvStateStorage } from '@/lib/storage'
 
 export interface DietIntake {
   // Step 1 — Stats
@@ -61,7 +61,7 @@ export const useDietIntakeStore = create<DietIntakeState>()(
     reset: () => set({ intake: { ...defaults } }),
   }), {
     name: 'tanren-diet-intake',
-    storage: createJSONStorage(() => AsyncStorage),
+    storage: createJSONStorage(() => mmkvStateStorage),
     partialize: (state) => ({ intake: state.intake }),
   }),
 )

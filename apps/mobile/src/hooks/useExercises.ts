@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { storage } from '@/lib/storage'
 import { trpc } from '@/lib/trpc'
 
 const CACHE_KEY = 'exercises_cache'
@@ -83,18 +83,16 @@ export function useExercises() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    AsyncStorage.multiGet([CACHE_KEY, CACHE_VERSION_KEY]).then((results) => {
-      const data = results[0]?.[1]
-      const version = results[1]?.[1]
-      if (data && version === CURRENT_VERSION) {
-        try {
-          setCached(JSON.parse(data))
-          setIsLoading(false)
-        } catch {
-          // corrupted cache, will fetch
-        }
+    const version = storage.getString(CACHE_VERSION_KEY)
+    const data = storage.getString(CACHE_KEY)
+    if (data && version === CURRENT_VERSION) {
+      try {
+        setCached(JSON.parse(data))
+        setIsLoading(false)
+      } catch {
+        // corrupted cache, will fetch
       }
-    })
+    }
   }, [])
 
   const { data: fetched } = trpc.exercises.list.useQuery(undefined, {
@@ -107,8 +105,8 @@ export function useExercises() {
     if (fetched && fetched.length > 0) {
       setCached(fetched as RawExercise[])
       setIsLoading(false)
-      AsyncStorage.setItem(CACHE_KEY, JSON.stringify(fetched))
-      AsyncStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION)
+      storage.set(CACHE_KEY, JSON.stringify(fetched))
+      storage.set(CACHE_VERSION_KEY, CURRENT_VERSION)
     }
   }, [fetched])
 
@@ -118,10 +116,10 @@ export function useExercises() {
   }, [cached, isFr])
 
   const refresh = () => {
-    AsyncStorage.multiRemove([CACHE_KEY, CACHE_VERSION_KEY]).then(() => {
-      setCached(null)
-      setIsLoading(true)
-    })
+    storage.remove(CACHE_KEY)
+    storage.remove(CACHE_VERSION_KEY)
+    setCached(null)
+    setIsLoading(true)
   }
 
   return { data: exercises, isLoading, refresh }
