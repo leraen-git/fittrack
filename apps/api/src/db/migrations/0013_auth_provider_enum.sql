@@ -6,10 +6,9 @@ UPDATE users SET auth_provider = 'apple'
 -- Create the enum type
 CREATE TYPE auth_provider_enum AS ENUM ('apple', 'google', 'email', 'guest');
 
--- Convert column from text to enum
+-- Drop existing default, convert column, re-add default
+ALTER TABLE users ALTER COLUMN auth_provider DROP DEFAULT;
 ALTER TABLE users
   ALTER COLUMN auth_provider TYPE auth_provider_enum
   USING auth_provider::auth_provider_enum;
-
--- Set default
 ALTER TABLE users ALTER COLUMN auth_provider SET DEFAULT 'apple';
