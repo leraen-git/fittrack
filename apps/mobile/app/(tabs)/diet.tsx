@@ -62,7 +62,7 @@ export default function DietScreen() {
   const bannerVisible = useGuestBannerVisible()
   const { data: plan, isLoading } = trpc.diet.activePlan.useQuery()
   const { data: planCount } = trpc.diet.planCount.useQuery()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
   const utils = trpc.useUtils()
   const [selectedMeal, setSelectedMeal] = useState<DietMeal | null>(null)

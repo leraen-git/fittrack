@@ -188,7 +188,7 @@ export default function ProfileScreen() {
   const { signOut } = useAuth()
   const { activeModal, openModal, closeModal } = useProfileStore()
 
-  const { data: user, refetch, isLoading, error } = trpc.users.me.useQuery()
+  const { data: user, refetch, isLoading, error } = trpc.auth.me.useQuery()
   const { data: sessions } = trpc.sessions.history.useQuery({ limit: 100 })
   const { data: records } = trpc.progress.records.useQuery()
   const utils = trpc.useUtils()

@@ -83,7 +83,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
 }
 
 function OnboardingGate() {
-  const me = trpc.users.me.useQuery()
+  const me = trpc.auth.me.useQuery()
   const redirected = useRef(false)
 
   useEffect(() => {
@@ -149,7 +149,7 @@ function ThemedStatusBar() {
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
 
   useEffect(() => {

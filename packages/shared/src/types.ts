@@ -1,19 +1,26 @@
 // ─── User ────────────────────────────────────────────────────────────────────
 
 export type AuthProvider = 'apple' | 'google' | 'email' | 'guest'
+export type SessionStatus = 'IN_PROGRESS' | 'DONE' | 'ABANDONED'
 export type UserLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
 export type UserGoal = 'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE'
 
 export interface User {
   id: string
+  authProvider: AuthProvider
   name: string
   email: string
   avatarUrl: string | null
   level: UserLevel
   goal: UserGoal
   weeklyTarget: number
+  heightCm: number | null
+  weightKg: number | null
+  gender: string | null
+  onboardingDone: boolean
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
 }
 
 // ─── Exercise ────────────────────────────────────────────────────────────────
@@ -66,6 +73,7 @@ export interface WorkoutSession {
   id: string
   userId: string
   workoutTemplateId: string
+  status: SessionStatus
   startedAt: Date
   completedAt: Date | null
   durationSeconds: number

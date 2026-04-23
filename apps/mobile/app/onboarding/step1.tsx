@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 export default function OnboardingStep1() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: me } = trpc.users.me.useQuery()
+  const { data: me } = trpc.auth.me.useQuery()
   const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
   const isGoogle = me?.authProvider === 'google'
   const [name, setName] = useState(providerName)

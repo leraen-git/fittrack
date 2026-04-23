@@ -35,7 +35,7 @@ function DataRow({
 export default function OnboardingStep0() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
 
   const isGoogle = user?.authProvider === 'google'
   const isPrivateRelay = user?.email?.endsWith('@privaterelay.appleid.com') ?? false

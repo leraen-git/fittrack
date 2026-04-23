@@ -141,7 +141,7 @@ export default function ExploreScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
 
-  const { data: user }       = trpc.users.me.useQuery()
+  const { data: user }       = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
   const { data: sessions }   = trpc.sessions.history.useQuery({ limit: 5 })
   const { data: records }    = trpc.progress.records.useQuery()

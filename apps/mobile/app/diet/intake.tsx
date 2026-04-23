@@ -72,7 +72,7 @@ export default function DietIntakeScreen() {
   const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const { intake, update } = useDietIntakeStore()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const scrollRef = useRef<ScrollView>(null)
 
   React.useEffect(() => {

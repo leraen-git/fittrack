@@ -35,7 +35,7 @@ export default function CreatePlanScreen() {
   const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id?: string }>()
   const isEditing = !!id
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
 
   const [name, setName] = useState('')

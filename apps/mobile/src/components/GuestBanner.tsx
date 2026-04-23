@@ -9,7 +9,7 @@ import { trpc } from '@/lib/trpc'
 export function GuestBanner() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const insets = useSafeAreaInsets()
 
   if (user?.authProvider !== 'guest') return null

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 export default function GeneratePlanScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: user } = trpc.users.me.useQuery()
+  const { data: user } = trpc.auth.me.useQuery()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
   const [prompt, setPrompt] = useState(lastPrompt)
 

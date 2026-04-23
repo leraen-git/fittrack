@@ -23,7 +23,7 @@ export default function WeightScreen() {
   const { data, isLoading } = trpc.weight.list.useQuery({ period })
   const invalidateAll = () => {
     utils.weight.list.invalidate()
-    utils.users.me.invalidate()
+    utils.auth.me.invalidate()
   }
   const addMutation = trpc.weight.add.useMutation({ onSuccess: invalidateAll })
   const deleteMutation = trpc.weight.delete.useMutation({ onSuccess: invalidateAll })

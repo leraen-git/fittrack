@@ -33,7 +33,7 @@ export default function HomeScreen() {
     return `${dayName} ${timeOfDay}`
   }
 
-  const { data: user, isLoading: userLoading } = trpc.users.me.useQuery()
+  const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery()
   const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
   const { data: dietToday } = trpc.diet.todayMeals.useQuery(undefined, { staleTime: Infinity })
