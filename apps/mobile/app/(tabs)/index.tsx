@@ -64,7 +64,8 @@ export default function HomeScreen() {
       return ((a.dayOfWeek - todayDow + 7) % 7) - ((b.dayOfWeek - todayDow + 7) % 7)
     })
 
-  const showTodayTabs = !!activePlan && !!dietToday
+  const hasDiet = !!dietToday
+  const showTodayTabs = true
   const todayUiDow = jsDowToUi(new Date().getDay())
   const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayUiDow)
   const isTodayWorkoutDone = todayPlanDays.length > 0 && todayPlanDays.every((d) => doneTemplateIds.has(d.workoutTemplateId))
@@ -76,8 +77,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (hasManuallySet.current) return
-    if (isRestDay || isTodayWorkoutDone) setActiveTab('diet')
-  }, [isRestDay, isTodayWorkoutDone])
+    if (hasDiet && (isRestDay || isTodayWorkoutDone)) setActiveTab('diet')
+  }, [isRestDay, isTodayWorkoutDone, hasDiet])
 
   const lastDateRef = useRef(new Date().toDateString())
   useFocusEffect(useCallback(() => {
@@ -86,8 +87,8 @@ export default function HomeScreen() {
       lastDateRef.current = today
       hasManuallySet.current = false
     }
-    if (!hasManuallySet.current && (isRestDay || isTodayWorkoutDone)) setActiveTab('diet')
-  }, [isRestDay, isTodayWorkoutDone]))
+    if (!hasManuallySet.current && hasDiet && (isRestDay || isTodayWorkoutDone)) setActiveTab('diet')
+  }, [isRestDay, isTodayWorkoutDone, hasDiet]))
 
   const handleTabChange = (tab: 'workout' | 'diet') => {
     hasManuallySet.current = true
@@ -190,7 +191,7 @@ export default function HomeScreen() {
         )}
 
         {/* === DIET TAB === */}
-        {showTodayTabs && activeTab === 'diet' && (
+        {activeTab === 'diet' && (
           <View style={{ gap: 12 }}>
             {todayDietDay ? (
               <>
@@ -260,17 +261,27 @@ export default function HomeScreen() {
                 ))}
               </>
             ) : (
-              <View style={{ borderWidth: 1, borderColor: tokens.border, padding: 20, alignItems: 'center' }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.textMute, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.6 }}>
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/diet')}
+                style={{
+                  borderWidth: 1, borderColor: tokens.borderStrong, borderStyle: 'dashed',
+                  padding: 20, alignItems: 'center', gap: 8,
+                }}
+                accessibilityRole="button"
+              >
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.6 }}>
                   {t('home.noMealPlanToday')}
                 </Text>
-              </View>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute, textAlign: 'center' }}>
+                  {t('home.noActivePlanDesc')}
+                </Text>
+              </TouchableOpacity>
             )}
           </View>
         )}
 
         {/* === WORKOUT TAB === */}
-        {(!showTodayTabs || activeTab === 'workout') && (
+        {activeTab === 'workout' && (
           <>
             {/* Workout complete — hero card */}
             {isTodayWorkoutDone && (
@@ -284,7 +295,7 @@ export default function HomeScreen() {
                 <Text style={{ fontFamily: fonts.sansX, fontSize: 32, color: tokens.text, textTransform: 'uppercase', textAlign: 'center' }}>
                   {t('home.workoutComplete')}
                 </Text>
-                {showTodayTabs && (
+                {hasDiet && (
                   <TouchableOpacity
                     onPress={() => handleTabChange('diet')}
                     style={{ backgroundColor: tokens.accent, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 4, alignSelf: 'stretch' }}
