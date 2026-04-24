@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   AppState,
+  Linking,
   type AppStateStatus,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -491,6 +492,32 @@ export default function ActiveWorkoutScreen() {
             >
               <Text style={{ fontFamily: fonts.sansX, fontSize: 20, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 }}>
                 {t('workout.finishTitle')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Video link */}
+          {currentExercise.videoUrl && (
+            <TouchableOpacity
+              onPress={() => Linking.openURL(currentExercise.videoUrl!)}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, marginTop: 4 }}
+              accessibilityLabel={t('workout.seeVideo')}
+              accessibilityRole="link"
+            >
+              <View style={{
+                width: 20, height: 14, backgroundColor: '#FF0000', borderRadius: 3,
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <View style={{
+                  width: 0, height: 0,
+                  borderTopWidth: 3.5, borderTopColor: 'transparent',
+                  borderBottomWidth: 3.5, borderBottomColor: 'transparent',
+                  borderLeftWidth: 6, borderLeftColor: '#FFFFFF',
+                  marginLeft: 1,
+                }} />
+              </View>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
+                {t('workout.seeVideo')}
               </Text>
             </TouchableOpacity>
           )}

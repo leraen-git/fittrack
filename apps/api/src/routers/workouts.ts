@@ -184,6 +184,7 @@ export const workoutsRouter = router({
           exerciseName: exercises.name,
           muscleGroups: exercises.muscleGroups,
           difficulty: exercises.difficulty,
+          videoUrl: exercises.videoUrl,
         })
         .from(workoutExercises)
         .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id))

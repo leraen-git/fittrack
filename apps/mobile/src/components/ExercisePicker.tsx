@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Modal,
   Image,
+  Pressable,
+  Dimensions,
 } from 'react-native'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import { useTheme } from '@/theme/ThemeContext'
@@ -32,6 +34,7 @@ export function ExercisePicker({ visible, mode, excludeIds = [], preselectedMusc
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [selected, setSelected] = useState<PickedExercise[]>([])
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
   const { data: allExercises } = useExercises()
 
   useEffect(() => {
@@ -199,6 +202,7 @@ export function ExercisePicker({ visible, mode, excludeIds = [], preselectedMusc
               <TouchableOpacity
                 key={ex.id}
                 onPress={() => toggleSelect({ id: ex.id, name: ex.name, muscleGroups: ex.muscleGroups })}
+                onLongPress={() => ex.imageUrl ? setPreviewImage(ex.imageUrl) : undefined}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -237,13 +241,32 @@ export function ExercisePicker({ visible, mode, excludeIds = [], preselectedMusc
                   justifyContent: 'center',
                 }}>
                   {ticked && (
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: '#FFFFFF' }}>V</Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: '#FFFFFF' }}>✓</Text>
                   )}
                 </View>
               </TouchableOpacity>
             )
           })}
         </ScrollView>
+
+        {/* Image preview modal */}
+        {previewImage && (
+          <Modal visible transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
+            <Pressable
+              onPress={() => setPreviewImage(null)}
+              style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Image
+                source={{ uri: previewImage }}
+                style={{ width: Dimensions.get('window').width - 48, height: Dimensions.get('window').width - 48 }}
+                resizeMode="contain"
+              />
+              <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: '#AAAAAA', marginTop: 16 }}>
+                {t('exercisePicker.tapToClose')}
+              </Text>
+            </Pressable>
+          </Modal>
+        )}
 
         {/* Bottom confirm (multi mode only) */}
         {mode === 'multi' && selected.length > 0 && (

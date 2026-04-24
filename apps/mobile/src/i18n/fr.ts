@@ -129,6 +129,7 @@ export const fr = {
     noActiveWorkout: 'Aucune séance en cours',
     prevExercise: 'Exercice précédent',
     nextExercise: 'Exercice suivant',
+    seeVideo: 'Voir la vidéo',
     subtract15: 'Retirer 15 secondes',
     add15: 'Ajouter 15 secondes',
     pause: 'Pause',
@@ -165,6 +166,7 @@ export const fr = {
     all: 'Tous',
     addCount: 'Ajouter ({{count}})',
     close: 'Fermer',
+    tapToClose: 'Tape pour fermer',
   },
   recap: {
     title: 'Séance\nterminée',

@@ -22,6 +22,7 @@ export interface SessionExercise {
   prWeight?: number
   prReps?: number
   previousVolume?: number
+  videoUrl?: string | null
   sets: SetConfig[]
 }
 

@@ -134,10 +134,9 @@ export default function MealDetailScreen() {
           </>
         )}
 
-        {/* YouTube CTA */}
-        {meal.youtubeUrl && (
-          <TouchableOpacity
-            onPress={() => Linking.openURL(meal.youtubeUrl)}
+        {/* YouTube CTA — real URL or search fallback */}
+        <TouchableOpacity
+            onPress={() => Linking.openURL(meal.youtubeUrl || `https://www.youtube.com/results?search_query=${encodeURIComponent(`recette ${meal.name}`)}`)}
             style={{
               flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
               borderWidth: 1, borderColor: tokens.borderStrong,
@@ -166,7 +165,6 @@ export default function MealDetailScreen() {
             </View>
             <Text style={{ fontFamily: fonts.sans, fontSize: 18, color: tokens.textMute }}>›</Text>
           </TouchableOpacity>
-        )}
       </ScrollView>
     </Screen>
   )

@@ -129,6 +129,7 @@ export const en = {
     noActiveWorkout: 'No active workout',
     prevExercise: 'Previous exercise',
     nextExercise: 'Next exercise',
+    seeVideo: 'See video',
     subtract15: 'Subtract 15 seconds',
     add15: 'Add 15 seconds',
     pause: 'Pause',
@@ -165,6 +166,7 @@ export const en = {
     all: 'All',
     addCount: 'Add ({{count}})',
     close: 'Close',
+    tapToClose: 'Tap to close',
   },
   recap: {
     title: 'Session\ncomplete',
