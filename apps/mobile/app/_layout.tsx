@@ -71,7 +71,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   const prevToken = prevTokenRef.current
   tokenRef.current = token
   prevTokenRef.current = token
-  if (prevToken && prevToken !== token) {
+  if (prevToken !== token) {
     queryClient.clear()
   }
 
