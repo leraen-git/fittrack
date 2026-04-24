@@ -5,7 +5,7 @@ import helmet from '@fastify/helmet'
 import rateLimit from '@fastify/rate-limit'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 import { appRouter } from './router.js'
-import { db } from './db/index.js'
+import { db, runPendingMigrations } from './db/index.js'
 import { redis } from './redis.js'
 import { validateSession } from './services/sessionService.js'
 
@@ -96,6 +96,8 @@ server.setErrorHandler((error: Error & { statusCode?: number }, _req, reply) => 
   Sentry.captureException(error)
   reply.code(error.statusCode ?? 500).send({ error: error.message })
 })
+
+await runPendingMigrations()
 
 const port = Number(process.env['PORT'] ?? 3000)
 await server.listen({ port, host: '0.0.0.0' })

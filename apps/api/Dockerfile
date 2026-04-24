@@ -30,4 +30,4 @@ COPY --from=base /app/apps/api/ ./apps/api/
 COPY --from=base /app/package.json ./
 
 EXPOSE 3000
-CMD ["sh", "-c", "node apps/api/dist/db/migrate.js && node apps/api/dist/index.js"]
+CMD ["node", "apps/api/dist/index.js"]
