@@ -68,14 +68,12 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
 
   const tokenRef = useRef<string | null>(token)
   const prevTokenRef = useRef<string | null>(token)
-  useEffect(() => {
-    const prev = prevTokenRef.current
-    tokenRef.current = token
-    prevTokenRef.current = token
-    if (prev && prev !== token) {
-      queryClient.clear()
-    }
-  }, [token, queryClient])
+  const prevToken = prevTokenRef.current
+  tokenRef.current = token
+  prevTokenRef.current = token
+  if (prevToken && prevToken !== token) {
+    queryClient.clear()
+  }
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
