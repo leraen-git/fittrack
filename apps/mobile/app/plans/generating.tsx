@@ -37,7 +37,7 @@ export default function PlanGeneratingScreen() {
     onError: (err) => {
       router.replace('/plans/generate')
       setTimeout(() => {
-        Alert.alert(t('common.error'), t('ai.generateError'))
+        Alert.alert(t('common.error'), err.message || t('ai.generateError'))
       }, 300)
     },
   })
