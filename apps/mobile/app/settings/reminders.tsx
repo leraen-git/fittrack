@@ -404,7 +404,7 @@ export default function RemindersScreen() {
         <View style={cardStyle}>
           {mealSlots.map(({ key, label }) => (
             <SettingRow
-              key={key}
+              key={key as string}
               label={label}
               right={
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

@@ -36,7 +36,7 @@ export const exercisesRouter = router({
       if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
       const [created] = await ctx.db
         .insert(exercises)
-        .values({ ...input, isCustom: true, userId: user.id })
+        .values({ name: input.name, description: input.description, muscleGroups: input.muscleGroups, equipment: input.equipment, difficulty: input.difficulty, isCustom: true, userId: user.id })
         .returning()
       return created
     }),

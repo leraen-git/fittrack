@@ -143,7 +143,7 @@ function NotificationWatcher() {
 
     const s = settingsRef.current
     const anyEnabled = s.workoutEnabled || s.hydrationEnabled ||
-      Object.values(s.meals).some((m) => m.enabled)
+      Object.values(s.meals).some((m: any) => m.enabled)
     if (anyEnabled) {
       getPermissionStatus().then((status) => {
         if (status === 'undetermined') requestPermission()

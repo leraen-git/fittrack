@@ -135,15 +135,16 @@ export async function rescheduleMealNotifications(settings: NotificationSettings
 
   for (const [slot, cfg] of slots) {
     if (!cfg.enabled) continue
-    const content = MEAL_CONTENT[slot]!
+    const slotName = slot as string
+    const content = MEAL_CONTENT[slotName]!
     const { hour, minute } = parseTime(cfg.time)
 
     await Notifications.scheduleNotificationAsync({
-      identifier: `meal-${slot}`,
+      identifier: `meal-${slotName}`,
       content: {
         title: content.title,
         body: content.body,
-        data: { screen: 'diet', mealSlot: slot },
+        data: { screen: 'diet', mealSlot: slotName },
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,

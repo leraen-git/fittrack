@@ -34,7 +34,7 @@ export const workoutsRouter = router({
       const { exercises: exInput, ...templateData } = input
       const [created] = await ctx.db
         .insert(workoutTemplates)
-        .values({ ...templateData, userId: user.id })
+        .values({ name: templateData.name, description: templateData.description, muscleGroups: templateData.muscleGroups, estimatedDuration: templateData.estimatedDuration, userId: user.id })
         .returning()
       if (exInput.length > 0) {
         await ctx.db.insert(workoutExercises).values(

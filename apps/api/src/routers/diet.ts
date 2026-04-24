@@ -359,7 +359,7 @@ export const dietRouter = router({
           goalWeightKg: input.goalWeightKg ?? null,
           goalFeel: input.goalFeel ?? null,
           hatedFoods: input.hatedFoods ?? null,
-        })
+        } as Parameters<typeof generatePlanWithClaude>[0])
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unknown error'
         throw new TRPCError({

@@ -154,7 +154,7 @@ export default function ExploreScreen() {
   const hasDiet       = !!dietMeals
   const hasWorkoutPlan = !!activePlan
   const hasReminders  = notifSettings.workoutEnabled
-    || Object.values(notifSettings.meals).some((m) => m.enabled)
+    || Object.values(notifSettings.meals).some((m: any) => m.enabled)
     || notifSettings.hydrationEnabled
 
   const groups: FeatureGroup[] = [

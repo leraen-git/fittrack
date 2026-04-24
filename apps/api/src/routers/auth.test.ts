@@ -76,14 +76,14 @@ describe('auth router', () => {
   describe('devSignIn', () => {
     it('returns NOT_FOUND in production', async () => {
       const origEnv = process.env['NODE_ENV']
-      process.env['NODE_ENV'] = 'production'
+      ;(process.env as Record<string, string | undefined>)['NODE_ENV'] = 'production'
       try {
         const caller = createTestCaller()
         await expect(
           caller.auth.devSignIn({ userId: 'fake-id' }),
         ).rejects.toThrow()
       } finally {
-        process.env['NODE_ENV'] = origEnv
+        ;(process.env as Record<string, string | undefined>)['NODE_ENV'] = origEnv
       }
     })
   })

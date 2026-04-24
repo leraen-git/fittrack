@@ -35,8 +35,8 @@ const planDaysSchema = z.array(z.object({
   { message: 'Un jour ne peut être assigné qu\'une seule fois' }
 )
 
-async function validateWorkoutOwnership(db: any, userId: string, days: { workoutTemplateId: string }[]) {
-  const templateIds = [...new Set(days.map(d => d.workoutTemplateId))]
+async function validateWorkoutOwnership(db: any, userId: string, days: { workoutTemplateId?: string; dayOfWeek?: number }[]) {
+  const templateIds = [...new Set(days.map(d => d.workoutTemplateId).filter((id): id is string => !!id))]
   if (templateIds.length === 0) return
   const owned = await db.select({ id: workoutTemplates.id })
     .from(workoutTemplates)
