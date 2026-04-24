@@ -175,6 +175,13 @@ export function SplashScreen({ onFinish }: Props) {
   const loaderWidth      = useSharedValue(0)
 
   useEffect(() => {
+    let finished = false
+    const safeFinish = () => {
+      if (finished) return
+      finished = true
+      onFinish()
+    }
+
     const ease = Easing.out(Easing.exp)
 
     // Glow pulse
@@ -210,8 +217,12 @@ export function SplashScreen({ onFinish }: Props) {
 
     // Fade out and finish
     containerOpacity.value = withDelay(3200, withTiming(0, { duration: 400 }, (done) => {
-      if (done) runOnJS(onFinish)()
+      if (done) runOnJS(safeFinish)()
     }))
+
+    // Safety net: if Reanimated callback never fires, force finish after 5s
+    const fallback = setTimeout(safeFinish, 5000)
+    return () => clearTimeout(fallback)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

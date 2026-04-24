@@ -235,8 +235,9 @@ function ThemedStatusBar() {
 }
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const { status } = useAuth()
-  const { data: user } = useProfile()
+  const { status, signOut } = useAuth()
+  const profileQuery = useProfile()
+  const user = profileQuery.data
   const isGuest = user?.authProvider === 'guest'
 
   useEffect(() => {
@@ -244,6 +245,12 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       router.replace('/sign-in')
     }
   }, [status])
+
+  useEffect(() => {
+    if (status === 'authenticated' && !profileQuery.isPending && user === null) {
+      signOut()
+    }
+  }, [status, profileQuery.isPending, user, signOut])
 
   if (status === 'loading' || status === 'unauthenticated') return null
 
@@ -256,18 +263,24 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false)
+  const [fontsReady, setFontsReady] = useState(false)
   const [fontsLoaded] = useFonts({
     BarlowCondensed_300Light,
     BarlowCondensed_400Regular,
     BarlowCondensed_500Medium,
     BarlowCondensed_700Bold,
     BarlowCondensed_900Black,
-    // Subsetted Noto Serif JP — only contains 鍛錬 characters (~2.7KB each)
     NotoSerifJP_700Bold_subset: require('../assets/fonts/NotoSerifJP_700Bold_subset.ttf'),
     NotoSerifJP_900Black_subset: require('../assets/fonts/NotoSerifJP_900Black_subset.ttf'),
     JetBrainsMono_400Regular,
     JetBrainsMono_700Bold,
   })
+
+  useEffect(() => {
+    if (fontsLoaded) { setFontsReady(true); return }
+    const timeout = setTimeout(() => setFontsReady(true), 3000)
+    return () => clearTimeout(timeout)
+  }, [fontsLoaded])
 
   useEffect(() => {
     initMusicService().catch(() => null)
@@ -292,7 +305,7 @@ export default function RootLayout() {
           </AuthProvider>
         </ThemeProvider>
       </ErrorBoundary>
-      {!splashDone && (fontsLoaded
+      {!splashDone && (fontsReady
         ? <SplashScreen onFinish={() => setSplashDone(true)} />
         : <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#000000', zIndex: 9999 }} />
       )}
