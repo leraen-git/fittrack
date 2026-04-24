@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +11,7 @@ export default function OnboardingStep3() {
   const [height, setHeight] = useState('')
   const [weight, setWeight] = useState('')
   const updateMe = trpc.users.updateMe.useMutation()
+  const utils = trpc.useUtils()
 
   const handleFinish = async () => {
     await updateMe.mutateAsync({
@@ -19,7 +19,7 @@ export default function OnboardingStep3() {
       weightKg: weight ? parseFloat(weight) : null,
       onboardingDone: true,
     })
-    router.replace('/')
+    await utils.auth.me.invalidate()
   }
 
   return (
