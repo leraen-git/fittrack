@@ -6,6 +6,9 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
+import { useActivePlan } from '@/data/useActivePlan'
+import { useWorkouts } from '@/data/useWorkouts'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 
@@ -50,10 +53,10 @@ export default function TrainingScreen() {
   const bannerVisible = useGuestBannerVisible()
 
   const utils = trpc.useUtils()
-  const { data: activePlan, isLoading: planLoading, isRefetching } = trpc.plans.active.useQuery()
-  const { data: workouts, isLoading: workoutsLoading, refetch: refetchWorkouts } = trpc.workouts.list.useQuery()
+  const { data: activePlan, isLoading: planLoading, isRefetching } = useActivePlan()
+  const { data: workouts, isLoading: workoutsLoading, refetch: refetchWorkouts } = useWorkouts()
   const { data: plans } = trpc.plans.list.useQuery()
-  const { data: user } = trpc.auth.me.useQuery()
+  const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
 
   const todayUiDow = jsDowToUi(new Date().getDay())

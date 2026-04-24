@@ -8,6 +8,8 @@ import { MacroRow } from '@/components/MacroRow'
 import { MealCard } from '@/components/MealCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { trpc } from '@/lib/trpc'
+import { useProfile } from '@/data/useProfile'
+import { useActivePlan } from '@/data/useActivePlan'
 import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { sortMeals } from '@/components/MealDetailModal'
@@ -42,9 +44,9 @@ export default function HomeScreen() {
     return `${dayName} ${timeOfDay}`
   }
 
-  const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery()
+  const { data: user, isLoading: userLoading } = useProfile()
   const isGuest = user?.authProvider === 'guest'
-  const { data: activePlan, refetch: refetchPlan, isRefetching } = trpc.plans.active.useQuery()
+  const { data: activePlan, refetch: refetchPlan, isRefetching } = useActivePlan()
   const { data: dietToday } = trpc.diet.todayMeals.useQuery(undefined, { staleTime: Infinity })
   useFocusEffect(useCallback(() => { refetchPlan() }, []))
   const { data: lastSessionPRCount } = trpc.progress.lastSessionPRCount.useQuery()
