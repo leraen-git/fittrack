@@ -431,14 +431,19 @@ Retourne cette structure JSON exacte :
         { role: 'user' as const, content: input.prompt },
       ]
 
-      const response = await client.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
-        system: systemPrompt,
-        messages,
-      })
-
-      const text = response.content[0]?.type === 'text' ? response.content[0].text : ''
+      let text: string
+      try {
+        const response = await client.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4096,
+          system: systemPrompt,
+          messages,
+        })
+        text = response.content[0]?.type === 'text' ? response.content[0].text : ''
+      } catch (aiErr: any) {
+        ctx.req.log.error({ event: 'ai_generation_error', error: aiErr?.message ?? String(aiErr) }, 'Anthropic API call failed')
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: `Erreur IA : ${aiErr?.message ?? 'appel échoué'}` })
+      }
 
       let plan: {
         name: string

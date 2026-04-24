@@ -18,6 +18,7 @@ const MAX_REQUEST_AGE_MS = 5 * 60 * 1000
 
 const t = initTRPC.context<Context>().create({
   errorFormatter({ shape, error }) {
+    console.error('[TRPC_ERROR]', error.code, error.message, error.cause?.toString?.() ?? '', error.stack?.split('\n').slice(0, 5).join('\n'))
     const isDbError = error.cause?.constructor?.name === 'DrizzleQueryError'
       || error.message?.includes('Failed query:')
     return {
