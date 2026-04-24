@@ -140,8 +140,13 @@ export const useActiveSessionStore = create<ActiveSessionState>()(
       exercises: state.exercises,
       currentExerciseIndex: state.currentExerciseIndex,
       currentSetIndex: state.currentSetIndex,
-      startedAt: state.startedAt,
+      startedAt: state.startedAt?.toISOString() ?? null,
       isQuickSession: state.isQuickSession,
     }),
+    onRehydrateStorage: () => (state) => {
+      if (state?.startedAt && typeof state.startedAt === 'string') {
+        (state as any).startedAt = new Date(state.startedAt as any)
+      }
+    },
   }),
 )
