@@ -256,14 +256,6 @@ export default function ShareScreen() {
           {photoUri && (
             <Image source={{ uri: photoUri }} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
           )}
-          {/* Gradient overlay: transparent top → 55% black bottom */}
-          <View style={[StyleSheet.absoluteFillObject, {
-            // Simulated gradient with two layers
-          }]}>
-            <View style={{ flex: 1, backgroundColor: photoUri ? 'rgba(0,0,0,0.15)' : 'transparent' }} />
-            <View style={{ flex: 1, backgroundColor: photoUri ? 'rgba(0,0,0,0.55)' : 'transparent' }} />
-          </View>
-
           {/* Draggable: TOP — kanji + workout name + date */}
           <Animated.View
             style={{
@@ -275,40 +267,42 @@ export default function ShareScreen() {
             }}
             {...titlePanResponder.panHandlers}
           >
-            <Text style={{
-              fontFamily: fonts.jpX,
-              fontSize: 11,
-              color: tokens.accent,
-              letterSpacing: 4,
-              lineHeight: 14,
-              marginBottom: 6,
-            }}>
-              鍛 錬
-            </Text>
-            <Text
-              style={{
-                fontFamily: fonts.sansX,
-                fontSize: 22,
-                letterSpacing: 0.4,
+            <View>
+              <Text style={{
+                fontFamily: fonts.jpX,
+                fontSize: 11,
+                color: tokens.accent,
+                letterSpacing: 4,
+                lineHeight: 14,
+                marginBottom: 6,
+              }}>
+                鍛 錬
+              </Text>
+              <Text
+                style={{
+                  fontFamily: fonts.sansX,
+                  fontSize: 22,
+                  letterSpacing: 0.4,
+                  textTransform: 'uppercase',
+                  lineHeight: 22,
+                  color: '#FFFFFF',
+                  maxWidth: '90%',
+                }}
+                numberOfLines={2}
+              >
+                {workoutName ?? 'Workout'}
+              </Text>
+              <Text style={{
+                fontFamily: fonts.sansM,
+                fontSize: 9,
+                letterSpacing: 2,
+                color: 'rgba(255,255,255,0.7)',
                 textTransform: 'uppercase',
-                lineHeight: 22,
-                color: '#FFFFFF',
-                maxWidth: '90%',
-              }}
-              numberOfLines={2}
-            >
-              {workoutName ?? 'Workout'}
-            </Text>
-            <Text style={{
-              fontFamily: fonts.sansM,
-              fontSize: 9,
-              letterSpacing: 2,
-              color: 'rgba(255,255,255,0.7)',
-              textTransform: 'uppercase',
-              marginTop: 4,
-            }}>
-              {dateDisplay} · {durationDisplay}
-            </Text>
+                marginTop: 4,
+              }}>
+                {dateDisplay} · {durationDisplay}
+              </Text>
+            </View>
           </Animated.View>
 
           {/* Draggable: BOTTOM — stats line + brand */}
@@ -322,47 +316,16 @@ export default function ShareScreen() {
             }}
             {...statsPanResponder.panHandlers}
           >
-            {/* Stats row */}
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              paddingBottom: 8,
-              borderBottomWidth: 1,
-              borderBottomColor: 'rgba(255,255,255,0.25)',
-            }}>
-              <View>
-                <Text style={{
-                  fontFamily: fonts.sansB,
-                  fontSize: 7,
-                  letterSpacing: 2.5,
-                  color: 'rgba(255,255,255,0.7)',
-                  textTransform: 'uppercase',
-                  marginBottom: 2,
-                }}>
-                  {t('share.volume')}
-                </Text>
-                <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
-                  {volumeDisplay}
-                  <Text style={{ fontFamily: fonts.sansM, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}> kg</Text>
-                </Text>
-              </View>
-              <View>
-                <Text style={{
-                  fontFamily: fonts.sansB,
-                  fontSize: 7,
-                  letterSpacing: 2.5,
-                  color: 'rgba(255,255,255,0.7)',
-                  textTransform: 'uppercase',
-                  marginBottom: 2,
-                }}>
-                  {t('share.sets')}
-                </Text>
-                <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
-                  {completedSets ?? '0'}
-                </Text>
-              </View>
-              {prs > 0 && (
+            <View>
+              {/* Stats row */}
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                paddingBottom: 8,
+                borderBottomWidth: 1,
+                borderBottomColor: 'rgba(255,255,255,0.25)',
+              }}>
                 <View>
                   <Text style={{
                     fontFamily: fonts.sansB,
@@ -372,33 +335,66 @@ export default function ShareScreen() {
                     textTransform: 'uppercase',
                     marginBottom: 2,
                   }}>
-                    {t('share.records')}
+                    {t('share.volume')}
                   </Text>
-                  <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: tokens.accent, lineHeight: 16 }}>
-                    {prs}
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
+                    {volumeDisplay}
+                    <Text style={{ fontFamily: fonts.sansM, fontSize: 9, color: 'rgba(255,255,255,0.7)' }}> kg</Text>
                   </Text>
                 </View>
-              )}
-            </View>
+                <View>
+                  <Text style={{
+                    fontFamily: fonts.sansB,
+                    fontSize: 7,
+                    letterSpacing: 2.5,
+                    color: 'rgba(255,255,255,0.7)',
+                    textTransform: 'uppercase',
+                    marginBottom: 2,
+                  }}>
+                    {t('share.sets')}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: '#FFFFFF', lineHeight: 16 }}>
+                    {completedSets ?? '0'}
+                  </Text>
+                </View>
+                {prs > 0 && (
+                  <View>
+                    <Text style={{
+                      fontFamily: fonts.sansB,
+                      fontSize: 7,
+                      letterSpacing: 2.5,
+                      color: 'rgba(255,255,255,0.7)',
+                      textTransform: 'uppercase',
+                      marginBottom: 2,
+                    }}>
+                      {t('share.records')}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 15, color: tokens.accent, lineHeight: 16 }}>
+                      {prs}
+                    </Text>
+                  </View>
+                )}
+              </View>
 
-            {/* Brand line */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-              <Text style={{
-                fontFamily: fonts.sansX,
-                fontSize: 10,
-                letterSpacing: 3,
-                color: '#FFFFFF',
-              }}>
-                TANREN
-              </Text>
-              <Text style={{
-                fontFamily: fonts.sansM,
-                fontSize: 8,
-                letterSpacing: 2,
-                color: 'rgba(255,255,255,0.5)',
-              }}>
-                tanren.app
-              </Text>
+              {/* Brand line */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                <Text style={{
+                  fontFamily: fonts.sansX,
+                  fontSize: 10,
+                  letterSpacing: 3,
+                  color: '#FFFFFF',
+                }}>
+                  TANREN
+                </Text>
+                <Text style={{
+                  fontFamily: fonts.sansM,
+                  fontSize: 8,
+                  letterSpacing: 2,
+                  color: 'rgba(255,255,255,0.5)',
+                }}>
+                  tanren.app
+                </Text>
+              </View>
             </View>
           </Animated.View>
         </ViewShotCompat>

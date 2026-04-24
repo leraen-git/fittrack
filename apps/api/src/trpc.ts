@@ -19,11 +19,14 @@ const MAX_REQUEST_AGE_MS = 5 * 60 * 1000
 const t = initTRPC.context<Context>().create({
   errorFormatter({ shape, error }) {
     console.error('[TRPC_ERROR]', error.code, error.message, error.cause?.toString?.() ?? '', error.stack?.split('\n').slice(0, 5).join('\n'))
-    const isDbError = error.cause?.constructor?.name === 'DrizzleQueryError'
-      || error.message?.includes('Failed query:')
+    const isTRPCThrown = error.code !== 'INTERNAL_SERVER_ERROR'
+      || error.message !== 'INTERNAL_SERVER_ERROR'
+    const userMessage = isTRPCThrown
+      ? shape.message
+      : (isDev ? shape.message : 'Une erreur interne est survenue.')
     return {
       ...shape,
-      message: isDbError && !isDev ? 'An internal error occurred.' : shape.message,
+      message: userMessage,
       data: {
         ...shape.data,
         zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,

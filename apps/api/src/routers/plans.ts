@@ -328,23 +328,29 @@ export const plansRouter = router({
     }))
     .mutation(async ({ ctx, input }) => {
       const apiKey = process.env.ANTHROPIC_API_KEY
-      if (!apiKey || apiKey === 'your_key_here') {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'AI plan generation is not configured. Please set ANTHROPIC_API_KEY.' })
+      if (!apiKey || apiKey === 'your_key_here' || apiKey === 'ROTATE_ME_NOW') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Génération IA non configurée. Clé API manquante.' })
       }
 
       const user = await resolveUser(ctx.db, ctx.userId)
 
       // Rate limit: count ONLY AI-generated plans this week
       const weekStart = startOfWeekUTC()
-      const [countRow] = await ctx.db
-        .select({ value: count() })
-        .from(workoutPlans)
-        .where(and(
-          eq(workoutPlans.userId, user.id),
-          eq(workoutPlans.generatedByAi, true),
-          gte(workoutPlans.createdAt, weekStart)
-        ))
-      const generationsThisWeek = countRow?.value ?? 0
+      let generationsThisWeek = 0
+      try {
+        const [countRow] = await ctx.db
+          .select({ value: count() })
+          .from(workoutPlans)
+          .where(and(
+            eq(workoutPlans.userId, user.id),
+            eq(workoutPlans.generatedByAi, true),
+            gte(workoutPlans.createdAt, weekStart)
+          ))
+        generationsThisWeek = countRow?.value ?? 0
+      } catch (dbErr: any) {
+        ctx.req.log.error({ event: 'ai_ratelimit_query_error', error: dbErr?.message }, 'Rate limit query failed')
+        throw new TRPCError({ code: 'BAD_REQUEST', message: `Erreur base de données : ${dbErr?.message ?? 'requête échouée'}` })
+      }
 
       if (generationsThisWeek >= AI_GENERATION_LIMIT) {
         throw new TRPCError({
@@ -360,12 +366,18 @@ export const plansRouter = router({
         ? ['BEGINNER', 'INTERMEDIATE']
         : ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 
-      const allExercises = await ctx.db.select({
-        id: exercises.id,
-        name: exercises.name,
-        muscleGroups: exercises.muscleGroups,
-        difficulty: exercises.difficulty,
-      }).from(exercises).where(inArray(exercises.difficulty, levelFilter))
+      let allExercises: { id: string; name: string; muscleGroups: string[]; difficulty: string }[]
+      try {
+        allExercises = await ctx.db.select({
+          id: exercises.id,
+          name: exercises.name,
+          muscleGroups: exercises.muscleGroups,
+          difficulty: exercises.difficulty,
+        }).from(exercises).where(inArray(exercises.difficulty, levelFilter))
+      } catch (dbErr: any) {
+        ctx.req.log.error({ event: 'ai_exercise_query_error', error: dbErr?.message }, 'Exercise query failed')
+        throw new TRPCError({ code: 'BAD_REQUEST', message: `Erreur chargement exercices : ${dbErr?.message ?? 'requête échouée'}` })
+      }
 
       const exerciseList = allExercises
         .map((e) => `${e.id} | ${e.name} | ${e.muscleGroups.join(', ')} | ${e.difficulty}`)
@@ -442,7 +454,7 @@ Retourne cette structure JSON exacte :
         text = response.content[0]?.type === 'text' ? response.content[0].text : ''
       } catch (aiErr: any) {
         ctx.req.log.error({ event: 'ai_generation_error', error: aiErr?.message ?? String(aiErr) }, 'Anthropic API call failed')
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: `Erreur IA : ${aiErr?.message ?? 'appel échoué'}` })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: `Erreur IA : ${aiErr?.message ?? 'appel échoué'}` })
       }
 
       let plan: {
@@ -467,7 +479,7 @@ Retourne cette structure JSON exacte :
         const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
         plan = JSON.parse(cleaned)
       } catch {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'AI returned an invalid response. Please try again.' })
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'L\'IA a retourné une réponse invalide. Réessaie.' })
       }
 
       // Validate exerciseIds and clamp dayOfWeek to 1-7
