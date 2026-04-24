@@ -58,9 +58,10 @@ function ConfigModal({
   }
 
   return (
-    <Modal visible animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: tokens.bg }}>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
+    <Modal visible animationType="slide" statusBarTranslucent onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: tokens.bg }}>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12, borderBottomWidth: 1, borderBottomColor: tokens.border }}>
           <TouchableOpacity onPress={onClose} accessibilityLabel={t('quick.close')} accessibilityRole="button" style={{ paddingTop: 2 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
               {t('quick.close').toUpperCase()}
@@ -160,6 +161,7 @@ function ConfigModal({
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+      </View>
     </Modal>
   )
 }
