@@ -5,14 +5,18 @@ import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useTranslation } from 'react-i18next'
+import { useOnboardingStore } from '@/stores/onboardingStore'
 
 export default function OnboardingStep2() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(null)
-  const [days, setDays] = useState<number | null>(null)
-  const [goal, setGoal] = useState<'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE' | null>(null)
+  const ob = useOnboardingStore()
+  const [level, setLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | null>(ob.level)
+  const [days, setDays] = useState<number | null>(ob.weeklyTarget)
+  const [goal, setGoal] = useState<'WEIGHT_LOSS' | 'MUSCLE_GAIN' | 'MAINTENANCE' | null>(ob.goal)
   const updateMe = trpc.users.updateMe.useMutation()
+
+  React.useEffect(() => { ob.setStep(2) }, [])
 
   const LEVELS = [
     { value: 'BEGINNER' as const, label: t('profile.levelBeginner'), desc: t('onboarding.levelBeginnerDesc') },
@@ -30,6 +34,9 @@ export default function OnboardingStep2() {
 
   const handleFinish = async () => {
     if (!level || !days || !goal) return
+    ob.setField('level', level)
+    ob.setField('weeklyTarget', days)
+    ob.setField('goal', goal)
     await updateMe.mutateAsync({ level, weeklyTarget: days, goal })
     router.push('/onboarding/step3')
   }

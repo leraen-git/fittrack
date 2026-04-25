@@ -962,6 +962,13 @@ export const en = {
     levelAdvancedDesc: '3+ years',
     daysLabel: 'Training days per week',
     goalLabel: 'Primary goal',
+    step3TitlePre: 'Body',
+    step3Title: 'Measurements',
+    step3Subtitle: 'Optional — helps us tailor volume and intensity recommendations.',
+    heightLabel: 'Height',
+    weightLabel: 'Weight',
+    letsGo: "Let's go",
+    skip: 'Skip for now',
   },
   training: {
     title: 'Training',

@@ -6,6 +6,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
 import { useTranslation } from 'react-i18next'
+import { useOnboardingStore } from '@/stores/onboardingStore'
 
 export default function OnboardingStep1() {
   const { tokens, fonts } = useTheme()
@@ -13,10 +14,12 @@ export default function OnboardingStep1() {
   const { data: me } = useProfile()
   const providerName = me?.name && me.name !== 'Athlete' ? me.name : ''
   const isGoogle = me?.authProvider === 'google'
-  const [name, setName] = useState(providerName)
-  const [gender, setGender] = useState<'male' | 'female' | null>(null)
+  const ob = useOnboardingStore()
+  const [name, setName] = useState(ob.name ?? providerName)
+  const [gender, setGender] = useState<'male' | 'female' | null>(ob.gender)
   const updateMe = trpc.users.updateMe.useMutation()
 
+  useEffect(() => { ob.setStep(1) }, [])
   useEffect(() => {
     if (providerName && !name) setName(providerName)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -31,6 +34,8 @@ export default function OnboardingStep1() {
       Alert.alert(t('onboarding.alertMissingGender'), t('onboarding.alertMissingGenderDesc'))
       return
     }
+    ob.setField('name', name.trim())
+    ob.setField('gender', gender)
     await updateMe.mutateAsync({ name: name.trim(), gender })
     router.push('/onboarding/step2')
   }

@@ -21,7 +21,7 @@ import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { ExerciseRow } from '@/components/ExerciseRow'
 import { ExercisePicker } from '@/components/ExercisePicker'
 
-const MUSCLE_GROUPS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body', 'Cardio']
+const MUSCLE_GROUP_IDS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body', 'Cardio'] as const
 const DURATIONS = [30, 45, 60, 75, 90]
 
 export default function WorkoutBuildScreen() {
@@ -263,7 +263,7 @@ export default function WorkoutBuildScreen() {
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={{ flexDirection: 'row', gap: 6 }}>
-                  {MUSCLE_GROUPS.map((mg) => {
+                  {MUSCLE_GROUP_IDS.map((mg) => {
                     const selected = draft.muscleGroups.includes(mg)
                     const label = translateMuscleGroup(mg, t)
                     return (
@@ -376,7 +376,7 @@ export default function WorkoutBuildScreen() {
               />
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={{ flexDirection: 'row', gap: 6 }}>
-                  {MUSCLE_GROUPS.map((mg) => {
+                  {MUSCLE_GROUP_IDS.map((mg) => {
                     const selected = draft.muscleGroups.includes(mg)
                     const label = translateMuscleGroup(mg, t)
                     return (

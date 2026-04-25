@@ -964,6 +964,14 @@ export const fr = {
     levelAdvancedDesc: '3+ ans',
     daysLabel: 'Jours d\'entraînement par semaine',
     goalLabel: 'Objectif principal',
+    // Step 3 — measurements
+    step3TitlePre: 'Tes',
+    step3Title: 'Mensurations',
+    step3Subtitle: 'Facultatif — nous aide à calibrer le volume et l\'intensité.',
+    heightLabel: 'Taille',
+    weightLabel: 'Poids',
+    letsGo: 'C\'est parti',
+    skip: 'Passer cette étape',
   },
   training: {
     title: 'Entraînement',
