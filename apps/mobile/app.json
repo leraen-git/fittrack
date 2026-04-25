@@ -47,6 +47,12 @@
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/933ef993-9092-4e5c-aaa8-af38a9735b8d"
+    },
     "plugins": [
       "./plugins/withFixSpacesInPath",
       "./plugins/withFmtCpp17Fix",
