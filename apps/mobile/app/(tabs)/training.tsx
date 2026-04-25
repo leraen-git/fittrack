@@ -5,10 +5,10 @@ import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { SectionStatus } from '@/components/SectionStatus'
-import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
 import { useActivePlan } from '@/data/useActivePlan'
 import { useWorkouts } from '@/data/useWorkouts'
+import { usePlansList } from '@/data/usePlans'
 import { useInvalidateActivePlan } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
@@ -58,7 +58,7 @@ export default function TrainingScreen() {
   const { data: activePlan, isRefetching } = activePlanQuery
   const workoutsQuery = useWorkouts()
   const { data: workouts } = workoutsQuery
-  const { data: plans } = trpc.plans.list.useQuery()
+  const { data: plans } = usePlansList()
   const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
 

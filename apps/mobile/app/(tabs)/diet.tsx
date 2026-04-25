@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
+import { useDietPlan, useDietPlanCount, useRestorePlan } from '@/data/useDietPlan'
 import { useInvalidateDiet } from '@/lib/invalidation'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
@@ -96,9 +96,9 @@ function V2MealCard({
 function NoPlanView({ isGuest }: { isGuest: boolean }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
-  const { data: planCount } = trpc.diet.planCount.useQuery()
+  const { data: planCount } = useDietPlanCount()
   const invalidateDiet = useInvalidateDiet()
-  const restorePlan = trpc.diet.restoreLastPlan.useMutation({
+  const restorePlan = useRestorePlan({
     onSuccess: invalidateDiet,
   })
 
@@ -501,7 +501,7 @@ export default function DietScreen() {
   const isGuest = user?.authProvider === 'guest'
   const { status: genStatus, reset: resetGen } = useDietGenerationStore()
 
-  const { data: v2Plan, isLoading } = trpc.diet.getMyPlanV2.useQuery()
+  const { data: v2Plan, isLoading } = useDietPlan()
 
   // Auto-reset generation status when diet data arrives after successful generation
   React.useEffect(() => {

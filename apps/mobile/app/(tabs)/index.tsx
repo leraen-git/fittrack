@@ -7,9 +7,11 @@ import { StatsStrip } from '@/components/StatsStrip'
 import { MacroRow } from '@/components/MacroRow'
 import { MealCard } from '@/components/MealCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
 import { useActivePlan } from '@/data/useActivePlan'
+import { useDietPlan } from '@/data/useDietPlan'
+import { useLastSessionPRCount } from '@/data/useProgress'
+import { useWorkoutDetail } from '@/data/useWorkouts'
 import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { sortMeals } from '@/components/MealDetailModal'
@@ -48,13 +50,13 @@ export default function HomeScreen() {
   const { data: user, isLoading: userLoading } = useProfile()
   const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = useActivePlan()
-  const { data: v2Plan } = trpc.diet.getMyPlanV2.useQuery()
+  const { data: v2Plan } = useDietPlan()
   useFocusEffect(useCallback(() => { refetchPlan() }, []))
-  const { data: lastSessionPRCount } = trpc.progress.lastSessionPRCount.useQuery()
+  const { data: lastSessionPRCount } = useLastSessionPRCount()
 
   const nextWorkout = activePlan?.stats.nextWorkout
-  const { data: workoutDetail } = trpc.workouts.detail.useQuery(
-    { id: nextWorkout?.workoutTemplateId ?? '' },
+  const { data: workoutDetail } = useWorkoutDetail(
+    nextWorkout?.workoutTemplateId ?? '',
     { enabled: !!nextWorkout?.workoutTemplateId },
   )
 

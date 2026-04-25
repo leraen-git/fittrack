@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
+import { usePersonalRecords } from '@/data/useProgress'
 import { useSessions } from '@/data/useSessions'
 import { useAuth } from '@/contexts/AuthContext'
 import { SectionStatus } from '@/components/SectionStatus'
@@ -135,7 +136,7 @@ function Row({
 
 function ProfileStatsStrip({ sessionsQuery, recordsQuery }: {
   sessionsQuery: ReturnType<typeof useSessions>
-  recordsQuery: ReturnType<typeof trpc.progress.records.useQuery>
+  recordsQuery: ReturnType<typeof usePersonalRecords>
 }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
@@ -246,7 +247,7 @@ export default function ProfileScreen() {
   const profileQuery = useProfile()
   const { data: user, refetch } = profileQuery
   const sessionsQuery = useSessions({ limit: 100 })
-  const recordsQuery = trpc.progress.records.useQuery()
+  const recordsQuery = usePersonalRecords()
   const utils = trpc.useUtils()
 
   const updateMe = trpc.users.updateMe.useMutation({ onSuccess: () => refetch() })

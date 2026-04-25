@@ -3,7 +3,7 @@ import { View, Text, SectionList, TouchableOpacity, RefreshControl } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
-import { trpc } from '@/lib/trpc'
+import { useHistoryList, useHistoryStats } from '@/data/useHistory'
 import { useTranslation } from 'react-i18next'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
 import { useHistoryStore } from '@/stores/historyStore'
@@ -42,12 +42,12 @@ export default function HistoryScreen() {
     ...MUSCLE_GROUPS.map((mg) => ({ value: mg, label: translateMuscleGroup(mg, t) })),
   ], [t])
 
-  const { data: listData, isLoading: listLoading, refetch: refetchList } = trpc.history.list.useQuery(
+  const { data: listData, isLoading: listLoading, refetch: refetchList } = useHistoryList(
     { period, muscleGroup: muscleGroup ?? undefined, limit: 50 },
     { enabled: viewMode === 'list' },
   )
 
-  const { data: statsData, isLoading: statsLoading, refetch: refetchStats } = trpc.history.stats.useQuery(
+  const { data: statsData, isLoading: statsLoading, refetch: refetchStats } = useHistoryStats(
     { period },
     { enabled: viewMode === 'stats' },
   )
