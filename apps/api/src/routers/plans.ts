@@ -453,18 +453,31 @@ Retourne cette structure JSON exacte :
         { role: 'user' as const, content: input.prompt },
       ]
 
+      const ANTHROPIC_TIMEOUT_MS = 90_000
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), ANTHROPIC_TIMEOUT_MS)
+
       let text: string
       try {
-        const response = await client.messages.create({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 4096,
-          system: systemPrompt,
-          messages,
-        })
+        const response = await client.messages.create(
+          {
+            model: 'claude-sonnet-4-6',
+            max_tokens: 4096,
+            system: systemPrompt,
+            messages,
+          },
+          { signal: controller.signal },
+        )
         text = response.content[0]?.type === 'text' ? response.content[0].text : ''
       } catch (aiErr: any) {
+        if (controller.signal.aborted) {
+          ctx.req.log.error({ event: 'ai_timeout', procedure: 'plans.generateWithAI', timeoutMs: ANTHROPIC_TIMEOUT_MS }, 'Anthropic call timed out')
+          throw new TRPCError({ code: 'TIMEOUT', message: 'La génération a pris trop de temps. Réessaie.' })
+        }
         ctx.req.log.error({ event: 'ai_generation_error', error: aiErr?.message ?? String(aiErr) }, 'Anthropic API call failed')
         throw new TRPCError({ code: 'BAD_REQUEST', message: `Erreur IA : ${aiErr?.message ?? 'appel échoué'}` })
+      } finally {
+        clearTimeout(timeoutId)
       }
 
       let plan: {

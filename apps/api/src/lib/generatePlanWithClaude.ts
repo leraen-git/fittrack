@@ -70,14 +70,31 @@ export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlan
   const client = new Anthropic({ apiKey })
   const userMessage = formatIntakeAsUserMessage(intake)
 
-  const stream = client.messages.stream({
-    model: 'claude-opus-4-7',
-    max_tokens: 64000,
-    system: DIET_SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userMessage }],
-  })
+  const DIET_AI_TIMEOUT_MS = 180_000
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), DIET_AI_TIMEOUT_MS)
 
-  const response = await stream.finalMessage()
+  let response: Anthropic.Message
+  try {
+    const stream = client.messages.stream(
+      {
+        model: 'claude-opus-4-7',
+        max_tokens: 64000,
+        system: DIET_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userMessage }],
+      },
+      { signal: controller.signal },
+    )
+
+    response = await stream.finalMessage()
+  } catch (err) {
+    if (controller.signal.aborted) {
+      throw new Error('La génération du plan diététique a pris trop de temps. Réessaie.')
+    }
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+  }
 
   if (response.stop_reason === 'max_tokens') {
     throw new Error('AI response was truncated (max_tokens). Please retry.')

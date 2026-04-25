@@ -71,7 +71,9 @@ export const exercises = pgTable('exercises', {
   difficulty: difficultyEnum('difficulty').notNull().default('BEGINNER'),
   isCustom: boolean('is_custom').notNull().default(false),
   userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
-})
+}, (t) => [
+  index('ex_difficulty_idx').on(t.difficulty),
+])
 
 // ─── Workout Templates ────────────────────────────────────────────────────────
 
@@ -86,7 +88,9 @@ export const workoutTemplates = pgTable('workout_templates', {
   isProgramWorkout: boolean('is_program_workout').notNull().default(false),
   order: integer('order').notNull().default(0),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-})
+}, (t) => [
+  index('wt_user_idx').on(t.userId),
+])
 
 // ─── Workout Exercises ────────────────────────────────────────────────────────
 
@@ -100,7 +104,9 @@ export const workoutExercises = pgTable('workout_exercises', {
   defaultWeight: real('default_weight').notNull().default(0),
   defaultRestSeconds: integer('default_rest_seconds').notNull().default(90),
   notes: text('notes'),
-})
+}, (t) => [
+  index('we_template_idx').on(t.workoutTemplateId),
+])
 
 // ─── Workout Sessions ─────────────────────────────────────────────────────────
 
@@ -196,7 +202,9 @@ export const workoutPlanDays = pgTable('workout_plan_days', {
   planId: text('plan_id').notNull().references(() => workoutPlans.id, { onDelete: 'cascade' }),
   dayOfWeek: integer('day_of_week').notNull(), // 0–6
   workoutTemplateId: text('workout_template_id').notNull().references(() => workoutTemplates.id),
-})
+}, (t) => [
+  index('wpd_plan_idx').on(t.planId),
+])
 
 // ─── Personal Records ─────────────────────────────────────────────────────────
 
