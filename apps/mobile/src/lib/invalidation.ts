@@ -45,5 +45,8 @@ export function useInvalidateDiet() {
   const utils = trpc.useUtils()
   return () => {
     utils.diet.getMyPlanV2.invalidate()
+    utils.diet.todayMeals.invalidate()
+    utils.diet.planCount.invalidate()
+    utils.diet.getRegenCredits.invalidate()
   }
 }

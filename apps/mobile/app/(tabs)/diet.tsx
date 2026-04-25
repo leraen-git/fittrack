@@ -9,6 +9,7 @@ import { useProfile } from '@/data/useProfile'
 import { useInvalidateDiet } from '@/lib/invalidation'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { KanjiWatermark } from '@/components/KanjiWatermark'
+import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
 
 const DOW_DB_KEY = ['', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
@@ -288,7 +289,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
       </View>
 
       {/* Day selector */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 6, paddingBottom: 12 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 4, paddingBottom: 12 }}>
         {days.map((d) => {
           const isToday = d.dayNumber === todayDow
           const isSelected = d.dayNumber === selectedDay
@@ -301,15 +302,14 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
               key={d.dayNumber}
               onPress={() => setSelectedDay(d.dayNumber)}
               style={{
-                alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6,
+                flex: 1, alignItems: 'center', paddingVertical: 10,
                 backgroundColor: isSelected ? tokens.accent : 'transparent',
                 borderWidth: 1,
                 borderColor: isSelected ? tokens.accent : isToday ? tokens.accent : tokens.border,
-                minWidth: 52,
               }}
               accessibilityRole="button"
             >
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1.6, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 1, color: isSelected ? 'rgba(255,255,255,0.7)' : tokens.textMute, textTransform: 'uppercase', marginBottom: 4 }}>
                 {d.dayLabel}
               </Text>
               <Text style={{ fontFamily: fonts.sansX, fontSize: 18, lineHeight: 18, color: isSelected ? '#FFFFFF' : tokens.text }}>
@@ -321,20 +321,21 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
             </TouchableOpacity>
           )
         })}
-      </ScrollView>
+      </View>
 
       {currentDay && (
-        <View style={{ padding: 16, gap: 14 }}>
+        <View style={{ padding: 16, gap: 8 }}>
           {/* Day theme block */}
           <View style={{
             borderLeftWidth: 3, borderLeftColor: tokens.accent,
             backgroundColor: 'rgba(255, 45, 63, 0.05)',
-            paddingVertical: 10, paddingHorizontal: 14,
+            paddingVertical: 14, paddingHorizontal: 16,
+            justifyContent: 'center',
           }}>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.accent, textTransform: 'uppercase', marginBottom: 3 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: tokens.accent, textTransform: 'uppercase', marginBottom: 6 }}>
               {currentDay.dayLabel} · {t('diet.v2DayTheme')}
             </Text>
-            <Text style={{ fontFamily: fonts.sansX, fontSize: 14, letterSpacing: 0.3, color: tokens.text, textTransform: 'uppercase', lineHeight: 16 }}>
+            <Text style={{ fontFamily: fonts.sansX, fontSize: 20, letterSpacing: 0.4, color: tokens.text, textTransform: 'uppercase', lineHeight: 24 }}>
               {currentDay.theme}
             </Text>
           </View>
@@ -433,13 +434,79 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
 
 // ─── Main screen ────────────────────────────────────────────────────────────
 
+function GeneratingInlineView() {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <Text style={{
+        fontFamily: 'NotoSerifJP_900Black_subset', fontSize: 72,
+        color: tokens.accent, lineHeight: 84, opacity: 0.8,
+      }}>
+        鍛
+      </Text>
+      <Text style={{
+        fontFamily: fonts.sansX, fontSize: 22, color: tokens.text,
+        textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.4,
+        marginTop: 24, marginBottom: 12,
+      }}>
+        {t('diet.genInProgress')}
+      </Text>
+      <Text style={{
+        fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute,
+        textAlign: 'center', lineHeight: 18, maxWidth: 280,
+      }}>
+        {t('diet.genInProgressDesc')}
+      </Text>
+      <View style={{
+        width: 200, height: 2, backgroundColor: tokens.surface2,
+        marginTop: 24, overflow: 'hidden',
+      }}>
+        <View style={{
+          width: '60%', height: 2, backgroundColor: tokens.accent,
+        }} />
+      </View>
+    </View>
+  )
+}
+
+function GeneratingBanner() {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
+  return (
+    <View style={{
+      flexDirection: 'row', alignItems: 'center', gap: 12,
+      marginHorizontal: 16, marginTop: 12, padding: 14,
+      borderWidth: 1, borderColor: tokens.accent, backgroundColor: `${tokens.accent}08`,
+    }}>
+      <Text style={{ fontFamily: 'NotoSerifJP_900Black_subset', fontSize: 20, color: tokens.accent }}>
+        鍛
+      </Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.6 }}>
+          {t('diet.genInProgress')}
+        </Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
+          {t('diet.genInProgressDesc')}
+        </Text>
+      </View>
+    </View>
+  )
+}
+
 export default function DietScreen() {
   const { tokens } = useTheme()
   const bannerVisible = useGuestBannerVisible()
   const { data: user } = useProfile()
   const isGuest = user?.authProvider === 'guest'
+  const { status: genStatus, reset: resetGen } = useDietGenerationStore()
 
   const { data: v2Plan, isLoading } = trpc.diet.getMyPlanV2.useQuery()
+
+  // Auto-reset generation status when diet data arrives after successful generation
+  React.useEffect(() => {
+    if (genStatus === 'done' && v2Plan) resetGen()
+  }, [genStatus, v2Plan])
 
   if (isLoading) {
     return (
@@ -453,9 +520,19 @@ export default function DietScreen() {
     )
   }
 
+  if (genStatus === 'generating' && !v2Plan) {
+    return (
+      <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
+        <KanjiWatermark char="錬" />
+        <GeneratingInlineView />
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView edges={bannerVisible ? [] : ['top']} style={{ flex: 1, backgroundColor: tokens.bg }}>
       <KanjiWatermark char="錬" />
+      {genStatus === 'generating' && <GeneratingBanner />}
       {v2Plan ? (
         <V2ActivePlan plan={v2Plan as unknown as V2PlanData} />
       ) : (

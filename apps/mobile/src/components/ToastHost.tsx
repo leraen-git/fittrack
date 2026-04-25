@@ -28,7 +28,7 @@ export function ToastHost() {
           exiting={FadeOut.duration(200)}
           style={[styles.container, { top: insets.top + 8, borderLeftColor: typeColors[toast.type] }]}
         >
-          <Pressable onPress={() => dismiss(toast.id)} style={[styles.inner, { backgroundColor: tokens.surface2 }]}>
+          <Pressable onPress={() => { toast.onPress?.(); dismiss(toast.id) }} style={[styles.inner, { backgroundColor: tokens.surface2 }]}>
             <Text style={[styles.text, { color: tokens.text }]} numberOfLines={2}>{toast.message}</Text>
           </Pressable>
         </Animated.View>

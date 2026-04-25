@@ -22,6 +22,7 @@ import { GuestBannerProvider } from '@/contexts/GuestBannerContext'
 import * as Sentry from '@sentry/react-native'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastHost } from '@/components/ToastHost'
+import { DietGenerationWatcher } from '@/components/DietGenerationWatcher'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
 import { useProfile } from '@/data/useProfile'
@@ -301,6 +302,7 @@ export default function RootLayout() {
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />
                 <NotificationWatcher />
+                <DietGenerationWatcher />
                 <ToastHost />
               </AuthGateProvider>
             </TRPCProvider>

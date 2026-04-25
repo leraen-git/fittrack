@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
@@ -42,6 +42,73 @@ function CheckBox({ checked, onPress }: { checked: boolean; onPress: () => void 
         </Text>
       )}
     </TouchableOpacity>
+  )
+}
+
+function CollapsibleSection({
+  name, items, onToggle,
+}: { name: string; items: GroceryItem[]; onToggle: (id: string) => void }) {
+  const { tokens, fonts } = useTheme()
+  const [collapsed, setCollapsed] = useState(false)
+  const checkedCount = items.filter((i) => i.isChecked).length
+
+  return (
+    <View>
+      <TouchableOpacity
+        onPress={() => setCollapsed((c) => !c)}
+        style={{
+          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+          paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: tokens.border,
+        }}
+        accessibilityRole="button"
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={{
+            fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
+            color: tokens.textMute, textTransform: 'uppercase',
+          }}>
+            {name}
+          </Text>
+          <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textGhost }}>
+            {checkedCount}/{items.length}
+          </Text>
+        </View>
+        <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.textMute }}>
+          {collapsed ? '›' : '‹'}
+        </Text>
+      </TouchableOpacity>
+      {!collapsed && items.map((item) => (
+        <TouchableOpacity
+          key={item.id}
+          onPress={() => onToggle(item.id)}
+          activeOpacity={0.7}
+          style={{
+            flexDirection: 'row', alignItems: 'center', gap: 12,
+            paddingVertical: 11,
+            borderBottomWidth: 1, borderBottomColor: tokens.border,
+          }}
+        >
+          <CheckBox
+            checked={item.isChecked}
+            onPress={() => onToggle(item.id)}
+          />
+          <Text style={{
+            flex: 1,
+            fontFamily: fonts.sansM, fontSize: 13,
+            color: item.isChecked ? tokens.textMute : tokens.text,
+            textDecorationLine: item.isChecked ? 'line-through' : 'none',
+          }}>
+            {item.name}
+          </Text>
+          <Text style={{
+            fontFamily: fonts.monoB, fontSize: 11,
+            color: item.isChecked ? tokens.textGhost : tokens.textMute,
+          }}>
+            {item.quantity}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   )
 }
 
@@ -142,46 +209,12 @@ export default function GroceriesScreen() {
 
         {/* Sections */}
         {sections.map(([sectionName, sectionItems]) => (
-          <View key={sectionName} style={{ gap: 0 }}>
-            <Text style={{
-              fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
-              color: tokens.textMute, textTransform: 'uppercase',
-              marginBottom: 8,
-            }}>
-              {sectionName}
-            </Text>
-            {sectionItems.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => toggle.mutate({ itemId: item.id })}
-                activeOpacity={0.7}
-                style={{
-                  flexDirection: 'row', alignItems: 'center', gap: 12,
-                  paddingVertical: 11,
-                  borderBottomWidth: 1, borderBottomColor: tokens.border,
-                }}
-              >
-                <CheckBox
-                  checked={item.isChecked}
-                  onPress={() => toggle.mutate({ itemId: item.id })}
-                />
-                <Text style={{
-                  flex: 1,
-                  fontFamily: fonts.sansM, fontSize: 13,
-                  color: item.isChecked ? tokens.textMute : tokens.text,
-                  textDecorationLine: item.isChecked ? 'line-through' : 'none',
-                }}>
-                  {item.name}
-                </Text>
-                <Text style={{
-                  fontFamily: fonts.monoB, fontSize: 11,
-                  color: item.isChecked ? tokens.textGhost : tokens.textMute,
-                }}>
-                  {item.quantity}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <CollapsibleSection
+            key={sectionName}
+            name={sectionName}
+            items={sectionItems}
+            onToggle={(id) => toggle.mutate({ itemId: id })}
+          />
         ))}
       </ScrollView>
     </Screen>

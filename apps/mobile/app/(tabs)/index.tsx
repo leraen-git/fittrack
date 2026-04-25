@@ -48,7 +48,7 @@ export default function HomeScreen() {
   const { data: user, isLoading: userLoading } = useProfile()
   const isGuest = user?.authProvider === 'guest'
   const { data: activePlan, refetch: refetchPlan, isRefetching } = useActivePlan()
-  const { data: dietToday } = trpc.diet.todayMeals.useQuery(undefined, { staleTime: Infinity })
+  const { data: v2Plan } = trpc.diet.getMyPlanV2.useQuery()
   useFocusEffect(useCallback(() => { refetchPlan() }, []))
   const { data: lastSessionPRCount } = trpc.progress.lastSessionPRCount.useQuery()
 
@@ -67,7 +67,7 @@ export default function HomeScreen() {
       return ((a.dayOfWeek - todayDow + 7) % 7) - ((b.dayOfWeek - todayDow + 7) % 7)
     })
 
-  const hasDiet = !!dietToday
+  const hasDiet = !!v2Plan
   const showTodayTabs = true
   const todayUiDow = jsDowToUi(new Date().getDay())
   const todayPlanDays = (activePlan?.days ?? []).filter((d) => d.dayOfWeek === todayUiDow)
@@ -98,8 +98,24 @@ export default function HomeScreen() {
     setActiveTab(tab)
   }
 
-  const todayDietDay = dietToday?.todayDay ?? null
-  const todayMealsSorted = useMemo(() => sortMeals((todayDietDay?.meals ?? []) as { type: string; name: string; id?: string; calories?: number; protein?: number; carbs?: number; fat?: number }[]), [todayDietDay?.meals])
+  const todayDow = jsDowToUi(new Date().getDay())
+  const todayDietDay = useMemo(() => {
+    if (!v2Plan?.days) return null
+    return (v2Plan.days as any[]).find((d: any) => d.dayNumber === todayDow) ?? null
+  }, [v2Plan?.days, todayDow])
+  const todayMealsSorted = useMemo(() => {
+    if (!todayDietDay?.meals) return []
+    const meals = (todayDietDay.meals as any[]).map((m: any) => ({
+      id: m.id,
+      type: (m.mealType ?? '').toLowerCase(),
+      name: m.name,
+      calories: m.kcal,
+      protein: m.proteinG,
+      carbs: m.carbsG,
+      fat: m.fatG,
+    }))
+    return sortMeals(meals)
+  }, [todayDietDay?.meals])
   const { todayCalories, todayProtein, todayCarbs, todayFat } = useMemo(() => {
     let calories = 0, protein = 0, carbs = 0, fat = 0
     for (const m of todayMealsSorted) {
@@ -201,18 +217,19 @@ export default function HomeScreen() {
                 {/* Day theme — accent left border */}
                 <View style={{
                   paddingVertical: 14, paddingHorizontal: 16,
-                  backgroundColor: tokens.ghostBg,
+                  backgroundColor: 'rgba(255, 45, 63, 0.05)',
                   borderLeftWidth: 3, borderLeftColor: tokens.accent,
+                  justifyContent: 'center',
                 }}>
                   <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 3,
-                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 4,
+                    fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2,
+                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 6,
                   }}>
                     {t('home.today')}
                   </Text>
                   <Text style={{
-                    fontFamily: fonts.sansB, fontSize: 15, letterSpacing: 0.5,
-                    textTransform: 'uppercase', color: tokens.text,
+                    fontFamily: fonts.sansX, fontSize: 20, letterSpacing: 0.4,
+                    textTransform: 'uppercase', color: tokens.text, lineHeight: 24,
                   }}>
                     {todayDietDay.theme}
                   </Text>
@@ -360,16 +377,9 @@ export default function HomeScreen() {
                 accessibilityLabel={t('home.startWorkout')}
                 accessibilityRole="button"
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-                    {t('home.todayWorkout')}
-                  </Text>
-                  <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
-                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
-                      {t('home.today')}
-                    </Text>
-                  </View>
-                </View>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                  {t('home.todayWorkout')}
+                </Text>
                 <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
                   {nextWorkout.workoutName}
                 </Text>

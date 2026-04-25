@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, Alert } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { Screen } from '@/components/Screen'
-import { trpc } from '@/lib/trpc'
-import { useInvalidateDiet } from '@/lib/invalidation'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
+import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
 
 const FREQ_MAP = { '0-1': 1, '2-3': 3, '4+': 5 } as const
@@ -27,7 +26,8 @@ export default function GeneratingV2Screen() {
   const { t } = useTranslation()
   const { draft, reset } = useIntakeDraftV2Store()
   const triggered = useRef(false)
-  const invalidateDiet = useInvalidateDiet()
+  const started = useRef(false)
+  const { status, start, reset: resetGen } = useDietGenerationStore()
   const [progress, setProgress] = useState(0)
 
   const pulseScale = useSharedValue(1)
@@ -56,52 +56,60 @@ export default function GeneratingV2Screen() {
     return () => clearInterval(interval)
   }, [])
 
-  const submitIntake = trpc.diet.submitIntakeV2.useMutation({
-    onSuccess: async () => {
-      setProgress(100)
-      reset()
-      invalidateDiet()
-      router.replace('/diet')
-    },
-    onError: (err) => {
-      router.replace('/diet/intake-v2/snacks')
-      setTimeout(() => {
-        Alert.alert(t('intakeV2.genError'), err.message)
-      }, 300)
-    },
-  })
-
+  // Kick off generation via global store (watcher in root layout runs the mutation)
+  // If already generating (e.g. regen navigated here), skip start()
   useEffect(() => {
+    if (status === 'generating') {
+      started.current = true
+      return
+    }
     if (triggered.current) return
     triggered.current = true
 
-    submitIntake.mutate({
-      age: Number(draft.age) || 25,
-      biologicalSex: draft.biologicalSex,
-      heightCm: Number(draft.heightCm) || 170,
-      currentWeightKg: parseFloat(draft.currentWeightKg.replace(',', '.')) || 75,
-      goalWeightKg: draft.goalMode === 'WEIGHT' && draft.goalWeightKg
-        ? parseFloat(draft.goalWeightKg.replace(',', '.'))
-        : undefined,
-      goalFeel: draft.goalMode === 'FEEL' ? draft.goalFeel : undefined,
-      pace: draft.pace,
-      jobType: draft.jobType,
-      exerciseFrequencyPerWeek: FREQ_MAP[draft.exerciseFrequency],
-      exerciseType: draft.exerciseType,
-      sleepHours: Number(draft.sleepHours) || 7,
-      stressLevel: draft.stressLevel,
-      alcoholDrinksPerWeek: ALCOHOL_MAP[draft.alcoholBracket],
-      top5Meals: draft.top5Meals,
-      hatedFoods: draft.hatedFoods || undefined,
-      restrictions: draft.restrictions,
-      cookingStyle: draft.cookingStyle,
-      adventurousness: draft.adventurousness,
-      currentSnacks: draft.currentSnacks,
-      snackMotivation: draft.snackMotivation,
-      snackPreference: draft.snackPreference,
-      nightSnacking: draft.nightSnacking,
+    resetGen()
+    reset()
+    started.current = true
+    start({
+      mode: 'submit',
+      submitInput: {
+        age: Number(draft.age) || 25,
+        biologicalSex: draft.biologicalSex,
+        heightCm: Number(draft.heightCm) || 170,
+        currentWeightKg: parseFloat(draft.currentWeightKg.replace(',', '.')) || 75,
+        goalWeightKg: draft.goalMode === 'WEIGHT' && draft.goalWeightKg
+          ? parseFloat(draft.goalWeightKg.replace(',', '.'))
+          : undefined,
+        goalFeel: draft.goalMode === 'FEEL' ? draft.goalFeel : undefined,
+        pace: draft.pace,
+        jobType: draft.jobType,
+        exerciseFrequencyPerWeek: FREQ_MAP[draft.exerciseFrequency],
+        exerciseType: draft.exerciseType,
+        sleepHours: Number(draft.sleepHours) || 7,
+        stressLevel: draft.stressLevel,
+        alcoholDrinksPerWeek: ALCOHOL_MAP[draft.alcoholBracket],
+        top5Meals: draft.top5Meals,
+        hatedFoods: draft.hatedFoods || undefined,
+        restrictions: draft.restrictions,
+        cookingStyle: draft.cookingStyle,
+        adventurousness: draft.adventurousness,
+        currentSnacks: draft.currentSnacks,
+        snackMotivation: draft.snackMotivation,
+        snackPreference: draft.snackPreference,
+        nightSnacking: draft.nightSnacking,
+      },
     })
   }, [])
+
+  // Navigate away when generation finishes (only after we've started)
+  useEffect(() => {
+    if (!started.current) return
+    if (status === 'done') {
+      setProgress(100)
+      router.replace('/diet')
+    } else if (status === 'error') {
+      router.replace('/diet')
+    }
+  }, [status])
 
   function currentStepIndex(): number {
     for (let i = GEN_STEPS.length - 1; i >= 0; i--) {
@@ -140,11 +148,10 @@ export default function GeneratingV2Screen() {
         </Text>
 
         <Text style={{
-          fontFamily: fonts.monoB, fontSize: 10, color: tokens.textGhost,
-          textAlign: 'center', letterSpacing: 1.2, textTransform: 'uppercase',
-          marginBottom: 24,
+          fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute,
+          textAlign: 'center', marginBottom: 24,
         }}>
-          {t('intakeV2.genTime')}
+          {t('intakeV2.genCanLeave')}
         </Text>
 
         {/* Progress bar */}
@@ -187,6 +194,19 @@ export default function GeneratingV2Screen() {
             )
           })}
         </View>
+
+        <TouchableOpacity
+          onPress={() => router.replace('/(tabs)')}
+          style={{ marginTop: 32, paddingVertical: 12, paddingHorizontal: 24 }}
+          accessibilityRole="button"
+        >
+          <Text style={{
+            fontFamily: fonts.sansM, fontSize: 13, color: tokens.textMute,
+            textAlign: 'center',
+          }}>
+            {t('intakeV2.genContinueBrowsing')}
+          </Text>
+        </TouchableOpacity>
 
       </View>
     </Screen>

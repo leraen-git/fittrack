@@ -7,6 +7,7 @@ import { ScreenHeader } from '@/components/ScreenHeader'
 import { Button } from '@/components/Button'
 import { trpc } from '@/lib/trpc'
 import { useInvalidateDiet } from '@/lib/invalidation'
+import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
 
 type RegenMode = 'same' | 'edit'
@@ -31,15 +32,15 @@ export default function RegeneratePlanScreen() {
     },
   })
 
-  const regenerate = trpc.diet.regeneratePlanV2.useMutation({
-    onSuccess: () => {
-      invalidateDiet()
-      router.replace('/diet')
+  const { start: startGeneration, status: genStatus } = useDietGenerationStore()
+
+  const regenerate = {
+    isPending: genStatus === 'generating',
+    mutate: () => {
+      startGeneration({ mode: 'regenerate' })
+      router.replace('/diet/generating-v2')
     },
-    onError: (err) => {
-      Alert.alert(t('intakeV2.genError'), err.message)
-    },
-  })
+  }
 
   const planData = plan as any
 
@@ -59,7 +60,7 @@ export default function RegeneratePlanScreen() {
       router.push('/diet/intake-v2/stats')
       return
     }
-    regenerate.mutate({ useNewIntake: false })
+    regenerate.mutate()
   }
 
   function handleDelete() {

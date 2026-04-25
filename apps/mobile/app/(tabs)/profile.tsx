@@ -369,6 +369,9 @@ export default function ProfileScreen() {
                   </View>
                 </View>
 
+                {/* Stats strip — under name */}
+                <ProfileStatsStrip sessionsQuery={sessionsQuery} recordsQuery={recordsQuery} />
+
                 {/* Personnel */}
                 <SectionLabel label={t('profile.sectionPersonal')} />
                 <Row label={t('profile.fieldName')} value={u.name} onPress={() => openModal('editFirstName')} />
@@ -391,9 +394,6 @@ export default function ProfileScreen() {
             )
           }}
         </SectionStatus>
-
-        {/* Stats strip — optional, fails independently */}
-        <ProfileStatsStrip sessionsQuery={sessionsQuery} recordsQuery={recordsQuery} />
 
         <SyncStatusBanner />
 

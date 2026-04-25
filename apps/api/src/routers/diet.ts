@@ -144,9 +144,13 @@ export const dietRouter = router({
     return row?.value ?? 0
   }),
 
-  todayMeals: protectedProcedure.query(async ({ ctx }) => {
+  todayMeals: protectedProcedure
+    .input(z.object({ tzOffset: z.number().int().min(-840).max(840).optional() }).optional())
+    .query(async ({ ctx, input }) => {
     const user = await resolveUser(ctx.db, ctx.userId)
-    const jsDay = new Date().getDay()
+    const tzOffsetMin = input?.tzOffset ?? 0
+    const clientNow = new Date(Date.now() - tzOffsetMin * 60_000)
+    const jsDay = clientNow.getUTCDay()
     const dietDow = jsDay === 0 ? 7 : jsDay
 
     // Try v2 plan first
@@ -320,6 +324,27 @@ export const dietRouter = router({
         throw new TRPCError({
           code: 'CONFLICT',
           message: 'Un plan actif existe déjà. Utilise la régénération.',
+        })
+      }
+
+      // If user had any previous plan (deleted/replaced), this counts as a regeneration
+      const [anyPrevious] = await ctx.db
+        .select({ id: dietPlansV2.id })
+        .from(dietPlansV2)
+        .where(eq(dietPlansV2.userId, user.id))
+        .limit(1)
+
+      if (anyPrevious) {
+        const credits = await getRegenCreditsForCurrentWeek(ctx.db, user.id)
+        if (credits.used >= 2) {
+          throw new TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: `Tu as utilisé tes 2 régénérations de la semaine. Reset le ${credits.resetDateLabel}.`,
+          })
+        }
+        await ctx.db.insert(dietRegenCredits).values({
+          userId: user.id,
+          isoWeek: getCurrentISOWeek(),
         })
       }
 

@@ -110,24 +110,32 @@ export default function TrainingScreen() {
         >
           {(plan) => {
             const nw = plan.stats?.nextWorkout
+            const doneIds = new Set(plan.stats?.doneTemplateIds ?? [])
+            const todayDays = (plan.days ?? []).filter((d) => d.dayOfWeek === todayUiDow)
+            const isTodayDone = todayDays.length > 0 && todayDays.every((d) => doneIds.has(d.workoutTemplateId))
+            const isToday = nw?.dayOfWeek === todayUiDow && !isTodayDone
+            const isRestDay = todayDays.length === 0
             return (
               <>
-                {nw && (
+                {isTodayDone && (
+                  <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.green, padding: 16, gap: 4 }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.green, textTransform: 'uppercase', letterSpacing: 2 }}>
+                      {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
+                      {t('training.todayDone')}
+                    </Text>
+                  </View>
+                )}
+                {isToday && nw && (
                   <TouchableOpacity
                     onPress={() => router.push(`/workout/preview?templateId=${nw.workoutTemplateId}`)}
                     style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.accent, padding: 16, gap: 8 }}
                     accessibilityLabel={t('training.startSession')} accessibilityRole="button"
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
-                        {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
-                      </Text>
-                      <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 8, paddingVertical: 2 }}>
-                        <Text style={{ fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2, color: '#FFFFFF', textTransform: 'uppercase' }}>
-                          {t('training.todayLabel').toUpperCase()}
-                        </Text>
-                      </View>
-                    </View>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                      {t('training.todayLabel')} · {DOW_SHORT[todayUiDow]}
+                    </Text>
                     <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>{nw.workoutName}</Text>
                     <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                       {nw.muscleGroups?.slice(0, 3).map((mg: string) => translateMuscleGroup(mg, t)).join(' · ')}
@@ -143,6 +151,18 @@ export default function TrainingScreen() {
                       </Text>
                     </TouchableOpacity>
                   </TouchableOpacity>
+                )}
+                {!isToday && !isTodayDone && nw && (
+                  <View style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.border, padding: 16, gap: 4 }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
+                      {isRestDay ? t('training.restDay') : t('training.nextSession')} · {DOW_SHORT[nw.dayOfWeek]}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>{nw.workoutName}</Text>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                      {nw.muscleGroups?.slice(0, 3).map((mg: string) => translateMuscleGroup(mg, t)).join(' · ')}
+                      {nw.estimatedDuration ? ` · ~${nw.estimatedDuration} ${t('common.min')}` : ''}
+                    </Text>
+                  </View>
                 )}
 
                 <View>
