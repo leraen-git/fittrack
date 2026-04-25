@@ -3,12 +3,10 @@
     "name": "Tanren",
     "slug": "tanren",
     "version": "1.0.0",
-    "entryPoint": "../../node_modules/expo-router/entry",
     "scheme": "tanren",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -40,7 +38,7 @@
         "backgroundColor": "#000000"
       },
       "package": "app.tanren",
-      "versionCode": 1,
+      "versionCode": 2,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
