@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "postinstall": "patch-package && node scripts/patch-rn-space-paths.js",
+    "postinstall": "patch-package || true",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",

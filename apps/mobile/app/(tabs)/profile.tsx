@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGuestBannerVisible } from '@/contexts/GuestBannerContext'
@@ -408,6 +409,8 @@ export default function ProfileScreen() {
         {/* Compte & confidentialité — always visible */}
         <SectionLabel label={t('profile.sectionAccount')} />
         <Row label={t('profile.dataUsage')} onPress={() => router.push('/privacy')} muted />
+        <Row label={t('profile.cgu')} onPress={() => Linking.openURL('https://tanren.app/cgu')} muted />
+        <Row label={t('profile.privacyPolicy')} onPress={() => Linking.openURL('https://tanren.app/privacy')} muted />
         <Row label={t('profile.signOut')} onPress={() => openModal('logoutConfirm')} muted />
         <Row label={t('profile.deleteAccount')} onPress={handleDeleteAccount} danger />
       </ScrollView>

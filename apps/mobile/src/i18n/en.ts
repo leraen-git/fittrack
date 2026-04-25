@@ -305,6 +305,8 @@ export const en = {
     // Privacy rows
     dataUsage: 'How my data is used',
     dataUsageSub: 'Storage, AI & your rights',
+    cgu: 'Terms of service',
+    privacyPolicy: 'Privacy policy',
     signOut: 'Sign out',
     signOutTitle: 'Sign out?',
     signOutDesc: 'You will need to sign in again to access your account.',
@@ -578,6 +580,13 @@ export const en = {
     aiDietPlanDesc: 'A personalised 7-day meal plan with exact macros built around your favourite foods.',
     mealRecipes: 'Meal recipes & macros',
     mealRecipesDesc: 'Each meal has full ingredients, preparation steps and a YouTube link.',
+    // Extra features
+    exerciseLibrary: 'Exercise library',
+    exerciseLibraryDesc: '685+ exercises with muscle groups, difficulty and form cues.',
+    shareCard: 'Share card',
+    shareCardDesc: 'Share your completed session as a 9:16 story with stats and photo.',
+    weightTracking: 'Weight tracking',
+    weightTrackingDesc: 'Log your weight over time and visualise your progression curve.',
     // Reminder features
     reminders: 'Smart reminders',
     remindersDesc: 'Workout, meal and hydration reminders — scheduled locally, no server needed.',

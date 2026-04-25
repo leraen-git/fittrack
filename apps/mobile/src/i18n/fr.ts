@@ -305,6 +305,8 @@ export const fr = {
     // Privacy rows
     dataUsage: 'Comment mes données sont utilisées',
     dataUsageSub: 'Stockage, IA & tes droits',
+    cgu: 'Conditions générales d\'utilisation',
+    privacyPolicy: 'Politique de confidentialité',
     signOut: 'Se déconnecter',
     signOutTitle: 'Se déconnecter ?',
     signOutDesc: 'Tu devras te reconnecter pour accéder à ton compte.',
@@ -474,7 +476,7 @@ export const fr = {
     ingredients: 'Ingrédients',
     preparation: 'Préparation',
     noRecipe: 'Pas encore de recette. Régénère ton plan pour obtenir les ingrédients et les étapes.',
-    watchYoutube: 'Voir la recette sur YouTube',
+    watchYoutube: 'Voir un exemple sur YouTube',
     recipe: 'recette',
     mealType: {
       breakfast: 'Petit-déjeuner',
@@ -513,7 +515,7 @@ export const fr = {
     // Meal detail
     mealIngredients: 'Ingrédients · 1 pers.',
     mealPrep: 'Préparation',
-    mealYoutube: 'Voir la recette sur YouTube',
+    mealYoutube: 'Voir un exemple sur YouTube',
     // Regenerate
     regenTitle: 'Plan',
     regenCurrent: 'Plan actuel',
@@ -582,6 +584,13 @@ export const fr = {
     aiDietPlanDesc: 'Un plan repas 7 jours personnalisé avec macros exactes, autour de tes aliments préférés.',
     mealRecipes: 'Recettes & macros',
     mealRecipesDesc: 'Chaque repas a ses ingrédients complets, étapes de préparation et un lien YouTube.',
+    // Extra features
+    exerciseLibrary: 'Bibliothèque d\'exercices',
+    exerciseLibraryDesc: '685+ exercices avec groupes musculaires, difficulté et conseils de forme.',
+    shareCard: 'Carte de partage',
+    shareCardDesc: 'Partage ta séance terminée en story 9:16 avec stats et photo.',
+    weightTracking: 'Suivi du poids',
+    weightTrackingDesc: 'Enregistre ton poids au fil du temps et visualise ta courbe de progression.',
     // Reminder features
     reminders: 'Rappels intelligents',
     remindersDesc: 'Rappels entraînement, repas et hydratation — planifiés en local, sans serveur.',

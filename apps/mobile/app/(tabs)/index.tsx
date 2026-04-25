@@ -221,20 +221,20 @@ export default function HomeScreen() {
               <>
                 {/* Day theme — accent left border */}
                 <View style={{
-                  paddingVertical: 14, paddingHorizontal: 16,
+                  paddingVertical: 10, paddingHorizontal: 14,
                   backgroundColor: 'rgba(255, 45, 63, 0.05)',
                   borderLeftWidth: 3, borderLeftColor: tokens.accent,
                   justifyContent: 'center',
                 }}>
                   <Text style={{
                     fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 2,
-                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 6,
+                    textTransform: 'uppercase', color: tokens.accent, marginBottom: 3,
                   }}>
                     {t('home.today')}
                   </Text>
                   <Text style={{
-                    fontFamily: fonts.sansX, fontSize: 20, letterSpacing: 0.4,
-                    textTransform: 'uppercase', color: tokens.text, lineHeight: 24,
+                    fontFamily: fonts.sansX, fontSize: 16, letterSpacing: 0.4,
+                    textTransform: 'uppercase', color: tokens.text, lineHeight: 20,
                   }}>
                     {todayDietDay.theme}
                   </Text>
@@ -376,8 +376,8 @@ export default function HomeScreen() {
                   backgroundColor: tokens.surface1,
                   borderWidth: 1,
                   borderColor: tokens.accent,
-                  padding: 16,
-                  gap: 8,
+                  padding: 12,
+                  gap: 4,
                 }}
                 accessibilityLabel={t('home.startWorkout')}
                 accessibilityRole="button"
@@ -385,10 +385,10 @@ export default function HomeScreen() {
                 <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.textMute, textTransform: 'uppercase', letterSpacing: 2 }}>
                   {t('home.todayWorkout')}
                 </Text>
-                <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
                   {nextWorkout.workoutName}
                 </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
                   {nextWorkout.muscleGroups?.slice(0, 3).map((mg: string) => translateMuscleGroup(mg, t)).join(' · ')}
                   {nextWorkout.estimatedDuration ? ` · ~${nextWorkout.estimatedDuration} ${t('common.min')}` : ''}
                 </Text>
@@ -396,10 +396,10 @@ export default function HomeScreen() {
                   onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
                   style={{
                     backgroundColor: tokens.accent,
-                    height: 44,
+                    height: 40,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginTop: 4,
+                    marginTop: 2,
                   }}
                   accessibilityLabel={t('home.startWorkout')}
                   accessibilityRole="button"

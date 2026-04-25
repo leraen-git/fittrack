@@ -166,6 +166,7 @@ export default function ExploreScreen() {
         { icon: '>', title: t('explore.activeSession'), desc: t('explore.activeSessionDesc'), route: '/(tabs)/training', used: hasSessions },
         { icon: 'T', title: t('explore.restTimer'), desc: t('explore.restTimerDesc'), route: '/(tabs)/training', used: hasSessions },
         { icon: 'PR', title: t('explore.personalRecords'), desc: t('explore.personalRecordsDesc'), route: '/(tabs)/history', used: hasRecords },
+        { icon: 'EX', title: t('explore.exerciseLibrary'), desc: t('explore.exerciseLibraryDesc'), route: '/(tabs)/training', used: true },
       ],
     },
     {
@@ -174,6 +175,8 @@ export default function ExploreScreen() {
         { icon: '/\\', title: t('explore.progressCharts'), desc: t('explore.progressChartsDesc'), route: '/(tabs)/history', used: hasSessions },
         { icon: 'ST', title: t('explore.streakStats'), desc: t('explore.streakStatsDesc'), route: '/(tabs)/history', used: hasSessions },
         { icon: 'RC', title: t('explore.sessionRecap'), desc: t('explore.sessionRecapDesc'), route: '/(tabs)/training', used: hasSessions },
+        { icon: 'SH', title: t('explore.shareCard'), desc: t('explore.shareCardDesc'), route: '/(tabs)/training', used: hasSessions },
+        { icon: 'KG', title: t('explore.weightTracking'), desc: t('explore.weightTrackingDesc'), route: '/profile/weight', used: hasSessions },
       ],
     },
     {
