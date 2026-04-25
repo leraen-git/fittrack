@@ -35,7 +35,7 @@ class ErrorBoundaryInner extends Component<Props, State> {
       return (
         <View style={styles.container}>
           <Text style={styles.title}>{t('common.errorOccurred')}</Text>
-          {__DEV__ && this.state.error && (
+          {this.state.error && (
             <Text style={styles.detail}>{this.state.error.message}</Text>
           )}
           <TouchableOpacity
