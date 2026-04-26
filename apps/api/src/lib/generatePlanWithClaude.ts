@@ -79,7 +79,7 @@ export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlan
     const stream = client.messages.stream(
       {
         model: 'claude-sonnet-4-6',
-        max_tokens: 16000,
+        max_tokens: 32000,
         system: DIET_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userMessage }],
       },
