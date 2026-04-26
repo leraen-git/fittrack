@@ -56,7 +56,7 @@ export default function CGUScreen() {
         </Section>
 
         <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textGhost, textAlign: 'center', marginTop: 12 }}>
-          {t('legal.contact')} : contact@tanren.app
+          {t('legal.contact')} : contact@tanren.fr
         </Text>
       </ScrollView>
     </SafeAreaView>

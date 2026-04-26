@@ -161,12 +161,12 @@ export default function PrivacyScreen() {
             {isFr ? 'Des questions ? Contact :' : 'Questions? Contact:'}
           </Text>
           <TouchableOpacity
-            onPress={() => Linking.openURL('mailto:privacy@tanren.app')}
+            onPress={() => Linking.openURL('mailto:privacy@tanren.fr')}
             accessibilityRole="link"
-            accessibilityLabel="Email privacy@tanren.app"
+            accessibilityLabel="Email privacy@tanren.fr"
           >
             <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent }}>
-              privacy@tanren.app
+              privacy@tanren.fr
             </Text>
           </TouchableOpacity>
           <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, marginTop: 8 }}>

@@ -7,7 +7,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist'
@@ -27,6 +27,7 @@ const DURATIONS = [30, 45, 60, 75, 90]
 export default function WorkoutBuildScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
+  const insets = useSafeAreaInsets()
   const { editId, forPlanDay } = useLocalSearchParams<{ editId?: string; forPlanDay?: string }>()
   const isEdit = !!editId
 
@@ -480,6 +481,7 @@ export default function WorkoutBuildScreen() {
           left: 0,
           right: 0,
           padding: 16,
+          paddingBottom: 16 + insets.bottom,
           backgroundColor: tokens.bg,
           borderTopWidth: 1,
           borderTopColor: tokens.border,

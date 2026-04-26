@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +11,7 @@ export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
+  const insets = useSafeAreaInsets()
 
   const { data: workout, isLoading } = trpc.workouts.detail.useQuery(
     { id: id ?? '' },
@@ -140,6 +141,7 @@ export default function WorkoutDetailScreen() {
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         padding: 16,
+        paddingBottom: 16 + insets.bottom,
         backgroundColor: tokens.bg,
         borderTopWidth: 1,
         borderTopColor: tokens.border,

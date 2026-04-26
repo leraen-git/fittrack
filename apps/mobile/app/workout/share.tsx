@@ -392,7 +392,7 @@ export default function ShareScreen() {
                   letterSpacing: 2,
                   color: 'rgba(255,255,255,0.5)',
                 }}>
-                  tanren.app
+                  tanren.fr
                 </Text>
               </View>
             </View>

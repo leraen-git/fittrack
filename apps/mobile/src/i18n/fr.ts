@@ -1115,6 +1115,6 @@ export const fr = {
     priv6Title: '6. Cookies et traceurs',
     priv6Body: "L'application mobile n'utilise pas de cookies. Nous utilisons Sentry pour le suivi des erreurs techniques (aucune donnee personnelle n'est collectee par Sentry). Aucun outil de tracking publicitaire n'est integre.",
     priv7Title: '7. Contact',
-    priv7Body: "Pour toute question relative a tes donnees personnelles, tu peux nous contacter a contact@tanren.app. Nous repondons sous 30 jours ouvrables.",
+    priv7Body: "Pour toute question relative a tes donnees personnelles, tu peux nous contacter a contact@tanren.fr. Nous repondons sous 30 jours ouvrables.",
   },
 } as const

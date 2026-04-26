@@ -5,18 +5,25 @@ import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '@/theme/ThemeContext'
 import { useProfile } from '@/data/useProfile'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function GuestBanner() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: user } = useProfile()
+  const { signOut } = useAuth()
   const insets = useSafeAreaInsets()
 
   if (user?.authProvider !== 'guest') return null
 
+  const handleUpgrade = async () => {
+    await signOut()
+    router.replace('/sign-in')
+  }
+
   return (
     <TouchableOpacity
-      onPress={() => router.push('/sign-in?upgrade=1')}
+      onPress={handleUpgrade}
       style={{
         backgroundColor: tokens.surface1,
         borderBottomWidth: 1,

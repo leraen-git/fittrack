@@ -293,7 +293,7 @@ export const authRouter = router({
   guestSignIn: publicProcedure
     .mutation(async ({ ctx }) => {
       const guestId = crypto.randomUUID()
-      const guestEncrypted = encryptUserFields({ name: 'Guest', email: `guest_${guestId.slice(0, 8)}@guest.tanren.app` })
+      const guestEncrypted = encryptUserFields({ name: 'Guest', email: `guest_${guestId.slice(0, 8)}@guest.tanren.fr` })
       const [user] = await ctx.db.insert(users).values({
         authId: `guest_${guestId}`,
         authProvider: 'guest',
