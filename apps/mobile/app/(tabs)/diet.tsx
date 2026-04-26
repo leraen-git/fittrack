@@ -416,6 +416,68 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
               </View>
             </TouchableOpacity>
           )}
+
+          {/* Snack swaps */}
+          {plan.aiSnackSwaps && plan.aiSnackSwaps.length > 0 && (
+            <View style={{ marginTop: 12, gap: 8 }}>
+              <Text style={{
+                fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
+                color: tokens.textMute, textTransform: 'uppercase',
+              }}>
+                {t('diet.snackSwaps')}
+              </Text>
+              {plan.aiSnackSwaps.map((swap, i) => (
+                <View key={i} style={{
+                  borderWidth: 1, borderColor: tokens.border, padding: 12,
+                  flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={{ fontFamily: fonts.sans, fontSize: 13, color: tokens.textMute, textDecorationLine: 'line-through' }}>
+                      {swap.originalSnack}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text }}>
+                      {swap.swap}
+                    </Text>
+                  </View>
+                  <Text style={{ fontFamily: fonts.mono, fontSize: 12, color: tokens.textMute }}>
+                    {swap.kcal}<Text style={{ fontSize: 9 }}> kcal</Text>
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Supplements */}
+          {plan.aiSupplements && plan.aiSupplements.length > 0 && (
+            <View style={{ marginTop: 12, gap: 8 }}>
+              <Text style={{
+                fontFamily: fonts.sansB, fontSize: 9, letterSpacing: 3,
+                color: tokens.textMute, textTransform: 'uppercase',
+              }}>
+                {t('diet.supplements')}
+              </Text>
+              {plan.aiSupplements.map((sup, i) => (
+                <View key={i} style={{
+                  borderWidth: 1, borderColor: tokens.border, padding: 12, gap: 4,
+                }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                      {sup.name}
+                    </Text>
+                    <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.accent }}>
+                      {sup.dose}
+                    </Text>
+                  </View>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                    {sup.when}
+                  </Text>
+                  <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textGhost, fontStyle: 'italic' }}>
+                    {sup.why}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       )}
 
