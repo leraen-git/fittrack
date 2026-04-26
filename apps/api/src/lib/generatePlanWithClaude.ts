@@ -70,7 +70,7 @@ export async function generatePlanWithClaude(intake: IntakeData): Promise<AiPlan
   const client = new Anthropic({ apiKey })
   const userMessage = formatIntakeAsUserMessage(intake)
 
-  const DIET_AI_TIMEOUT_MS = 180_000
+  const DIET_AI_TIMEOUT_MS = 300_000
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), DIET_AI_TIMEOUT_MS)
 
