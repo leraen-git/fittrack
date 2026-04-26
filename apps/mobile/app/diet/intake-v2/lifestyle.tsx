@@ -11,6 +11,8 @@ import { Button } from '@/components/Button'
 import { useIntakeDraftV2Store } from '@/stores/intakeDraftV2Store'
 import type { JobType, ExerciseFrequency, StressLevel, AlcoholBracket } from '@/stores/intakeDraftV2Store'
 import { useTranslation } from 'react-i18next'
+import { useActivePlan } from '@/data/useActivePlan'
+import type { ExerciseFrequency as ExFreq } from '@/stores/intakeDraftV2Store'
 
 function ProgressPills({ step }: { step: number }) {
   const { tokens } = useTheme()
@@ -120,6 +122,22 @@ export default function IntakeLifestyleScreen() {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { draft, update } = useIntakeDraftV2Store()
+  const { data: activePlan } = useActivePlan()
+
+  React.useEffect(() => {
+    if (!activePlan?.days?.length) return
+    const prefill: Partial<typeof draft> = {}
+    const dayCount = activePlan.days.length
+    if (!draft.exerciseFrequency || draft.exerciseFrequency === '2-3') {
+      const freq: ExFreq = dayCount <= 1 ? '0-1' : dayCount <= 3 ? '2-3' : '4+'
+      if (freq !== '2-3') prefill.exerciseFrequency = freq
+    }
+    if (!draft.exerciseType) {
+      const names = [...new Set(activePlan.days.map((d: { workoutName: string }) => d.workoutName))]
+      if (names.length > 0) prefill.exerciseType = `Musculation (${names.join(', ')})`
+    }
+    if (Object.keys(prefill).length > 0) update(prefill)
+  }, [activePlan?.days])
 
   function validate(): boolean {
     if (!draft.exerciseType.trim()) {

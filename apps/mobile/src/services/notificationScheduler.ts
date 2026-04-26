@@ -5,28 +5,27 @@ import type { NotificationSettings } from '@/stores/notificationSettingsStore'
 // ─── Hydration message pool ───────────────────────────────────────────────────
 
 const HYDRATION_MESSAGES_EN = [
-  'Drink some water 💧',
-  'Stay hydrated 💦',
-  'Time for a glass of water 🚰',
-  'Hydration check — drink up! 💧',
-  'Your body is 60% water. Top it up! 💦',
-  'Quick water break 🚰',
-  "Don't forget to drink water 💧",
-  'Small sips, big wins 💦',
+  'Drink some water',
+  'Stay hydrated',
+  'Time for a glass of water',
+  'Hydration check — drink up',
+  'Your body is 60% water. Top it up.',
+  'Quick water break',
+  "Don't forget to drink water",
+  'Small sips, big wins',
 ]
 
 const HYDRATION_MESSAGES_FR = [
-  'Bois de l\'eau 💧',
-  'Reste hydraté 💦',
-  'Pause hydratation 🚰',
-  'Vérification hydratation — bois ! 💧',
-  'Ton corps est à 60% d\'eau. Recharge ! 💦',
-  'Petite pause eau 🚰',
-  "N'oublie pas de boire 💧",
-  'Quelques gorgées, grands bénéfices 💦',
+  'Bois de l\'eau',
+  'Reste hydrate',
+  'Pause hydratation',
+  'Check hydratation — bois',
+  'Ton corps est a 60% d\'eau. Recharge.',
+  'Petite pause eau',
+  'N\'oublie pas de boire',
+  'Quelques gorgees, grands benefices',
 ]
 
-// Pick a message seeded by index so it rotates predictably across the day
 function hydrationMessage(index: number, lang: 'en' | 'fr' = 'en'): string {
   const pool = lang === 'fr' ? HYDRATION_MESSAGES_FR : HYDRATION_MESSAGES_EN
   return pool[index % pool.length]!
@@ -42,7 +41,7 @@ function parseTime(hhmm: string): { hour: number; minute: number } {
 function subtractMinutes(hhmm: string, minutes: number): { hour: number; minute: number } {
   const total = parseTime(hhmm)
   const totalMins = total.hour * 60 + total.minute - minutes
-  const normalized = ((totalMins % 1440) + 1440) % 1440 // wrap around midnight
+  const normalized = ((totalMins % 1440) + 1440) % 1440
   return { hour: Math.floor(normalized / 60), minute: normalized % 60 }
 }
 
@@ -91,12 +90,11 @@ export async function rescheduleWorkoutNotifications(
         : `in ${settings.workoutOffset} min`
     }
 
-    const title = lang === 'fr' ? 'Rappel entraînement' : 'Workout reminder'
+    const title = lang === 'fr' ? 'Rappel entrainement' : 'Workout reminder'
     const body = workoutName
-      ? `${workoutName} ${offsetLabel} 💪`
-      : lang === 'fr' ? "C'est l'heure de t'entraîner 💪" : "Time to hit the gym 💪"
+      ? `${workoutName} ${offsetLabel}`
+      : lang === 'fr' ? 'C\'est l\'heure de t\'entrainer' : 'Time to hit the gym'
 
-    // Expo weekday: 1=Sunday, 2=Monday, …, 7=Saturday
     const weekday = day === 0 ? 1 : day + 1
 
     await Notifications.scheduleNotificationAsync({
@@ -119,14 +117,17 @@ export async function rescheduleWorkoutNotifications(
 
 // ─── Meal reminders ───────────────────────────────────────────────────────────
 
-const MEAL_CONTENT: Record<string, { title: string; body: string; bodyFr: string }> = {
-  breakfast: { title: 'Breakfast time 🍳',  body: 'Time for breakfast 🍳',  bodyFr: 'C\'est l\'heure du petit-déj 🍳' },
-  lunch:     { title: 'Lunch time 🥗',      body: 'Lunch time 🥗',          bodyFr: 'C\'est l\'heure du déjeuner 🥗' },
-  snack:     { title: 'Snack time 🍎',      body: 'Time for a snack 🍎',    bodyFr: 'Heure de la collation 🍎' },
-  dinner:    { title: 'Dinner time 🍽️',    body: 'Time for dinner 🍽️',    bodyFr: 'C\'est l\'heure du dîner 🍽️' },
+const MEAL_CONTENT: Record<string, { titleEn: string; titleFr: string; bodyEn: string; bodyFr: string }> = {
+  breakfast: { titleEn: 'Breakfast time',     titleFr: 'Petit-dej',             bodyEn: 'Time for breakfast',          bodyFr: 'C\'est l\'heure du petit-dej' },
+  lunch:     { titleEn: 'Lunch time',         titleFr: 'Dejeuner',              bodyEn: 'Lunch time',                  bodyFr: 'C\'est l\'heure du dejeuner' },
+  snack:     { titleEn: 'Snack time',         titleFr: 'Collation',             bodyEn: 'Time for a snack',            bodyFr: 'Heure de la collation' },
+  dinner:    { titleEn: 'Dinner time',        titleFr: 'Diner',                 bodyEn: 'Time for dinner',             bodyFr: 'C\'est l\'heure du diner' },
 }
 
-export async function rescheduleMealNotifications(settings: NotificationSettings): Promise<void> {
+export async function rescheduleMealNotifications(
+  settings: NotificationSettings,
+  lang: 'en' | 'fr' = 'en',
+): Promise<void> {
   await cancelByPrefix('meal-')
 
   if ((await getPermissionStatus()) !== 'granted') return
@@ -142,8 +143,8 @@ export async function rescheduleMealNotifications(settings: NotificationSettings
     await Notifications.scheduleNotificationAsync({
       identifier: `meal-${slotName}`,
       content: {
-        title: content.title,
-        body: content.body,
+        title: lang === 'fr' ? content.titleFr : content.titleEn,
+        body: lang === 'fr' ? content.bodyFr : content.bodyEn,
         data: { screen: 'diet', mealSlot: slotName },
       },
       trigger: {
@@ -157,7 +158,10 @@ export async function rescheduleMealNotifications(settings: NotificationSettings
 
 // ─── Hydration reminders ──────────────────────────────────────────────────────
 
-export async function rescheduleHydrationNotifications(settings: NotificationSettings): Promise<void> {
+export async function rescheduleHydrationNotifications(
+  settings: NotificationSettings,
+  lang: 'en' | 'fr' = 'en',
+): Promise<void> {
   await cancelByPrefix('hydration-')
 
   if (!settings.hydrationEnabled) return
@@ -168,7 +172,7 @@ export async function rescheduleHydrationNotifications(settings: NotificationSet
   const fromMins = from.hour * 60 + from.minute
   const toMins = to.hour * 60 + to.minute
 
-  if (fromMins >= toMins) return // invalid range
+  if (fromMins >= toMins) return
 
   const MAX = 64
   let index = 0
@@ -181,8 +185,8 @@ export async function rescheduleHydrationNotifications(settings: NotificationSet
     await Notifications.scheduleNotificationAsync({
       identifier: `hydration-${index}`,
       content: {
-        title: 'Hydration 💧',
-        body: hydrationMessage(index),
+        title: lang === 'fr' ? 'Hydratation' : 'Hydration',
+        body: hydrationMessage(index, lang),
         data: { screen: 'home' },
       },
       trigger: {
@@ -206,7 +210,7 @@ export async function rescheduleAll(
 ): Promise<void> {
   await Promise.all([
     rescheduleWorkoutNotifications(settings, planDays, lang),
-    rescheduleMealNotifications(settings),
-    rescheduleHydrationNotifications(settings),
+    rescheduleMealNotifications(settings, lang),
+    rescheduleHydrationNotifications(settings, lang),
   ])
 }

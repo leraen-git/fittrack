@@ -25,8 +25,8 @@ export async function scheduleRestEndNotification(
   }
   scheduledNotificationId = await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Rest complete!',
-      body: `Time for your next set of ${exerciseName}`,
+      title: 'Repos termine',
+      body: `Prochaine serie : ${exerciseName}`,
       data: { exerciseName },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },

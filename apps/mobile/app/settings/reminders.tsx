@@ -23,6 +23,7 @@ import {
   rescheduleMealNotifications,
   rescheduleHydrationNotifications,
 } from '@/services/notificationScheduler'
+import { useActivePlan } from '@/data/useActivePlan'
 
 function SectionHeader({ label }: { label: string }) {
   const { tokens, fonts } = useTheme()
@@ -229,6 +230,18 @@ export default function RemindersScreen() {
   const settings = useNotificationSettingsStore()
   const { enableWithPermission, permDenied } = usePermissionToggle()
   const lang = (i18n.language === 'fr' ? 'fr' : 'en') as 'en' | 'fr'
+  const { data: activePlan } = useActivePlan()
+
+  // Sync workout days from active plan on first load
+  useEffect(() => {
+    if (!activePlan?.days?.length) return
+    const planDows = activePlan.days.map((d: { dayOfWeek: number }) => d.dayOfWeek)
+    const current = settings.workoutDays
+    if (planDows.length > 0 && JSON.stringify([...planDows].sort()) !== JSON.stringify([...current].sort())) {
+      settings.updateWorkout({ workoutDays: planDows })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePlan?.days])
 
   const [timePicker, setTimePicker] = useState<{
     visible: boolean; value: string; label: string
@@ -395,6 +408,7 @@ export default function RemindersScreen() {
                     settings.updateWorkout({ workoutDays: days })
                     rescheduleWorkoutNotifications({ ...settings, workoutDays: days }, undefined, lang)
                   }}
+                  lang={lang}
                 />
               </View>
             </>
@@ -419,7 +433,7 @@ export default function RemindersScreen() {
                           rescheduleMealNotifications({
                             ...settings,
                             meals: { ...settings.meals, [key]: { ...settings.meals[key], time } },
-                          })
+                          }, lang)
                         })
                       }
                     />
@@ -433,14 +447,14 @@ export default function RemindersScreen() {
                           rescheduleMealNotifications({
                             ...settings,
                             meals: { ...settings.meals, [key]: { ...settings.meals[key], enabled: true } },
-                          })
+                          }, lang)
                         })
                       } else {
                         settings.updateMeal(key, { enabled: false })
                         rescheduleMealNotifications({
                           ...settings,
                           meals: { ...settings.meals, [key]: { ...settings.meals[key], enabled: false } },
-                        })
+                        }, lang)
                       }
                     }}
                     trackColor={{ true: tokens.accent, false: tokens.surface2 }}
@@ -465,11 +479,11 @@ export default function RemindersScreen() {
                   if (v) {
                     enableWithPermission(() => {
                       settings.updateHydration({ hydrationEnabled: true })
-                      rescheduleHydrationNotifications({ ...settings, hydrationEnabled: true })
+                      rescheduleHydrationNotifications({ ...settings, hydrationEnabled: true }, lang)
                     })
                   } else {
                     settings.updateHydration({ hydrationEnabled: false })
-                    rescheduleHydrationNotifications({ ...settings, hydrationEnabled: false })
+                    rescheduleHydrationNotifications({ ...settings, hydrationEnabled: false }, lang)
                   }
                 }}
                 trackColor={{ true: tokens.accent, false: tokens.surface2 }}
@@ -490,7 +504,7 @@ export default function RemindersScreen() {
                   value={settings.hydrationInterval}
                   onChange={(v) => {
                     settings.updateHydration({ hydrationInterval: v })
-                    rescheduleHydrationNotifications({ ...settings, hydrationInterval: v })
+                    rescheduleHydrationNotifications({ ...settings, hydrationInterval: v }, lang)
                   }}
                   labelMap={intervalLabels}
                 />
@@ -503,7 +517,7 @@ export default function RemindersScreen() {
                     onPress={() =>
                       openTimePicker(settings.hydrationActiveFrom, t('notifications.activeFrom'), (time) => {
                         settings.updateHydration({ hydrationActiveFrom: time })
-                        rescheduleHydrationNotifications({ ...settings, hydrationActiveFrom: time })
+                        rescheduleHydrationNotifications({ ...settings, hydrationActiveFrom: time }, lang)
                       })
                     }
                   />
@@ -517,7 +531,7 @@ export default function RemindersScreen() {
                     onPress={() =>
                       openTimePicker(settings.hydrationActiveTo, t('notifications.activeTo'), (time) => {
                         settings.updateHydration({ hydrationActiveTo: time })
-                        rescheduleHydrationNotifications({ ...settings, hydrationActiveTo: time })
+                        rescheduleHydrationNotifications({ ...settings, hydrationActiveTo: time }, lang)
                       })
                     }
                   />

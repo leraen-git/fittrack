@@ -93,7 +93,7 @@ function V2MealCard({
 
 // ─── No plan state ──────────────────────────────────────────────────────────
 
-function NoPlanView({ isGuest }: { isGuest: boolean }) {
+function NoPlanView({ isGuest, showError }: { isGuest: boolean; showError?: boolean }) {
   const { tokens, fonts } = useTheme()
   const { t } = useTranslation()
   const { data: planCount } = useDietPlanCount()
@@ -129,6 +129,19 @@ function NoPlanView({ isGuest }: { isGuest: boolean }) {
           {t('diet.v2HeroDesc')}
         </Text>
       </View>
+
+      {showError && (
+        <View style={{
+          borderWidth: 1, borderColor: tokens.accent, padding: 12, gap: 4,
+        }}>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            {t('diet.genErrorTitle')}
+          </Text>
+          <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim, lineHeight: 18 }}>
+            {t('diet.genErrorDesc')}
+          </Text>
+        </View>
+      )}
 
       {/* Features */}
       <Text style={{
@@ -603,7 +616,7 @@ export default function DietScreen() {
       {v2Plan ? (
         <V2ActivePlan plan={v2Plan as unknown as V2PlanData} />
       ) : (
-        <NoPlanView isGuest={isGuest ?? false} />
+        <NoPlanView isGuest={isGuest ?? false} showError={genStatus === 'error'} />
       )}
     </SafeAreaView>
   )

@@ -225,11 +225,17 @@ function AuthRedirect() {
   }, [status])
 
   useEffect(() => {
-    if (status === 'authenticated' && !profileQuery.isPending && user === null && !hasSignedOut.current) {
+    if (
+      status === 'authenticated' &&
+      !profileQuery.isPending &&
+      !profileQuery.isError &&
+      user === null &&
+      !hasSignedOut.current
+    ) {
       hasSignedOut.current = true
       signOut()
     }
-  }, [status, profileQuery.isPending, user, signOut])
+  }, [status, profileQuery.isPending, profileQuery.isError, user, signOut])
 
   const inAuthGroup = segments[0] === '(auth)'
   const inOnboarding = segments[0] === 'onboarding'

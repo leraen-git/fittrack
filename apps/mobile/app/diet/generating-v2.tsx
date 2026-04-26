@@ -67,7 +67,6 @@ export default function GeneratingV2Screen() {
     triggered.current = true
 
     resetGen()
-    reset()
     started.current = true
     start({
       mode: 'submit',
@@ -105,6 +104,7 @@ export default function GeneratingV2Screen() {
     if (!started.current) return
     if (status === 'done') {
       setProgress(100)
+      reset()
       router.replace('/diet')
     } else if (status === 'error') {
       router.replace('/diet')
