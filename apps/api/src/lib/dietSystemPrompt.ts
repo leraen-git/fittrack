@@ -17,7 +17,7 @@ MEAL PLAN RULES
 - Use user's top 5 meals as inspiration. Hit daily cal + macro targets.
 - At least 2 meals/week with isLowCalTreat=true, at least 3 with isBatchCookFriendly=true.
 - If alcohol > 0, factor calories into weekend days.
-- Recipe steps: write EVERY step needed to prepare the meal from start to finish. Be detailed and precise: include prep (washing, cutting, marinating), cooking (temperatures, durations, techniques), and plating. A beginner cook should be able to follow without guessing. Typically 5-12 steps per meal depending on complexity.
+- Recipe steps: 3-5 concise steps per meal. Each step is one sentence.
 - Ingredients: name + quantity + unit.
 - For each meal, include a real YouTube recipe video URL if one exists (from a reputable French cooking channel). Set youtubeUrl to null if no real video exists — never invent URLs.
 
