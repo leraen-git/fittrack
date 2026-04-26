@@ -1,7 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, router, Redirect, useSegments } from 'expo-router'
 import { ThemeProvider, useTheme } from '@/theme/ThemeContext'
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, onlineManager } from '@tanstack/react-query'
+import NetInfo from '@react-native-community/netinfo'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { mmkvPersister } from '@/lib/queryPersister'
 import { trpc } from '@/lib/trpc'
@@ -54,6 +55,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
+        networkMode: 'offlineFirst',
         staleTime: 30_000,
         gcTime: 24 * 60 * 60 * 1000,
         retry: (failureCount, error: any) => {
@@ -63,7 +65,7 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
         },
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
       },
-      mutations: { retry: 0 },
+      mutations: { networkMode: 'offlineFirst', retry: 0 },
     },
   }))
 
@@ -92,6 +94,13 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
       })],
     }),
   )
+
+  // Wire NetInfo to React Query so it knows when the device is offline
+  useEffect(() => {
+    return NetInfo.addEventListener((state) => {
+      onlineManager.setOnline(!!state.isConnected)
+    })
+  }, [])
 
   // Cancel all in-flight queries when app backgrounds to prevent radio wake-ups
   useEffect(() => {
