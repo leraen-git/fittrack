@@ -403,7 +403,7 @@ export default function ProfileScreen() {
 
         {/* Réglages — always visible, no query dependency */}
         <SectionLabel label={t('profile.sectionReglages')} />
-        <Row label="À propos de Tanren" onPress={() => { resetIntroSeen(); router.push('/intro') }} muted />
+        <Row label="Notre Mantra" onPress={() => { resetIntroSeen(); router.push('/intro') }} muted />
         <Row label={t('explore.title')} onPress={() => router.push('/explore')} muted />
         <Row label={t('profile.reminders')} onPress={() => router.push('/settings/reminders')} muted />
         <Row label={t('profile.healthTitle')} disabled badge={t('profile.healthSoonBadge')} />
