@@ -309,24 +309,7 @@ export const dietRouter = router({
     .mutation(async ({ ctx, input }) => {
       const user = await resolveUser(ctx.db, ctx.userId)
 
-      // Block if user already has an active v2 plan
-      const [existing] = await ctx.db
-        .select({ id: dietPlansV2.id })
-        .from(dietPlansV2)
-        .where(and(
-          eq(dietPlansV2.userId, user.id),
-          eq(dietPlansV2.status, 'ACTIVE'),
-        ))
-        .limit(1)
-
-      if (existing) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: 'Un plan actif existe déjà. Utilise la régénération.',
-        })
-      }
-
-      // If user had any previous plan (deleted/replaced), this counts as a regeneration
+      // If user had any previous plan (active/deleted/replaced), this counts as a regeneration
       const [anyPrevious] = await ctx.db
         .select({ id: dietPlansV2.id })
         .from(dietPlansV2)
