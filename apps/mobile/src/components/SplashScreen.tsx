@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, useColorScheme, Appearance, useWindowDimensions } from 'react-native'
+import * as FileSystem from 'expo-file-system/legacy'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -153,7 +154,22 @@ interface Props {
 }
 
 export function SplashScreen({ onFinish }: Props) {
-  const scheme = useColorScheme() ?? Appearance.getColorScheme()
+  const systemScheme = useColorScheme() ?? Appearance.getColorScheme()
+  const [prefScheme, setPrefScheme] = useState<'light' | 'dark' | null>(null)
+
+  useEffect(() => {
+    const prefFile = (FileSystem.documentDirectory ?? '') + 'theme_pref.json'
+    FileSystem.readAsStringAsync(prefFile)
+      .then((content) => {
+        const parsed = JSON.parse(content)
+        if (parsed.preference === 'light' || parsed.preference === 'dark') {
+          setPrefScheme(parsed.preference)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const scheme = prefScheme ?? systemScheme
   const isDark = scheme === 'dark'
 
   const bg        = isDark ? tokenColors.black : tokenColors.white
