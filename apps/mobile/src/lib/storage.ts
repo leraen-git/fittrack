@@ -5,6 +5,10 @@ export const storage = createMMKV({
   id: 'tanren-default',
 })
 
+export const STORAGE_KEYS = {
+  INTRO_SEEN: 'tanren-intro-seen-v1',
+} as const
+
 export const mmkvStateStorage: StateStorage = {
   getItem: (name) => storage.getString(name) ?? null,
   setItem: (name, value) => storage.set(name, value),

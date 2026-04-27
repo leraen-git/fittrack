@@ -27,6 +27,7 @@ import { DietGenerationWatcher } from '@/components/DietGenerationWatcher'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
 import { useProfile } from '@/data/useProfile'
+import { useIntroSeen } from '@/hooks/useIntroSeen'
 import '@/i18n'
 
 const SENTRY_DSN = process.env['EXPO_PUBLIC_SENTRY_DSN']
@@ -228,6 +229,7 @@ function AuthRedirect() {
   const profileQuery = useProfile()
   const user = profileQuery.data
   const hasSignedOut = useRef(false)
+  const { seen: introSeen } = useIntroSeen()
 
   useEffect(() => {
     if (status === 'authenticated') hasSignedOut.current = false
@@ -246,21 +248,27 @@ function AuthRedirect() {
     }
   }, [status, profileQuery.isPending, profileQuery.isError, user, signOut])
 
-  const inAuthGroup = segments[0] === '(auth)'
-  const inOnboarding = segments[0] === 'onboarding'
+  const seg0 = segments[0] as string
+  const inAuthGroup = seg0 === '(auth)'
+  const inOnboarding = seg0 === 'onboarding'
+  const inIntro = seg0 === 'intro'
 
   if (status === 'loading') return null
   if (status === 'unauthenticated' && !inAuthGroup) return <Redirect href="/sign-in" />
 
   if (status === 'authenticated' && user) {
     if (!user.onboardingDone) {
+      if (!introSeen) {
+        if (inIntro) return null
+        return <Redirect href="/intro" />
+      }
       if (!inOnboarding) {
         const skipConsent = user.authProvider === 'guest' || user.authProvider === 'email'
         return <Redirect href={skipConsent ? '/onboarding/step1' : '/onboarding/step0'} />
       }
       return null
     }
-    if (inAuthGroup || inOnboarding) return <Redirect href="/" />
+    if (inAuthGroup || inOnboarding || inIntro) return <Redirect href="/" />
   }
 
   return null
