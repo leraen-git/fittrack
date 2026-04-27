@@ -65,35 +65,38 @@ export default function IntroScreen() {
           <Text style={[styles.skipText, { color: textGhost }]}>PASSER</Text>
         </Pressable>
 
-        {/* Kanji */}
-        <Animated.Text
-          style={[styles.kanjiPair, { color: accent, opacity: kanjiOpacity }]}
-          accessibilityLabel="Tanren, écrit en kanji japonais"
-        >
-          鍛 錬
-        </Animated.Text>
+        {/* Centered content */}
+        <View style={styles.centerContent}>
+          {/* Kanji */}
+          <Animated.Text
+            style={[styles.kanjiPair, { color: accent, opacity: kanjiOpacity }]}
+            accessibilityLabel="Tanren, écrit en kanji japonais"
+          >
+            鍛 錬
+          </Animated.Text>
 
-        {/* Romaji */}
-        <Animated.Text style={[styles.romaji, { color: textMute, opacity: romajiOpacity }]}>
-          tan · ren
-        </Animated.Text>
+          {/* Romaji */}
+          <Animated.Text style={[styles.romaji, { color: textMute, opacity: romajiOpacity }]}>
+            tan · ren
+          </Animated.Text>
 
-        {/* Divider */}
-        <Animated.View style={[styles.divider, { backgroundColor: accent, opacity: romajiOpacity }]} />
+          {/* Divider */}
+          <Animated.View style={[styles.divider, { backgroundColor: accent, opacity: romajiOpacity }]} />
 
-        {/* Quote */}
-        <Animated.Text style={[styles.quote, { color: textDim, opacity: quoteOpacity }]}>
-          L'acier ne devient lame qu'après{' '}
-          <Text style={{ color: accent, fontStyle: 'italic' }}>
-            mille coups de marteau
-          </Text>
-          .
-        </Animated.Text>
+          {/* Quote */}
+          <Animated.Text style={[styles.quote, { color: textDim, opacity: quoteOpacity }]}>
+            L'acier ne devient lame qu'après{' '}
+            <Text style={{ color: accent, fontStyle: 'italic' }}>
+              mille coups de marteau
+            </Text>
+            .
+          </Animated.Text>
 
-        {/* Attribution */}
-        <Animated.Text style={[styles.attribution, { color: textGhost, opacity: quoteOpacity }]}>
-          {'— proverbe forgeron\njaponais'}
-        </Animated.Text>
+          {/* Attribution */}
+          <Animated.Text style={[styles.attribution, { color: textGhost, opacity: quoteOpacity }]}>
+            {'— proverbe forgeron\njaponais'}
+          </Animated.Text>
+        </View>
 
         {/* CTA */}
         <Animated.View style={[styles.ctaWrapper, { opacity: ctaOpacity }]}>
@@ -146,6 +149,11 @@ const styles = StyleSheet.create({
     letterSpacing: 12 * 0.32,
     textTransform: 'uppercase',
   },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   kanjiPair: {
     fontFamily: 'NotoSerifJP_900Black_subset',
     fontWeight: '900',
@@ -153,7 +161,6 @@ const styles = StyleSheet.create({
     lineHeight: 130,
     letterSpacing: 130 * 0.06,
     textAlign: 'center',
-    marginTop: 20,
     marginBottom: 22,
   },
   romaji: {
