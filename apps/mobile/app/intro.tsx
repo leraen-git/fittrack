@@ -54,17 +54,6 @@ export default function IntroScreen() {
       </Text>
 
       <SafeAreaView style={styles.screen}>
-        {/* Skip */}
-        <Pressable
-          onPress={finish}
-          hitSlop={12}
-          style={styles.skipBtn}
-          accessibilityRole="button"
-          accessibilityLabel="Passer l'introduction"
-        >
-          <Text style={[styles.skipText, { color: textGhost }]}>PASSER</Text>
-        </Pressable>
-
         {/* Centered content */}
         <View style={styles.centerContent}>
           {/* Kanji */}
@@ -109,7 +98,7 @@ export default function IntroScreen() {
               { backgroundColor: accent, opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={styles.ctaText}>Commencer</Text>
+            <Text style={styles.ctaText}>Compris</Text>
           </Pressable>
         </Animated.View>
       </SafeAreaView>
