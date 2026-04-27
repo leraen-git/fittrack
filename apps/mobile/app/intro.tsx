@@ -2,13 +2,12 @@ import { useEffect, useRef } from 'react'
 import { View, Text, Pressable, Animated, Easing, StyleSheet } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router, useNavigation } from 'expo-router'
+import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { useIntroSeen } from '../src/hooks/useIntroSeen'
 
 export default function IntroScreen() {
   const { isDark } = useTheme()
-  const navigation = useNavigation()
   const { markSeen } = useIntroSeen()
 
   const accent = isDark ? '#FF2D3F' : '#E8192C'
@@ -33,11 +32,7 @@ export default function IntroScreen() {
 
   const finish = () => {
     markSeen()
-    if (navigation.canGoBack()) {
-      router.back()
-    } else {
-      router.replace('/onboarding/step0')
-    }
+    router.replace('/onboarding/step0')
   }
 
   return (
