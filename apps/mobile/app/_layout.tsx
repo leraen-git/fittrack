@@ -268,7 +268,7 @@ function AuthRedirect() {
       }
       return null
     }
-    if (inAuthGroup || inOnboarding || inIntro) return <Redirect href="/" />
+    if (inAuthGroup || inOnboarding) return <Redirect href="/" />
   }
 
   return null
