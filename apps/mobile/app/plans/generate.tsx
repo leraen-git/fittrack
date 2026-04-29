@@ -20,7 +20,8 @@ export default function GeneratePlanScreen() {
   const { t } = useTranslation()
   const { data: user } = useProfile()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
-  const [prompt, setPrompt] = useState(lastPrompt)
+  const isRefinement = conversationHistory.length > 0
+  const [prompt, setPrompt] = useState(isRefinement ? '' : lastPrompt)
 
   const GOAL_LABELS: Record<string, string> = {
     MUSCLE_GAIN: t('profile.goalMuscleGain'),
@@ -43,8 +44,6 @@ export default function GeneratePlanScreen() {
     setPendingPrompt(trimmed)
     router.push('/plans/generating')
   }
-
-  const isRefinement = conversationHistory.length > 0
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>
