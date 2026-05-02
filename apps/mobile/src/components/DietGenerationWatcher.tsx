@@ -11,6 +11,7 @@ export function DietGenerationWatcher() {
   const toast = useToastStore()
   const invalidateDiet = useInvalidateDiet()
   const running = useRef(false)
+  const utils = trpc.useUtils()
 
   const submitMutation = trpc.diet.submitIntakeV2.useMutation()
   const regenMutation = trpc.diet.regeneratePlanV2.useMutation()
@@ -33,6 +34,22 @@ export function DietGenerationWatcher() {
           onPress: () => router.push('/diet'),
         })
       } catch (err: any) {
+        // The server may have completed the generation even though the client
+        // lost the response (Android backgrounding, Railway proxy timeout, etc.).
+        // Check if the plan actually exists before declaring failure.
+        try {
+          const plan = await utils.diet.getMyPlanV2.fetch()
+          if (plan) {
+            invalidateDiet()
+            finish()
+            toast.show(i18n.t('diet.genReadyToast'), 'success', {
+              duration: 5000,
+              onPress: () => router.push('/diet'),
+            })
+            return
+          }
+        } catch {}
+
         const raw = err?.message ?? ''
         const msg = raw.includes('{') || raw.length > 100
           ? i18n.t('diet.genErrorToast')

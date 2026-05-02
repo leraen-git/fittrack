@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useNavigation } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
+import { useTranslation } from 'react-i18next'
 
 const PAGES = [
   {
@@ -88,6 +89,7 @@ const PAGES = [
 
 export default function MantraScreen() {
   const { isDark, tokens, fonts } = useTheme()
+  const { t } = useTranslation()
   const navigation = useNavigation()
   const [page, setPage] = useState(0)
 
@@ -216,7 +218,7 @@ export default function MantraScreen() {
                 { borderColor: btnPrevBorder, opacity: pressed ? 0.7 : 1 },
               ]}
               accessibilityRole="button"
-              accessibilityLabel="Précédent"
+              accessibilityLabel={t('mantra.previous')}
             >
               <Text style={[styles.btnPrevText, { color: btnPrevText }]}>‹</Text>
             </Pressable>
@@ -228,10 +230,10 @@ export default function MantraScreen() {
               { backgroundColor: accent, opacity: pressed ? 0.85 : 1 },
             ]}
             accessibilityRole="button"
-            accessibilityLabel={isLast ? 'Commencer' : 'Suivant'}
+            accessibilityLabel={isLast ? t('mantra.start') : t('mantra.next')}
           >
             <Text style={styles.btnNextText}>
-              {isLast ? 'Commencer' : 'Suivant'}
+              {isLast ? t('mantra.start') : t('mantra.next')}
             </Text>
           </Pressable>
         </View>

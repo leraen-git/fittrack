@@ -252,7 +252,7 @@ export default function HomeScreen() {
                     {t('diet.calorieTarget')}
                   </Text>
                   <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text }}>
-                    {todayCalories.toLocaleString('fr-FR')}
+                    {todayCalories.toLocaleString()}
                     <Text style={{ fontFamily: fonts.sansM, fontSize: 12, color: tokens.textMute }}> kcal</Text>
                   </Text>
                 </View>

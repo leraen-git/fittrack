@@ -1117,4 +1117,23 @@ export const fr = {
     priv7Title: '7. Contact',
     priv7Body: "Pour toute question relative a tes donnees personnelles, tu peux nous contacter a contact@tanren.fr. Nous repondons sous 30 jours ouvrables.",
   },
+  intro: {
+    understood: 'Compris',
+    accessibilityStart: 'Commencer Tanren',
+  },
+  mantra: {
+    next: 'Suivant',
+    start: 'Commencer',
+    previous: 'Précédent',
+  },
+  dates: {
+    today: "Aujourd'hui",
+    yesterday: 'Hier',
+  },
+  weight: {
+    period7d: '7 jours',
+    period30d: '30 jours',
+    period3m: '3 mois',
+    period1y: '1 an',
+  },
 } as const

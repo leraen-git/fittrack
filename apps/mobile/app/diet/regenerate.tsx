@@ -9,6 +9,7 @@ import { trpc } from '@/lib/trpc'
 import { useInvalidateDiet } from '@/lib/invalidation'
 import { useDietGenerationStore } from '@/stores/dietGenerationStore'
 import { useTranslation } from 'react-i18next'
+import { formatDateDayMonthLong } from '@/utils/format'
 
 type RegenMode = 'same' | 'edit'
 
@@ -43,7 +44,7 @@ export default function RegeneratePlanScreen() {
   }
 
   const createdDate = plan?.createdAt
-    ? new Date(plan.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+    ? formatDateDayMonthLong(new Date(plan.createdAt))
     : ''
   const daysActive = plan?.createdAt
     ? Math.max(1, Math.floor((Date.now() - new Date(plan.createdAt).getTime()) / 86400000))

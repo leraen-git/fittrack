@@ -20,7 +20,10 @@ if (process.env['SENTRY_DSN']) {
 }
 const isDevAuthEnabled = process.env['ENABLE_DEV_AUTH'] === 'true'
 
-const server = Fastify({ logger: { level: isDev ? 'warn' : 'info' } })
+const server = Fastify({
+  logger: { level: isDev ? 'warn' : 'info' },
+  requestTimeout: 330_000,
+})
 
 // CORS
 const allowedOrigins = isDev

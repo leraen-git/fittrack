@@ -1114,6 +1114,25 @@ export const en = {
     priv7Title: '7. Contact',
     priv7Body: 'For any questions regarding your personal data, you can contact us at contact@tanren.fr. We respond within 30 business days.',
   },
+  intro: {
+    understood: 'Got it',
+    accessibilityStart: 'Start Tanren',
+  },
+  mantra: {
+    next: 'Next',
+    start: 'Start',
+    previous: 'Previous',
+  },
+  dates: {
+    today: 'Today',
+    yesterday: 'Yesterday',
+  },
+  weight: {
+    period7d: '7 days',
+    period30d: '30 days',
+    period3m: '3 months',
+    period1y: '1 year',
+  },
 } as const
 
 export type Translations = typeof en

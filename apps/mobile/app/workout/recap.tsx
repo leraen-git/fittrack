@@ -10,6 +10,7 @@ import { trpc } from '@/lib/trpc'
 import { useInvalidateSessions } from '@/lib/invalidation'
 import { useTranslation } from 'react-i18next'
 import { useExercises, translateMuscleGroup, translateDifficulty } from '@/hooks/useExercises'
+import { formatNumber, formatDateShort, getLocaleTag } from '@/utils/format'
 
 const MUSCLE_GROUPS = ['All', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core', 'Full Body']
 
@@ -152,7 +153,7 @@ export default function RecapScreen() {
     router.replace('/')
   }
 
-  const dateDisplay = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase()
+  const dateDisplay = formatDateShort(new Date()).toUpperCase()
   const durationLabel = durationH > 0 ? `${durationH}H${String(durationM).padStart(2, '0')}` : `${durationMins}MIN`
 
   const getDeltaColor = (delta: number | null) => {
@@ -172,7 +173,7 @@ export default function RecapScreen() {
   const formatDelta = (delta: number | null) => {
     if (delta === null) return null
     if (delta >= -0.01 && delta <= 0.01) return null
-    const pct = (delta * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })
+    const pct = (delta * 100).toLocaleString(getLocaleTag(), { maximumFractionDigits: 1, minimumFractionDigits: 1 })
     if (delta > 0.01) return `+${pct} %`
     return `${pct} %`
   }
@@ -225,7 +226,7 @@ export default function RecapScreen() {
           borderColor: tokens.border,
         }}>
           {[
-            { label: t('share.volume'), value: totalVolume.toLocaleString('fr-FR'), unit: 'kg' },
+            { label: t('share.volume'), value: formatNumber(totalVolume), unit: 'kg' },
             { label: t('recap.duration'), value: durationH > 0 ? `${durationH}:${String(durationM).padStart(2, '0')}` : String(durationMins), unit: durationH > 0 ? 'h' : 'min' },
             { label: t('share.sets'), value: String(completedSets) },
             { label: t('share.records'), value: String(improvedCount), isPR: improvedCount > 0 },
@@ -328,7 +329,7 @@ export default function RecapScreen() {
                     fontSize: 11,
                     color: tokens.textMute,
                   }}>
-                    {comp.currentVolume.toLocaleString('fr-FR')} kg
+                    {formatNumber(comp.currentVolume)} kg
                   </Text>
                 )}
               </View>

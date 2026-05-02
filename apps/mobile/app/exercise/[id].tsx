@@ -211,7 +211,7 @@ export default function ExerciseDetailScreen() {
                       {r.weight} kg x {r.reps}
                     </Text>
                     <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                      {new Date(r.achievedAt).toLocaleDateString('fr-FR')}
+                      {new Date(r.achievedAt).toLocaleDateString()}
                     </Text>
                   </View>
                 ))}

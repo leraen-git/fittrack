@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { getLocales } from 'expo-localization'
+import { AppState, type AppStateStatus } from 'react-native'
 import { en } from './en'
 import { fr } from './fr'
 
@@ -9,9 +10,6 @@ export const resources = {
   fr: { translation: fr },
 } as const
 
-// expo-localization getLocales() is synchronous and uses TurboModules —
-// compatible with React Native New Architecture (bridgeless mode).
-// NativeModules.SettingsManager was unreliable in New Architecture.
 function getDeviceLocale(): string {
   try {
     const locales = getLocales()
@@ -21,7 +19,11 @@ function getDeviceLocale(): string {
   }
 }
 
-const supportedLocale = getDeviceLocale().startsWith('fr') ? 'fr' : 'en'
+function toSupported(locale: string): 'fr' | 'en' {
+  return locale.startsWith('fr') ? 'fr' : 'en'
+}
+
+const supportedLocale = toSupported(getDeviceLocale())
 
 i18n
   .use(initReactI18next)
@@ -30,9 +32,17 @@ i18n
     lng: supportedLocale,
     fallbackLng: 'en',
     interpolation: {
-      escapeValue: false, // React Native handles escaping
+      escapeValue: false,
     },
   })
+
+AppState.addEventListener('change', (state: AppStateStatus) => {
+  if (state !== 'active') return
+  const lang = toSupported(getDeviceLocale())
+  if (lang !== i18n.language) {
+    i18n.changeLanguage(lang)
+  }
+})
 
 export default i18n
 export type { Translations } from './en'

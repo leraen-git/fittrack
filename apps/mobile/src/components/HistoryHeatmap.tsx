@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
+import { formatMonthLabel } from '@/utils/format'
 import type { HeatmapCell } from '@tanren/shared'
 
 const CELL_SIZE = 8
@@ -62,7 +63,7 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
       const d = new Date(firstCell.date + 'T00:00:00')
       const m = d.getMonth()
       if (m !== lastMonth) {
-        const label = d.toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { month: 'short' })
+        const label = formatMonthLabel(d)
         months.push({ label: label.charAt(0).toUpperCase() + label.slice(1), weekIdx: w })
         lastMonth = m
       }

@@ -104,9 +104,13 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // Cancel all in-flight queries when app backgrounds to prevent radio wake-ups
+  // Skip if a diet generation is in progress — the mutation needs to survive backgrounding
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state === 'background') queryClient.cancelQueries()
+      if (state !== 'background') return
+      const { useDietGenerationStore } = require('@/stores/dietGenerationStore')
+      if (useDietGenerationStore.getState().status === 'generating') return
+      queryClient.cancelQueries()
     })
     return () => sub.remove()
   }, [queryClient])

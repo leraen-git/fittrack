@@ -4,10 +4,12 @@ import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
+import { useTranslation } from 'react-i18next'
 import { useIntroSeen } from '../src/hooks/useIntroSeen'
 
 export default function IntroScreen() {
   const { isDark } = useTheme()
+  const { t } = useTranslation()
   const { markSeen } = useIntroSeen()
 
   const accent = isDark ? '#FF2D3F' : '#E8192C'
@@ -87,13 +89,13 @@ export default function IntroScreen() {
           <Pressable
             onPress={finish}
             accessibilityRole="button"
-            accessibilityLabel="Commencer Tanren"
+            accessibilityLabel={t('intro.accessibilityStart')}
             style={({ pressed }) => [
               styles.ctaBtn,
               { backgroundColor: accent, opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={styles.ctaText}>Compris</Text>
+            <Text style={styles.ctaText}>{t('intro.understood')}</Text>
           </Pressable>
         </Animated.View>
       </SafeAreaView>

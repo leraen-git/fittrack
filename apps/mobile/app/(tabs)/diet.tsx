@@ -367,7 +367,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
               {t('diet.v2DayTarget')}
             </Text>
             <Text style={{ fontFamily: fonts.monoB, fontSize: 22, lineHeight: 22, color: tokens.text }}>
-              {dayTotalKcal.toLocaleString('fr-FR')}<Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}> kcal</Text>
+              {dayTotalKcal.toLocaleString()}<Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}> kcal</Text>
             </Text>
           </View>
 

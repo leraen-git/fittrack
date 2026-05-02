@@ -3,7 +3,7 @@ import { View, Text } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
 import { CornerAccent } from './CornerAccent'
-import { formatVolume, formatDuration } from '@/utils/format'
+import { formatVolume, formatDuration, formatDateLong, formatTime } from '@/utils/format'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 import type { SessionDetail } from '@tanren/shared'
 
@@ -16,8 +16,8 @@ export const SessionHero = React.memo(function SessionHero({ session }: SessionH
   const { t } = useTranslation()
 
   const date = new Date(session.startedAt)
-  const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' })
-  const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  const dateStr = formatDateLong(date)
+  const timeStr = formatTime(date)
 
   const stats = [
     { label: t('history.detailDuration'), value: session.durationSeconds ? formatDuration(session.durationSeconds) : '--' },

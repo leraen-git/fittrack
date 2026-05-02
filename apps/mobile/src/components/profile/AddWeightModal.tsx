@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
+import { formatTime } from '@/utils/format'
 import { BottomSheetShell } from '../BottomSheetShell'
 import { Stepper } from '../Stepper'
 import { Button } from '../Button'
@@ -38,7 +39,7 @@ export function AddWeightModal({ open, onClose, lastWeightKg, onSave }: Props) {
   ]
 
   const now = new Date()
-  const dateStr = `Aujourd'hui · ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+  const dateStr = `${t('dates.today')} · ${formatTime(now)}`
 
   return (
     <BottomSheetShell

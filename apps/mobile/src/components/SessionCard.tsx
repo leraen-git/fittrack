@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { useTranslation } from 'react-i18next'
-import { formatVolume, formatDuration } from '@/utils/format'
+import { formatVolume, formatDuration, formatDateShort } from '@/utils/format'
 import { translateMuscleGroup } from '@/hooks/useExercises'
 import type { SessionListItem } from '@tanren/shared'
 
@@ -17,8 +17,7 @@ export const SessionCard = React.memo(function SessionCard({ session, onPress }:
   const hasPR = session.prCount > 0
 
   const date = new Date(session.startedAt)
-  const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
-    .replace(/\./g, '')
+  const dateStr = formatDateShort(date)
 
   const isCompleted = !!session.completedAt
 

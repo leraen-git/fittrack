@@ -1,4 +1,5 @@
 import type { SessionListItem } from '@tanren/shared'
+import { getLocaleTag } from './format'
 
 export interface SessionGroup {
   key: string
@@ -53,8 +54,7 @@ export function groupSessionsByTime(
         key = `week-${weeksAgo}`
         label = l.weeksAgo(weeksAgo)
       } else {
-        const monthLocale = locale === 'fr' ? 'fr-FR' : 'en-US'
-        const month = d.toLocaleDateString(monthLocale, { month: 'long', year: 'numeric' })
+        const month = d.toLocaleDateString(getLocaleTag(), { month: 'long', year: 'numeric' })
         key = `month-${d.getFullYear()}-${d.getMonth()}`
         label = month.charAt(0).toUpperCase() + month.slice(1)
       }

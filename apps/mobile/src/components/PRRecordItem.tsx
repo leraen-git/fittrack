@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
+import { formatDateDayMonth } from '@/utils/format'
 
 interface PRRecordItemProps {
   exerciseName: string
@@ -14,7 +15,7 @@ export const PRRecordItem = React.memo(function PRRecordItem({ exerciseName, wei
   const { tokens, fonts } = useTheme()
 
   const date = new Date(achievedAt)
-  const dateStr = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  const dateStr = formatDateDayMonth(date)
 
   return (
     <TouchableOpacity

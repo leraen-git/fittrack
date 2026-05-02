@@ -23,6 +23,7 @@ import * as Sharing from 'expo-sharing'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/theme/ThemeContext'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
+import { formatNumber, formatDateShort } from '@/utils/format'
 
 const CARD_RATIO = 9 / 16
 
@@ -129,11 +130,11 @@ export default function ShareScreen() {
   const prs = parseInt(prCount ?? '0', 10)
   const volume = parseFloat(totalVolume ?? '0')
   const volumeDisplay = volume >= 1000
-    ? `${Math.round(volume).toLocaleString('fr-FR')}`
+    ? `${formatNumber(Math.round(volume))}`
     : `${Math.round(volume)}`
 
   const durationDisplay = `${durationMins ?? 0}min`
-  const dateDisplay = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
+  const dateDisplay = formatDateShort(new Date())
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tokens.bg }}>

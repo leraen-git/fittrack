@@ -1,6 +1,8 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
+import { useTranslation } from 'react-i18next'
+import { formatTime, formatDateDayMonth } from '@/utils/format'
 import type { WeightEntry } from '@tanren/shared'
 
 interface WeightEntryRowProps {
@@ -9,21 +11,21 @@ interface WeightEntryRowProps {
   onLongPress?: () => void
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso)
-  const now = new Date()
-  const diffMs = now.getTime() - d.getTime()
-  const diffDays = Math.floor(diffMs / 86400000)
-  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-
-  if (diffDays === 0) return `Aujourd'hui · ${time}`
-  if (diffDays === 1) return `Hier · ${time}`
-  const dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-  return `${dateStr} · ${time}`
-}
-
 export function WeightEntryRow({ entry, previousEntry, onLongPress }: WeightEntryRowProps) {
   const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
+
+  const formatEntryDate = (iso: string): string => {
+    const d = new Date(iso)
+    const now = new Date()
+    const diffMs = now.getTime() - d.getTime()
+    const diffDays = Math.floor(diffMs / 86400000)
+    const time = formatTime(d)
+
+    if (diffDays === 0) return `${t('dates.today')} · ${time}`
+    if (diffDays === 1) return `${t('dates.yesterday')} · ${time}`
+    return `${formatDateDayMonth(d)} · ${time}`
+  }
 
   const delta = previousEntry
     ? Math.round((entry.weightKg - previousEntry.weightKg) * 10) / 10
@@ -52,7 +54,7 @@ export function WeightEntryRow({ entry, previousEntry, onLongPress }: WeightEntr
     >
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-          {formatDate(entry.measuredAt)}
+          {formatEntryDate(entry.measuredAt)}
         </Text>
       </View>
 
