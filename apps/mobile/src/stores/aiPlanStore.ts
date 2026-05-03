@@ -37,6 +37,7 @@ interface AIPlanState {
 
   setPendingPrompt: (prompt: string) => void
   setProposedPlan: (plan: GeneratedPlan, userPrompt: string, assistantMessage: string) => void
+  updateProposedPlan: (plan: GeneratedPlan) => void
   reset: () => void
 }
 
@@ -48,6 +49,7 @@ export const useAIPlanStore = create<AIPlanState>()(
   pendingPrompt: '',
 
   setPendingPrompt: (prompt) => set({ pendingPrompt: prompt }),
+  updateProposedPlan: (plan) => set({ proposedPlan: plan }),
 
   setProposedPlan: (plan, userPrompt, assistantMessage) =>
     set((s) => ({

@@ -1,5 +1,6 @@
-import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, Pressable } from 'react-native'
+import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -9,17 +10,23 @@ import { trpc } from '@/lib/trpc'
 import { useInvalidateActivePlan, useInvalidateWorkouts } from '@/lib/invalidation'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { translateMuscleGroup } from '@/hooks/useExercises'
+import { useExercises } from '@/hooks/useExercises'
+import { ExercisePicker, type PickedExercise } from '@/components/ExercisePicker'
 
 const DAY_NAMES: Record<number, string> = { 1: 'Lun', 2: 'Mar', 3: 'Mer', 4: 'Jeu', 5: 'Ven', 6: 'Sam', 7: 'Dim' }
 
 export default function PreviewPlanScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
-  const { proposedPlan, reset } = useAIPlanStore()
+  const { proposedPlan, updateProposedPlan, reset } = useAIPlanStore()
   const { data: plans } = trpc.plans.list.useQuery()
   const currentActivePlan = plans?.find((p) => p.isActive)
   const invalidatePlans = useInvalidateActivePlan()
   const invalidateWorkouts = useInvalidateWorkouts()
+  const { data: allExercises } = useExercises()
+
+  const [previewImage, setPreviewImage] = useState<{ name: string; url: string } | null>(null)
+  const [replacingExercise, setReplacingExercise] = useState<{ dayIdx: number; exIdx: number; muscleGroups: string[] } | null>(null)
 
   const acceptPlan = trpc.plans.acceptGenerated.useMutation({
     onSuccess: async () => {
@@ -49,6 +56,65 @@ export default function PreviewPlanScreen() {
         { text: t('ai.previewActivate'), onPress: () => acceptPlan.mutate(proposedPlan) },
       ]
     )
+  }
+
+  const findExerciseImage = (exerciseId: string): string | null => {
+    return allExercises?.find((e) => e.id === exerciseId)?.imageUrl ?? null
+  }
+
+  const handleDeleteExercise = (dayIdx: number, exIdx: number) => {
+    if (!proposedPlan) return
+    const day = proposedPlan.days[dayIdx]
+    if (!day || day.exercises.length <= 1) {
+      Alert.alert(t('ai.cannotDeleteLast'))
+      return
+    }
+    const newExercises = day.exercises.filter((_, i) => i !== exIdx)
+    const newDays = proposedPlan.days.map((d, i) =>
+      i === dayIdx ? { dayOfWeek: d.dayOfWeek, workoutName: d.workoutName, muscleGroups: d.muscleGroups, estimatedDuration: d.estimatedDuration, exercises: newExercises } : d
+    )
+    updateProposedPlan({ name: proposedPlan.name, days: newDays })
+  }
+
+  const handleReplaceExercise = (dayIdx: number, exIdx: number) => {
+    if (!proposedPlan) return
+    const day = proposedPlan.days[dayIdx]
+    if (!day) return
+    setReplacingExercise({ dayIdx, exIdx, muscleGroups: day.muscleGroups })
+  }
+
+  const handlePickerConfirm = (picked: PickedExercise[]) => {
+    if (!proposedPlan || !replacingExercise || picked.length === 0) {
+      setReplacingExercise(null)
+      return
+    }
+    const { dayIdx, exIdx } = replacingExercise
+    const day = proposedPlan.days[dayIdx]
+    if (!day) { setReplacingExercise(null); return }
+    const old = day.exercises[exIdx]
+    const pick = picked[0]
+    if (!old || !pick) { setReplacingExercise(null); return }
+    const newExercise: typeof old = {
+      exerciseId: pick.id,
+      exerciseName: pick.name,
+      defaultSets: old.defaultSets,
+      defaultReps: old.defaultReps,
+      defaultWeight: old.defaultWeight,
+      defaultRestSeconds: old.defaultRestSeconds,
+    }
+    const newExercises = day.exercises.map((e, i) => i === exIdx ? newExercise : e)
+    const newDays = proposedPlan.days.map((d, i) =>
+      i === dayIdx ? { dayOfWeek: d.dayOfWeek, workoutName: d.workoutName, muscleGroups: d.muscleGroups, estimatedDuration: d.estimatedDuration, exercises: newExercises } : d
+    )
+    updateProposedPlan({ name: proposedPlan.name, days: newDays })
+    setReplacingExercise(null)
+  }
+
+  const handleLongPress = (exerciseId: string, exerciseName: string) => {
+    const url = findExerciseImage(exerciseId)
+    if (url) {
+      setPreviewImage({ name: exerciseName, url })
+    }
   }
 
   if (!proposedPlan) {
@@ -112,8 +178,8 @@ export default function PreviewPlanScreen() {
         </Text>
 
         {/* Day cards */}
-        {sortedDays.map((day, idx) => (
-          <View key={idx} style={{
+        {sortedDays.map((day, dayIdx) => (
+          <View key={dayIdx} style={{
             borderWidth: 1,
             borderColor: tokens.border,
           }}>
@@ -157,9 +223,11 @@ export default function PreviewPlanScreen() {
             </View>
 
             {/* Exercises */}
-            {day.exercises.map((ex, i) => (
-              <View
-                key={i}
+            {day.exercises.map((ex, exIdx) => (
+              <Pressable
+                key={exIdx}
+                onLongPress={() => handleLongPress(ex.exerciseId, ex.exerciseName)}
+                delayLongPress={400}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -177,7 +245,7 @@ export default function PreviewPlanScreen() {
                   alignItems: 'center', justifyContent: 'center',
                 }}>
                   <Text style={{ fontFamily: fonts.sansB, fontSize: 10, color: tokens.accent }}>
-                    {i + 1}
+                    {exIdx + 1}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
@@ -188,13 +256,37 @@ export default function PreviewPlanScreen() {
                     {ex.defaultSets} {t('common.sets')} x {ex.defaultReps} {t('common.reps')} · {ex.defaultRestSeconds}s repos
                   </Text>
                 </View>
-              </View>
+                <TouchableOpacity
+                  onPress={() => handleReplaceExercise(dayIdx, exIdx)}
+                  hitSlop={8}
+                  accessibilityLabel={t('ai.swapExercise')}
+                  accessibilityRole="button"
+                  style={{ paddingHorizontal: 6, paddingVertical: 4 }}
+                >
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 9, color: tokens.accent, letterSpacing: 1, textTransform: 'uppercase' }}>
+                    {t('planBuilder.swap')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleDeleteExercise(dayIdx, exIdx)}
+                  hitSlop={8}
+                  accessibilityLabel={t('common.delete')}
+                  accessibilityRole="button"
+                  style={{ paddingLeft: 4, paddingVertical: 4 }}
+                >
+                  <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.textMute }}>×</Text>
+                </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         ))}
+
+        <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textGhost, textAlign: 'center' }}>
+          {t('ai.previewHint')}
+        </Text>
       </ScrollView>
 
-      {/* Bottom actions — two CTAs */}
+      {/* Bottom actions */}
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         backgroundColor: tokens.bg,
@@ -225,6 +317,52 @@ export default function PreviewPlanScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Image preview modal */}
+      <Modal visible={!!previewImage} transparent animationType="fade" onRequestClose={() => setPreviewImage(null)}>
+        <Pressable
+          onPress={() => setPreviewImage(null)}
+          style={{
+            flex: 1,
+            backgroundColor: tokens.overlay,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 24,
+          }}
+        >
+          <View style={{ width: '100%', maxWidth: 340, backgroundColor: tokens.bg, borderWidth: 1, borderColor: tokens.border }}>
+            <View style={{ padding: 12 }}>
+              <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
+                {previewImage?.name}
+              </Text>
+            </View>
+            {previewImage?.url && (
+              <Image
+                source={{ uri: previewImage.url }}
+                style={{ width: '100%', height: 220 }}
+                contentFit="cover"
+              />
+            )}
+            <TouchableOpacity
+              onPress={() => setPreviewImage(null)}
+              style={{ padding: 12, alignItems: 'center' }}
+              accessibilityLabel={t('common.close')}
+              accessibilityRole="button"
+            >
+              <Text style={{ ...label.sm, color: tokens.accent }}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Exercise picker for replacement */}
+      <ExercisePicker
+        visible={!!replacingExercise}
+        mode="single"
+        preselectedMuscles={replacingExercise?.muscleGroups}
+        onClose={() => setReplacingExercise(null)}
+        onConfirm={handlePickerConfirm}
+      />
     </SafeAreaView>
   )
 }

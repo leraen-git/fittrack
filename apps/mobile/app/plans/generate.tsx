@@ -8,6 +8,7 @@ import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
 import { useAIPlanStore } from '@/stores/aiPlanStore'
 import { useTranslation } from 'react-i18next'
+import { formatDateDayMonthLong } from '@/utils/format'
 
 const SUGGESTIONS = [
   { titleKey: 'ai.suggestionPpl', descKey: 'ai.suggestionPplDesc', promptKey: 'ai.suggestionPplPrompt' },
@@ -19,6 +20,7 @@ export default function GeneratePlanScreen() {
   const { tokens, fonts, label } = useTheme()
   const { t } = useTranslation()
   const { data: user } = useProfile()
+  const { data: credits } = trpc.plans.aiCredits.useQuery()
   const { conversationHistory, lastPrompt, setPendingPrompt, reset } = useAIPlanStore()
   const isRefinement = conversationHistory.length > 0
   const [prompt, setPrompt] = useState(isRefinement ? '' : lastPrompt)
@@ -35,7 +37,13 @@ export default function GeneratePlanScreen() {
     ADVANCED: t('profile.levelAdvanced'),
   }
 
+  const remaining = credits ? credits.limit - credits.used : 1
+
   const handleGenerate = () => {
+    if (remaining <= 0) {
+      Alert.alert(t('ai.noCreditsTitle'), t('ai.noCreditsDesc'))
+      return
+    }
     const trimmed = prompt.trim()
     if (!trimmed) {
       Alert.alert(t('generate.alertTitle'), t('generate.alertDesc'))
@@ -83,6 +91,32 @@ export default function GeneratePlanScreen() {
               {isRefinement ? t('ai.heroDescRefine') : t('ai.heroDescInitial')}
             </Text>
           </View>
+
+          {/* Credits counter */}
+          {credits && (
+            <View style={{ borderWidth: 1, borderColor: tokens.border, borderTopWidth: 3, borderTopColor: tokens.accent, padding: 12, gap: 6 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <Text style={{ ...label.sm, color: tokens.textMute }}>
+                  {t('ai.creditsLabel')}
+                </Text>
+                <Text style={{ fontFamily: fonts.monoB, fontSize: 20 }}>
+                  <Text style={{ color: (credits.limit - credits.used) > 0 ? tokens.text : tokens.accent }}>{credits.limit - credits.used}</Text>
+                  <Text style={{ fontFamily: fonts.mono, fontSize: 12, color: tokens.textMute }}> / {credits.limit}</Text>
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 2, height: 3 }}>
+                {Array.from({ length: credits.limit }).map((_, i) => (
+                  <View key={i} style={{
+                    flex: 1, height: 3,
+                    backgroundColor: i < credits.used ? tokens.accent : tokens.surface2,
+                  }} />
+                ))}
+              </View>
+              <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute }}>
+                {t('ai.creditsReset')} <Text style={{ fontFamily: fonts.monoB, color: tokens.text }}>{formatDateDayMonthLong(new Date(credits.resetAt))}</Text>
+              </Text>
+            </View>
+          )}
 
           {/* Profile chips */}
           {user && (
@@ -197,6 +231,7 @@ export default function GeneratePlanScreen() {
           <Button
             label={isRefinement ? t('ai.refine') : t('ai.generate')}
             onPress={handleGenerate}
+            disabled={remaining <= 0}
           />
         </ScrollView>
       </KeyboardAvoidingView>

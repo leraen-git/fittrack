@@ -162,8 +162,8 @@ export default function TrainingScreen() {
                     style={{ backgroundColor: tokens.surface1, borderWidth: 1, borderColor: tokens.border }}
                     accessibilityLabel={plan.name} accessibilityRole="button"
                   >
-                    <View style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <View style={{ gap: 2 }}>
+                    <View style={{ padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                      <View style={{ flex: 1, gap: 2 }}>
                         <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>{plan.name}</Text>
                         <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                           {plan.days.length} {t('common.exercises')} / {t('common.sets').toLowerCase()}

@@ -48,6 +48,8 @@ export default function WorkoutPreviewScreen() {
 
   const [setsConfig, setSetsConfig] = useState<Record<string, SetConfig[]>>({})
   const [extraExercises, setExtraExercises] = useState<ExtraExercise[]>([])
+  const [removedTemplateIds, setRemovedTemplateIds] = useState<Set<string>>(new Set())
+  const [exerciseOrder, setExerciseOrder] = useState<string[] | null>(null)
   const [pickerVisible, setPickerVisible] = useState(false)
 
   React.useEffect(() => {
@@ -67,13 +69,34 @@ export default function WorkoutPreviewScreen() {
 
   const startSession = useActiveSessionStore((s) => s.startSession)
 
-  const allExerciseIds = useMemo(() => {
-    const fromTemplate = workout?.exercises.map((e) => e.exerciseId) ?? []
-    const fromExtra = extraExercises.map((e) => e.exerciseId)
-    return [...fromTemplate, ...fromExtra]
-  }, [workout, extraExercises])
+  React.useEffect(() => {
+    if (!workout || exerciseOrder !== null) return
+    setExerciseOrder(workout.exercises.map((e) => e.exerciseId))
+  }, [workout?.id])
+
+  const orderedExerciseIds = useMemo(() => {
+    if (!exerciseOrder) return []
+    const extraIds = extraExercises.map((e) => e.exerciseId)
+    return [...exerciseOrder, ...extraIds.filter((id) => !exerciseOrder.includes(id))]
+      .filter((id) => !removedTemplateIds.has(id))
+  }, [exerciseOrder, extraExercises, removedTemplateIds])
+
+  const templateExerciseMap = useMemo(() => {
+    const map = new Map<string, NonNullable<typeof workout>['exercises'][number]>()
+    if (workout) workout.exercises.forEach((e) => map.set(e.exerciseId, e))
+    return map
+  }, [workout])
+
+  const extraExerciseMap = useMemo(() => {
+    const map = new Map<string, ExtraExercise>()
+    extraExercises.forEach((e) => map.set(e.exerciseId, e))
+    return map
+  }, [extraExercises])
+
+  const allExerciseIds = orderedExerciseIds
 
   const handlePickExercises = (picked: { id: string; name: string; muscleGroups: string[] }[]) => {
+    const newIds: string[] = []
     for (const ex of picked) {
       if (!allExerciseIds.includes(ex.id)) {
         setExtraExercises((prev) => [...prev, { exerciseId: ex.id, exerciseName: ex.name, muscleGroups: ex.muscleGroups }])
@@ -81,13 +104,22 @@ export default function WorkoutPreviewScreen() {
           ...prev,
           [ex.id]: Array.from({ length: DEFAULT_SETS }, () => ({ reps: DEFAULT_REPS, weight: 0, restSeconds: DEFAULT_REST })),
         }))
+        newIds.push(ex.id)
       }
+    }
+    if (newIds.length > 0) {
+      setExerciseOrder((prev) => [...(prev ?? []), ...newIds])
     }
     setPickerVisible(false)
   }
 
-  const removeExtraExercise = (exerciseId: string) => {
-    setExtraExercises((prev) => prev.filter((e) => e.exerciseId !== exerciseId))
+  const removeExercise = (exerciseId: string) => {
+    if (extraExerciseMap.has(exerciseId)) {
+      setExtraExercises((prev) => prev.filter((e) => e.exerciseId !== exerciseId))
+    } else {
+      setRemovedTemplateIds((prev) => new Set([...prev, exerciseId]))
+    }
+    setExerciseOrder((prev) => prev?.filter((id) => id !== exerciseId) ?? null)
     setSetsConfig((prev) => {
       const next = { ...prev }
       delete next[exerciseId]
@@ -95,36 +127,50 @@ export default function WorkoutPreviewScreen() {
     })
   }
 
+  const moveExercise = (fromIdx: number, toIdx: number) => {
+    const ids = [...orderedExerciseIds]
+    const [moved] = ids.splice(fromIdx, 1)
+    if (!moved) return
+    ids.splice(toIdx, 0, moved)
+    setExerciseOrder(ids)
+  }
+
   const handleStart = () => {
-    if (!workout) return
+    if (!workout || orderedExerciseIds.length === 0) return
     const withCompleted = (sets: SetConfig[]) => sets.map((s) => ({ ...s, isCompleted: false }))
-    const templateExercises = workout.exercises.map((ex) => ({
-      exerciseId: ex.exerciseId,
-      exerciseName: ex.exerciseName,
-      defaultSets: ex.defaultSets,
-      defaultReps: ex.defaultReps,
-      defaultWeight: ex.defaultWeight,
-      defaultRestSeconds: ex.defaultRestSeconds,
-      lastWeight: ex.previousSets[0]?.weight,
-      lastReps: ex.previousSets[0]?.reps,
-      prWeight: ex.prWeight ?? undefined,
-      prReps: ex.prReps ?? undefined,
-      videoUrl: ex.videoUrl ?? undefined,
-      previousVolume: ex.previousSets.length > 0
-        ? ex.previousSets.reduce((sum: number, s: { reps: number; weight: number }) => sum + s.reps * s.weight, 0)
-        : undefined,
-      sets: withCompleted(setsConfig[ex.exerciseId] ?? []),
-    }))
-    const additionalExercises = extraExercises.map((ex) => ({
-      exerciseId: ex.exerciseId,
-      exerciseName: ex.exerciseName,
-      defaultSets: DEFAULT_SETS,
-      defaultReps: DEFAULT_REPS,
-      defaultWeight: 0,
-      defaultRestSeconds: DEFAULT_REST,
-      sets: withCompleted(setsConfig[ex.exerciseId] ?? []),
-    }))
-    startSession({ id: workout.id, name: workout.name }, [...templateExercises, ...additionalExercises])
+    const exercises = orderedExerciseIds.map((id) => {
+      const tmpl = templateExerciseMap.get(id)
+      if (tmpl) {
+        return {
+          exerciseId: tmpl.exerciseId,
+          exerciseName: tmpl.exerciseName,
+          defaultSets: tmpl.defaultSets,
+          defaultReps: tmpl.defaultReps,
+          defaultWeight: tmpl.defaultWeight,
+          defaultRestSeconds: tmpl.defaultRestSeconds,
+          lastWeight: tmpl.previousSets[0]?.weight,
+          lastReps: tmpl.previousSets[0]?.reps,
+          prWeight: tmpl.prWeight ?? undefined,
+          prReps: tmpl.prReps ?? undefined,
+          videoUrl: tmpl.videoUrl ?? undefined,
+          previousVolume: tmpl.previousSets.length > 0
+            ? tmpl.previousSets.reduce((sum: number, s: { reps: number; weight: number }) => sum + s.reps * s.weight, 0)
+            : undefined,
+          sets: withCompleted(setsConfig[id] ?? []),
+        }
+      }
+      const extra = extraExerciseMap.get(id)
+      return {
+        exerciseId: id,
+        exerciseName: extra?.exerciseName ?? '',
+        defaultSets: DEFAULT_SETS,
+        defaultReps: DEFAULT_REPS,
+        defaultWeight: 0,
+        defaultRestSeconds: DEFAULT_REST,
+        sets: withCompleted(setsConfig[id] ?? []),
+      }
+    })
+    startSession({ id: workout.id, name: workout.name }, exercises)
     router.push('/workout/active')
   }
 
@@ -161,7 +207,7 @@ export default function WorkoutPreviewScreen() {
     )
   }
 
-  const totalExercises = workout.exercises.length + extraExercises.length
+  const totalExercises = orderedExerciseIds.length
 
   const renderExerciseBlock = (
     exerciseId: string,
@@ -173,12 +219,13 @@ export default function WorkoutPreviewScreen() {
       defaultWeight: number
       defaultRestSeconds: number
       previousSets: { reps: number; weight: number }[]
-      removable: boolean
     },
   ) => {
     const sets = setsConfig[exerciseId] ?? []
     const recWeight = recommendedWeight(opts.previousSets, opts.defaultWeight)
     const hasPrev = opts.previousSets.length > 0
+    const isFirst = exIdx === 0
+    const isLast = exIdx === totalExercises - 1
 
     return (
       <View key={exerciseId} style={{ gap: 8 }}>
@@ -200,15 +247,35 @@ export default function WorkoutPreviewScreen() {
               {muscleGroups.map((mg) => translateMuscleGroup(mg, t)).join(' · ')}{hasPrev ? `  ·  prev: ${opts.previousSets[0]?.weight ?? 0}kg` : ''}
             </Text>
           </View>
-          {opts.removable && (
-            <TouchableOpacity
-              onPress={() => removeExtraExercise(exerciseId)}
-              style={{ padding: 4 }}
-              accessibilityLabel={`Remove ${exerciseName}`}
-              accessibilityRole="button"
-            >
-              <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: tokens.accent }}>X</Text>
-            </TouchableOpacity>
+          {totalExercises > 1 && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <TouchableOpacity
+                onPress={() => !isFirst && moveExercise(exIdx, exIdx - 1)}
+                disabled={isFirst}
+                style={{ padding: 4, opacity: isFirst ? 0.2 : 1 }}
+                accessibilityLabel="Move up"
+                accessibilityRole="button"
+              >
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute }}>▲</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => !isLast && moveExercise(exIdx, exIdx + 1)}
+                disabled={isLast}
+                style={{ padding: 4, opacity: isLast ? 0.2 : 1 }}
+                accessibilityLabel="Move down"
+                accessibilityRole="button"
+              >
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.textMute }}>▼</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => removeExercise(exerciseId)}
+                style={{ padding: 4 }}
+                accessibilityLabel={`Remove ${exerciseName}`}
+                accessibilityRole="button"
+              >
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 20, color: tokens.accent }}>×</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
@@ -379,25 +446,27 @@ export default function WorkoutPreviewScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, gap: 20 }}>
-        {workout.exercises.map((ex, idx) =>
-          renderExerciseBlock(ex.exerciseId, ex.exerciseName, ex.muscleGroups, idx, {
-            defaultReps: ex.defaultReps,
-            defaultWeight: ex.defaultWeight,
-            defaultRestSeconds: ex.defaultRestSeconds,
-            previousSets: ex.previousSets,
-            removable: false,
-          }),
-        )}
-
-        {extraExercises.map((ex, idx) =>
-          renderExerciseBlock(ex.exerciseId, ex.exerciseName, ex.muscleGroups, workout.exercises.length + idx, {
-            defaultReps: DEFAULT_REPS,
-            defaultWeight: 0,
-            defaultRestSeconds: DEFAULT_REST,
-            previousSets: [],
-            removable: true,
-          }),
-        )}
+        {orderedExerciseIds.map((id, idx) => {
+          const tmpl = templateExerciseMap.get(id)
+          if (tmpl) {
+            return renderExerciseBlock(tmpl.exerciseId, tmpl.exerciseName, tmpl.muscleGroups, idx, {
+              defaultReps: tmpl.defaultReps,
+              defaultWeight: tmpl.defaultWeight,
+              defaultRestSeconds: tmpl.defaultRestSeconds,
+              previousSets: tmpl.previousSets,
+            })
+          }
+          const extra = extraExerciseMap.get(id)
+          if (extra) {
+            return renderExerciseBlock(extra.exerciseId, extra.exerciseName, extra.muscleGroups, idx, {
+              defaultReps: DEFAULT_REPS,
+              defaultWeight: 0,
+              defaultRestSeconds: DEFAULT_REST,
+              previousSets: [],
+            })
+          }
+          return null
+        })}
 
         {/* Add exercise */}
         <TouchableOpacity
