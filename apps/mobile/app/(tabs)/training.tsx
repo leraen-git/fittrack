@@ -5,7 +5,6 @@ import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-
 import { router } from 'expo-router'
 import { useTheme } from '@/theme/ThemeContext'
 import { SectionStatus } from '@/components/SectionStatus'
-import { useProfile } from '@/data/useProfile'
 import { useActivePlan } from '@/data/useActivePlan'
 import { useWorkouts } from '@/data/useWorkouts'
 import { usePlansList } from '@/data/usePlans'
@@ -53,9 +52,6 @@ export default function TrainingScreen() {
   const workoutsQuery = useWorkouts()
   const { data: workouts } = workoutsQuery
   const { data: plans } = usePlansList()
-  const { data: user } = useProfile()
-  const isGuest = user?.authProvider === 'guest'
-
   const todayUiDow = jsDowToUi(new Date().getDay())
 
   const refetch = () => {
@@ -76,9 +72,9 @@ export default function TrainingScreen() {
           <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
             {t('training.title')}
           </Text>
-          <TouchableOpacity onPress={() => router.push('/workout/build')} accessibilityLabel={t('training.newWorkout')} accessibilityRole="button">
+          <TouchableOpacity onPress={() => router.push('/plans/create')} accessibilityLabel={t('training.newPlan')} accessibilityRole="button">
             <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 1, color: tokens.accent, textTransform: 'uppercase' }}>
-              {t('training.newWorkout')}
+              {t('training.newPlan')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -235,7 +231,7 @@ export default function TrainingScreen() {
             title={t('training.mySeances')}
             count={workouts?.length}
             onAdd={() => router.push('/workout/build')}
-            addLabel={t('training.newWorkout')}
+            addLabel={t('training.newSession')}
           />
           <SectionStatus
             query={workoutsQuery}
@@ -284,40 +280,6 @@ export default function TrainingScreen() {
           </SectionStatus>
         </View>
 
-        {/* AI Plan card */}
-        <View>
-          <SectionLabel title={t('training.aiPlan')} />
-          <TouchableOpacity
-            onPress={isGuest ? undefined : () => router.push('/plans/generate')}
-            disabled={isGuest}
-            style={{
-              backgroundColor: tokens.surface1,
-              padding: 16,
-              borderWidth: 1,
-              borderStyle: 'dashed',
-              borderColor: isGuest ? tokens.border : tokens.accent,
-              gap: 8,
-              opacity: isGuest ? 0.4 : 1,
-            }}
-            accessibilityLabel={t('training.aiCardTitle')}
-            accessibilityRole="button"
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Text style={{ fontFamily: fonts.jp, fontSize: 24, color: tokens.accent, opacity: 0.6 }}>鍛</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
-                  {t('training.aiCardTitle')}
-                </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
-                  {t('training.aiCardDesc')}
-                </Text>
-              </View>
-            </View>
-            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent, textAlign: 'right' }}>
-              {t('training.aiCardCta')}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
   )

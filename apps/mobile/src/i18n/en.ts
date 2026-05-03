@@ -983,7 +983,8 @@ export const en = {
   },
   training: {
     title: 'Training',
-    newWorkout: '+ New',
+    newPlan: 'New plan',
+    newSession: '+ New session',
     todayLabel: 'Today',
     startSession: 'Start session',
     myActivePlan: 'My active plan',

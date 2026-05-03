@@ -16,6 +16,7 @@ import { useInvalidateActivePlan } from '@/lib/invalidation'
 import { usePendingWorkoutStore } from '@/stores/pendingWorkoutStore'
 import { useTranslation } from 'react-i18next'
 import { translateMuscleGroup } from '@/hooks/useExercises'
+import { useProfile } from '@/data/useProfile'
 
 const DOW_KEY: Record<number, string> = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun' }
 
@@ -167,6 +168,8 @@ export default function CreatePlanScreen() {
     }
   }
 
+  const { data: user } = useProfile()
+  const isGuest = user?.authProvider === 'guest'
   const isPending = createPlan.isPending || updatePlan.isPending
 
   return (
@@ -210,6 +213,49 @@ export default function CreatePlanScreen() {
         <Text style={{ fontFamily: fonts.sansX, fontSize: 24, color: tokens.text, textTransform: 'uppercase' }}>
           {isEditing ? t('planBuilder.editTitle') : t('planBuilder.newTitle')}
         </Text>
+
+        {/* AI Plan generator */}
+        {!isEditing && (
+          <TouchableOpacity
+            onPress={isGuest ? undefined : () => router.push('/plans/generate')}
+            disabled={isGuest}
+            style={{
+              backgroundColor: tokens.surface1,
+              padding: 16,
+              borderWidth: 1,
+              borderStyle: 'dashed',
+              borderColor: isGuest ? tokens.border : tokens.accent,
+              gap: 8,
+              opacity: isGuest ? 0.4 : 1,
+            }}
+            accessibilityLabel={t('training.aiCardTitle')}
+            accessibilityRole="button"
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Text style={{ fontFamily: fonts.jp, fontSize: 24, color: tokens.accent, opacity: 0.6 }}>鍛</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.sansB, fontSize: 14, color: tokens.text, textTransform: 'uppercase' }}>
+                  {t('training.aiCardTitle')}
+                </Text>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
+                  {t('training.aiCardDesc')}
+                </Text>
+              </View>
+            </View>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 12, color: tokens.accent, textAlign: 'right' }}>
+              {t('training.aiCardCta')}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Separator */}
+        {!isEditing && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
+            <Text style={{ ...label.sm, color: tokens.textGhost }}>{t('common.or')}</Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: tokens.border }} />
+          </View>
+        )}
 
         {/* Plan name */}
         <View>

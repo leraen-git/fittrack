@@ -986,7 +986,8 @@ export const fr = {
   },
   training: {
     title: 'Entraînement',
-    newWorkout: '+ Nouveau',
+    newPlan: 'Nouveau plan',
+    newSession: '+ Nouvelle séance',
     todayLabel: "Aujourd'hui",
     startSession: 'Démarrer la séance',
     myActivePlan: 'Mon plan actif',
