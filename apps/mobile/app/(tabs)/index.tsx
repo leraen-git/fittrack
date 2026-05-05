@@ -135,7 +135,7 @@ export default function HomeScreen() {
   return (
     <Screen showKanji kanjiChar="鍛" edges={bannerVisible ? [] : ['top']}>
       <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 16 }}
+        contentContainerStyle={{ padding: 16, gap: 10 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetchPlan} tintColor={tokens.accent} />}
       >
         {/* Greeting */}
@@ -216,7 +216,7 @@ export default function HomeScreen() {
 
         {/* === DIET TAB === */}
         {activeTab === 'diet' && (
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: 8 }}>
             {todayDietDay ? (
               <>
                 {/* Day theme — accent left border */}
@@ -240,7 +240,7 @@ export default function HomeScreen() {
                 {/* Calorie target */}
                 <View style={{
                   flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline',
-                  paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: tokens.border,
+                  paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: tokens.border,
                 }}>
                   <Text style={{ ...label.md, color: tokens.textMute }}>
                     {t('diet.calorieTarget')}
@@ -367,8 +367,8 @@ export default function HomeScreen() {
                   backgroundColor: tokens.surface1,
                   borderWidth: 1,
                   borderColor: tokens.accent,
-                  padding: 12,
-                  gap: 4,
+                  padding: 16,
+                  gap: 8,
                 }}
                 accessibilityLabel={t('home.startWorkout')}
                 accessibilityRole="button"
@@ -376,21 +376,40 @@ export default function HomeScreen() {
                 <Text style={{ ...label.sm, color: tokens.textMute }}>
                   {t('home.todayWorkout')}
                 </Text>
-                <Text style={{ fontFamily: fonts.sansX, fontSize: 18, color: tokens.text, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: fonts.sansX, fontSize: 22, color: tokens.text, textTransform: 'uppercase' }}>
                   {nextWorkout.workoutName}
                 </Text>
-                <Text style={{ fontFamily: fonts.sans, fontSize: 11, color: tokens.textMute }}>
+                <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textMute }}>
                   {nextWorkout.muscleGroups?.slice(0, 3).map((mg: string) => translateMuscleGroup(mg, t)).join(' · ')}
                   {nextWorkout.estimatedDuration ? ` · ~${nextWorkout.estimatedDuration} ${t('common.min')}` : ''}
                 </Text>
+
+                {workoutDetail?.exercises && workoutDetail.exercises.length > 0 && (
+                  <View style={{ gap: 2, marginTop: 4, borderTopWidth: 1, borderTopColor: tokens.border, paddingTop: 10 }}>
+                    {workoutDetail.exercises.map((ex: any, i: number) => (
+                      <View key={ex.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textGhost, width: 16 }}>
+                          {String(i + 1).padStart(2, '0')}
+                        </Text>
+                        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: tokens.textDim, flex: 1 }} numberOfLines={1}>
+                          {ex.exerciseName}
+                        </Text>
+                        <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textGhost }}>
+                          {ex.defaultSets}×{ex.defaultReps}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
                 <TouchableOpacity
                   onPress={() => router.push(`/workout/preview?templateId=${nextWorkout.workoutTemplateId}`)}
                   style={{
                     backgroundColor: tokens.accent,
-                    height: 40,
+                    height: 48,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginTop: 2,
+                    marginTop: 4,
                   }}
                   accessibilityLabel={t('home.startWorkout')}
                   accessibilityRole="button"

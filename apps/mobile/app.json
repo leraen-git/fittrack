@@ -16,6 +16,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "app.tanren",
       "infoPlist": {
+        "UIUserInterfaceStyle": "Automatic",
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
@@ -80,7 +81,8 @@
       "expo-asset",
       "expo-localization",
       "expo-sharing",
-      "expo-image"
+      "expo-image",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true

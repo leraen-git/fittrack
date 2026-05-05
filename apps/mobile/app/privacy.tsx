@@ -73,7 +73,7 @@ export default function PrivacyScreen() {
         </View>
 
         <Section title={isFr ? 'Ce que nous collectons' : 'What we collect'}>
-          <Body text={isFr ? 'Trois sources distinctes :' : 'Three distinct sources:'} />
+          <Body text={isFr ? 'Quatre sources distinctes :' : 'Four distinct sources:'} />
 
           <View style={{ gap: 4, paddingTop: 4 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
@@ -96,6 +96,13 @@ export default function PrivacyScreen() {
 
           <View style={{ gap: 4, paddingTop: 4 }}>
             <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
+              {isFr ? 'Fourni par connexion e-mail (OTP)' : 'Provided by email sign-in (OTP)'}
+            </Text>
+            <Bullet text={isFr ? 'Adresse e-mail — utilisée pour envoyer un code de vérification à usage unique' : 'Email address — used to send a one-time verification code'} />
+          </View>
+
+          <View style={{ gap: 4, paddingTop: 4 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>
               {isFr ? 'Saisi par toi lors de l\'inscription' : 'Entered by you during sign-up'}
             </Text>
             <Bullet text={isFr ? 'Genre' : 'Gender'} />
@@ -112,6 +119,7 @@ export default function PrivacyScreen() {
             <Bullet text={isFr ? 'Profil alimentaire et plans de repas générés par l\'IA' : 'Diet profile and AI-generated meal plans'} />
             <Bullet text={isFr ? 'Records personnels et historique de progression' : 'Personal records and progression history'} />
             <Bullet text={isFr ? 'Préférences de rappels (activées par toi)' : 'Reminder preferences (enabled by you)'} />
+            <Bullet text={isFr ? 'Photos d\'évolution — stockées uniquement sur ton appareil, jamais envoyées au serveur' : 'Evolution photos — stored only on your device, never sent to the server'} />
           </View>
         </Section>
 
@@ -120,21 +128,22 @@ export default function PrivacyScreen() {
             ? 'Tes données sont hébergées sur une base de données sécurisée. Tes informations personnelles (nom, e-mail) sont chiffrées au repos.'
             : 'Your data is hosted on a secure database. Your personal information (name, email) is encrypted at rest.'
           } />
-          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels et catalogue d\'exercices' : 'On device: reminder preferences and exercise catalog'} />
+          <Bullet text={isFr ? 'Sur l\'appareil : préférences de rappels, catalogue d\'exercices et photos d\'évolution' : 'On device: reminder preferences, exercise catalog and evolution photos'} />
           <Bullet text={isFr ? 'Serveur : toutes les autres données' : 'Server: all other data'} />
           <Bullet text={isFr ? 'Les sessions expirent automatiquement' : 'Login sessions expire automatically'} />
         </Section>
 
         <Section title={isFr ? 'Tiers impliqués' : 'Third parties involved'}>
           <Body text={isFr
-            ? 'Seuls quatre services tiers accèdent à des données :'
-            : 'Only four third-party services access data:'
+            ? 'Cinq services tiers accèdent à des données :'
+            : 'Five third-party services access data:'
           } />
           {[
             { name: 'Apple Sign-In', desc: isFr ? 'Authentification sécurisée. Apple ne reçoit aucune donnée de ta progression.' : 'Secure authentication. Apple does not receive any of your training data.' },
             { name: 'Google Sign-In', desc: isFr ? 'Alternative de connexion. Google ne reçoit aucune donnée de ta progression.' : 'Alternative sign-in. Google does not receive any of your training data.' },
             { name: 'Anthropic / Claude', desc: isFr ? 'Génération de plans. Jamais ton nom ou e-mail.' : 'Plan generation. Never your name or email.' },
             { name: 'Resend', desc: isFr ? 'Envoi de codes OTP. Seul ton e-mail est transmis.' : 'OTP code delivery. Only your email is transmitted.' },
+            { name: 'Sentry', desc: isFr ? 'Suivi des erreurs techniques. Aucune donnée personnelle ni de progression n\'est transmise.' : 'Technical error monitoring. No personal or training data is transmitted.' },
           ].map((tp) => (
             <View key={tp.name} style={{ gap: 2, paddingTop: 4 }}>
               <Text style={{ fontFamily: fonts.sansB, fontSize: 11, color: tokens.text, textTransform: 'uppercase' }}>{tp.name}</Text>
@@ -170,7 +179,7 @@ export default function PrivacyScreen() {
             </Text>
           </TouchableOpacity>
           <Text style={{ fontFamily: fonts.sans, fontSize: 10, color: tokens.textMute, marginTop: 8 }}>
-            {isFr ? 'Dernière mise à jour : avril 2026' : 'Last updated: April 2026'}
+            {isFr ? 'Dernière mise à jour : mai 2026' : 'Last updated: May 2026'}
           </Text>
         </View>
       </ScrollView>

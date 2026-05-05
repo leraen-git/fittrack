@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Dimensions } from 'react-native'
 import Svg, { Path, Circle, Line } from 'react-native-svg'
 import { useTheme } from '@/theme/ThemeContext'
 import { formatVolume } from '@/utils/format'
@@ -12,6 +12,8 @@ interface WeeklyVolumeChartProps {
 const CHART_HEIGHT = 100
 const PADDING_X = 8
 const DOT_RADIUS = 3
+const SCREEN_WIDTH = Dimensions.get('window').width
+const FULL_WIDTH = SCREEN_WIDTH - 32
 
 export const WeeklyVolumeChart = React.memo(function WeeklyVolumeChart({ weeks }: WeeklyVolumeChartProps) {
   const { tokens, fonts } = useTheme()
@@ -21,10 +23,7 @@ export const WeeklyVolumeChart = React.memo(function WeeklyVolumeChart({ weeks }
     return Math.max(...vals, 1)
   }, [weeks])
 
-  const chartWidth = useMemo(() => {
-    const perWeek = weeks.length > 20 ? 8 : weeks.length > 10 ? 16 : 40
-    return Math.max(weeks.length * perWeek, 200)
-  }, [weeks.length])
+  const chartWidth = FULL_WIDTH
 
   const points = useMemo(() => {
     const usable = chartWidth - PADDING_X * 2

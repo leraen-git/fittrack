@@ -301,7 +301,7 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
       </View>
 
       {/* Day selector */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 4, paddingBottom: 12 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 4, paddingBottom: 8 }}>
         {days.map((d) => {
           const isToday = d.dayNumber === todayDow
           const isSelected = d.dayNumber === selectedDay
@@ -335,8 +335,36 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
         })}
       </View>
 
+      {/* Compact grocery bar */}
+      {totalGroceries > 0 && (
+        <TouchableOpacity
+          onPress={() => router.push('/diet/groceries' as Href)}
+          style={{
+            flexDirection: 'row', alignItems: 'center', gap: 8,
+            marginHorizontal: 16, marginBottom: 4,
+            paddingVertical: 8, paddingHorizontal: 12,
+            borderWidth: 1, borderColor: tokens.border,
+          }}
+          accessibilityRole="button"
+        >
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 10, letterSpacing: 0.8, color: tokens.textMute, textTransform: 'uppercase' }}>
+            {t('diet.v2Groceries')}
+          </Text>
+          <View style={{ flex: 1, height: 3, backgroundColor: tokens.surface2 }}>
+            <View style={{
+              width: `${(checkedCount / totalGroceries) * 100}%`,
+              height: 3, backgroundColor: tokens.accent,
+            }} />
+          </View>
+          <Text style={{ fontFamily: fonts.mono, fontSize: 10, color: tokens.textMute }}>
+            {checkedCount}/{totalGroceries}
+          </Text>
+          <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.accent }}>›</Text>
+        </TouchableOpacity>
+      )}
+
       {currentDay && (
-        <View style={{ padding: 16, gap: 8 }}>
+        <View style={{ paddingHorizontal: 16, paddingBottom: 16, paddingTop: 8, gap: 8 }}>
           {/* Day theme block */}
           <View style={{
             borderLeftWidth: 3, borderLeftColor: tokens.accent,
@@ -387,39 +415,6 @@ function V2ActivePlan({ plan }: { plan: V2PlanData }) {
             />
           ))}
 
-          {/* Groceries preview */}
-          {totalGroceries > 0 && (
-            <TouchableOpacity
-              onPress={() => router.push('/diet/groceries' as Href)}
-              style={{
-                borderWidth: 1, borderColor: tokens.border,
-                borderLeftWidth: 3, borderLeftColor: tokens.accent,
-                padding: 14, gap: 8, marginTop: 8,
-              }}
-              accessibilityRole="button"
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <Text style={{ fontFamily: 'NotoSerifJP_900Black_subset', fontSize: 20, color: tokens.accent }}>
-                    買
-                  </Text>
-                  <Text style={{ fontFamily: fonts.sansB, fontSize: 13, color: tokens.text, textTransform: 'uppercase', letterSpacing: 0.6 }}>
-                    {t('diet.v2Groceries')}
-                  </Text>
-                </View>
-                <Text style={{ fontFamily: fonts.sansB, fontSize: 16, color: tokens.accent }}>›</Text>
-              </View>
-              <Text style={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.textMute }}>
-                {checkedCount}<Text style={{ color: tokens.textGhost }}> / {totalGroceries} {t('diet.v2GroceriesChecked')}</Text>
-              </Text>
-              <View style={{ height: 3, backgroundColor: tokens.surface2 }}>
-                <View style={{
-                  width: totalGroceries > 0 ? `${(checkedCount / totalGroceries) * 100}%` : '0%',
-                  height: 3, backgroundColor: tokens.accent,
-                }} />
-              </View>
-            </TouchableOpacity>
-          )}
 
           {/* Snack swaps */}
           {plan.aiSnackSwaps && plan.aiSnackSwaps.length > 0 && (

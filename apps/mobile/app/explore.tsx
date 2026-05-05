@@ -7,6 +7,7 @@ import { useTheme } from '@/theme/ThemeContext'
 import { trpc } from '@/lib/trpc'
 import { useProfile } from '@/data/useProfile'
 import { useNotificationSettingsStore } from '@/stores/notificationSettingsStore'
+import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 
 interface FeatureItem {
   icon: string
@@ -16,6 +17,7 @@ interface FeatureItem {
   isNew?: boolean
   used: boolean
   locked?: boolean
+  comingSoon?: boolean
 }
 
 interface FeatureGroup {
@@ -29,14 +31,14 @@ function FeatureRow({ item }: { item: FeatureItem }) {
 
   return (
     <TouchableOpacity
-      onPress={item.locked ? undefined : () => router.push(item.route)}
-      disabled={item.locked}
+      onPress={(item.locked || item.comingSoon) ? undefined : () => router.push(item.route)}
+      disabled={item.locked || item.comingSoon}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 12,
         paddingHorizontal: 12,
-        opacity: item.locked ? 0.4 : 1,
+        opacity: (item.locked || item.comingSoon) ? 0.4 : 1,
         borderBottomWidth: 1,
         borderBottomColor: tokens.border,
         gap: 12,
@@ -89,7 +91,24 @@ function FeatureRow({ item }: { item: FeatureItem }) {
         </Text>
       </View>
 
-      {!item.used ? (
+      {item.comingSoon ? (
+        <View style={{
+          borderWidth: 1,
+          borderColor: tokens.textMute,
+          paddingHorizontal: 8,
+          paddingVertical: 2,
+        }}>
+          <Text style={{
+            fontFamily: fonts.sansB,
+            fontSize: 8,
+            color: tokens.textMute,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          }}>
+            {t('explore.comingSoon')}
+          </Text>
+        </View>
+      ) : !item.used ? (
         <View style={{
           borderWidth: 1,
           borderColor: tokens.accent,
@@ -144,13 +163,17 @@ export default function ExploreScreen() {
   const { data: activePlan } = trpc.plans.active.useQuery()
   const notifSettings        = useNotificationSettingsStore()
 
-  const hasSessions   = (sessions?.length ?? 0) > 0
-  const hasRecords    = (records?.length ?? 0) > 0
-  const hasDiet       = !!dietMeals
+  const progressPhotos = useProgressPhotosStore(s => s.photos)
+
+  const hasSessions    = (sessions?.length ?? 0) > 0
+  const hasRecords     = (records?.length ?? 0) > 0
+  const hasDiet        = !!dietMeals
   const hasWorkoutPlan = !!activePlan
-  const hasReminders  = notifSettings.workoutEnabled
+  const hasReminders   = notifSettings.workoutEnabled
     || Object.values(notifSettings.meals).some((m: any) => m.enabled)
     || notifSettings.hydrationEnabled
+  const hasPhotos      = progressPhotos.length > 0
+  const hasWeight      = !!(user?.weightKg)
 
   const groups: FeatureGroup[] = [
     {
@@ -170,14 +193,15 @@ export default function ExploreScreen() {
         { icon: 'ST', title: t('explore.streakStats'), desc: t('explore.streakStatsDesc'), route: '/(tabs)/history', used: hasSessions },
         { icon: 'RC', title: t('explore.sessionRecap'), desc: t('explore.sessionRecapDesc'), route: '/(tabs)/training', used: hasSessions },
         { icon: 'SH', title: t('explore.shareCard'), desc: t('explore.shareCardDesc'), route: '/(tabs)/training', used: hasSessions },
-        { icon: 'KG', title: t('explore.weightTracking'), desc: t('explore.weightTrackingDesc'), route: '/profile/weight', used: hasSessions },
+        { icon: 'KG', title: t('explore.weightTracking'), desc: t('explore.weightTrackingDesc'), route: '/profile/weight', used: hasWeight },
+        { icon: 'EV', title: t('explore.evolutionPhotos'), desc: t('explore.evolutionPhotosDesc'), route: '/profile/evolution', isNew: true, used: hasPhotos },
       ],
     },
     {
       label: t('explore.groupPlans'),
       items: [
         { icon: 'AI', title: isGuest ? t('guest.aiLocked') : t('explore.aiWorkoutPlan'), desc: isGuest ? t('guest.aiLockedDesc') : t('explore.aiWorkoutPlanDesc'), route: '/plans/generate', isNew: !isGuest, used: hasWorkoutPlan, locked: isGuest },
-        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/training', used: false },
+        { icon: 'PG', title: t('explore.guidedPrograms'), desc: t('explore.guidedProgramsDesc'), route: '/(tabs)/training', used: false, comingSoon: true },
       ],
     },
     {

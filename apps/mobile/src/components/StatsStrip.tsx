@@ -23,7 +23,7 @@ export function StatsStrip({ stats }: StatsStripProps) {
           style={{
             flex: 1,
             alignItems: 'center',
-            paddingVertical: 14,
+            paddingVertical: 10,
             backgroundColor: tokens.bg,
             marginLeft: i > 0 ? 1 : 0,
           }}
@@ -34,6 +34,7 @@ export function StatsStrip({ stats }: StatsStripProps) {
           <Text style={{
             fontFamily: fonts.sansM, fontSize: 10, letterSpacing: 2,
             textTransform: 'uppercase', color: tokens.textMute, marginTop: 4,
+            textAlign: 'center',
           }}>
             {s.label}
           </Text>

@@ -25,6 +25,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { ToastHost } from '@/components/ToastHost'
 import { DietGenerationWatcher } from '@/components/DietGenerationWatcher'
 import { useActiveSessionStore } from '@/stores/activeSessionStore'
+import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
 import { useSyncWorker } from '@/hooks/useSyncWorker'
 import { useProfile } from '@/data/useProfile'
 import { useIntroSeen } from '@/hooks/useIntroSeen'
@@ -337,6 +338,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     initMusicService().catch(() => null)
+    useProgressPhotosStore.getState().load().then(() => {
+      import('@/lib/progressPhotos').then(({ progressPhotos }) => {
+        progressPhotos.cleanupOrphans().catch(() => null)
+      })
+    })
   }, [])
 
   return (
@@ -347,7 +353,9 @@ export default function RootLayout() {
           <AuthProvider>
             <TRPCProvider>
               <AuthGateProvider>
-                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
+                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+                  <Stack.Screen name="profile/evolution/capture" options={{ presentation: 'modal' }} />
+                </Stack>
                 <AuthRedirect />
                 {splashDone && <SessionResumeChecker />}
                 <SyncWorkerHost />

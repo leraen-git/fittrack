@@ -1,13 +1,19 @@
 import React, { useMemo, useRef, useEffect } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Dimensions } from 'react-native'
 import { useTheme } from '@/theme/ThemeContext'
 import { colors as tokenColors } from '@/theme/tokens'
 import { useTranslation } from 'react-i18next'
 import { formatMonthLabel } from '@/utils/format'
 import type { HeatmapCell } from '@tanren/shared'
 
-const CELL_SIZE = 8
-const CELL_GAP = 2
+const CELL_GAP = 3
+const DAY_LABEL_WIDTH = 18
+const SCREEN_WIDTH = Dimensions.get('window').width
+const GRID_PADDING = 32
+const MAX_WEEKS = 20
+const CELL_SIZE = Math.floor(
+  (SCREEN_WIDTH - GRID_PADDING - DAY_LABEL_WIDTH - 4 - MAX_WEEKS * CELL_GAP) / MAX_WEEKS
+)
 const HEATMAP = tokenColors.heatmap
 
 const DAY_LABELS_FR = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
@@ -72,12 +78,12 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
     return { grid: weeks, monthLabels: months }
   }, [cells, startDate, isFr])
 
-  const dayLabelWidth = 16
+  const dayLabelWidth = DAY_LABEL_WIDTH
 
   const gridContent = (
     <View>
       {/* Month labels */}
-      <View style={{ flexDirection: 'row', marginLeft: dayLabelWidth + 4, height: 14, marginBottom: 2 }}>
+      <View style={{ flexDirection: 'row', marginLeft: dayLabelWidth + 4, height: 16, marginBottom: 3 }}>
         {monthLabels.map((m, i) => (
           <Text
             key={i}
@@ -85,7 +91,7 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
               position: 'absolute',
               left: m.weekIdx * (CELL_SIZE + CELL_GAP),
               fontFamily: fonts.sansB,
-              fontSize: 8,
+              fontSize: 9,
               letterSpacing: 0.5,
               textTransform: 'uppercase',
               color: tokens.textGhost,
@@ -104,7 +110,7 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
               key={i}
               style={{
                 fontFamily: fonts.sansB,
-                fontSize: 7,
+                fontSize: 8,
                 letterSpacing: 0.5,
                 textTransform: 'uppercase',
                 color: tokens.textGhost,
@@ -144,7 +150,7 @@ export const HistoryHeatmap = React.memo(function HistoryHeatmap({ cells, startD
         <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', color: tokens.textMute }}>{t('history.heatmapLegendLess')}</Text>
         <View style={{ flexDirection: 'row', gap: 2 }}>
           {HEATMAP.map((c, i) => (
-            <View key={i} style={{ width: 10, height: 10, backgroundColor: c }} />
+            <View key={i} style={{ width: 12, height: 12, backgroundColor: c }} />
           ))}
         </View>
         <Text style={{ fontFamily: fonts.sansM, fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', color: tokens.textMute }}>{t('history.heatmapLegendMore')}</Text>

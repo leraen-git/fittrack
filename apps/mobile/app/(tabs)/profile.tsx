@@ -22,6 +22,8 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 import { formatVolume } from '@/utils/format'
 import { SyncStatusBanner } from '@/components/profile/SyncStatusBanner'
 import { useProfileStore } from '@/stores/profileStore'
+import { useProgressPhotosStore } from '@/stores/progressPhotosStore'
+import { storage } from '@/lib/storage'
 import { EditFirstNameModal } from '@/components/profile/EditFirstNameModal'
 import { EditHeightModal } from '@/components/profile/EditHeightModal'
 import { EditTrainingLevelModal } from '@/components/profile/EditTrainingLevelModal'
@@ -125,6 +127,59 @@ function Row({
   return (
     <TouchableOpacity onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
       {content}
+    </TouchableOpacity>
+  )
+}
+
+const EVOLUTION_SEEN_KEY = 'feature-seen-evolution'
+
+function EvolutionRow() {
+  const { tokens, fonts } = useTheme()
+  const { t } = useTranslation()
+  const photoCount = useProgressPhotosStore(s => s.photos.length)
+  const [seen, setSeen] = React.useState(() => storage.getBoolean(EVOLUTION_SEEN_KEY) ?? false)
+
+  const handlePress = () => {
+    if (!seen) {
+      storage.set(EVOLUTION_SEEN_KEY, true)
+      setSeen(true)
+    }
+    router.push('/profile/evolution')
+  }
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={t('evolution.title')}
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: tokens.border,
+        backgroundColor: !seen ? `${tokens.accent}0F` : 'transparent',
+        marginHorizontal: !seen ? -8 : 0,
+        paddingHorizontal: !seen ? 8 : 0,
+      }}
+    >
+      <Text style={{ fontFamily: fonts.sansM, fontSize: 13, letterSpacing: 0.3, color: tokens.text }}>
+        {t('evolution.title')}
+      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        {!seen && (
+          <View style={{ backgroundColor: tokens.accent, paddingHorizontal: 6, paddingVertical: 2 }}>
+            <Text style={{ fontFamily: fonts.sansB, fontSize: 8, letterSpacing: 1.5, color: '#FFFFFF', textTransform: 'uppercase' }}>
+              NEW
+            </Text>
+          </View>
+        )}
+        <Text style={{ fontFamily: fonts.sansM, fontSize: 13, letterSpacing: 0.3, color: tokens.textMute }}>
+          {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
+        </Text>
+        <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: tokens.textMute, marginLeft: 4 }}>›</Text>
+      </View>
     </TouchableOpacity>
   )
 }
@@ -373,6 +428,7 @@ export default function ProfileScreen() {
                 <Row label={t('profile.fieldName')} value={u.name} onPress={() => openModal('editFirstName')} />
                 <Row label={t('profile.fieldHeight')} value={heightDisplay} onPress={() => openModal('editHeight')} />
                 <Row label={t('profile.fieldWeight')} value={weightDisplay} onPress={() => router.push('/profile/weight')} />
+                <EvolutionRow />
 
                 {/* Entraînement */}
                 <SectionLabel label={t('profile.sectionTraining')} />
