@@ -97,10 +97,11 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
         fetch: (url, options) => {
           const controller = new AbortController()
           const timeoutId = setTimeout(() => controller.abort(), 120_000)
-          const signal = options?.signal
-            ? AbortSignal.any([options.signal, controller.signal])
-            : controller.signal
-          return fetch(url, { ...options, signal }).finally(() => clearTimeout(timeoutId))
+          const originalSignal = options?.signal
+          if (originalSignal) {
+            originalSignal.addEventListener('abort', () => controller.abort(), { once: true })
+          }
+          return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
         },
       })],
     }),
